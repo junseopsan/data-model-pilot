@@ -16,20 +16,20 @@ const Home = () => {
     return (
         <div className="flex flex-col h-full gap-4">
             <DataModelHeader data={dataModelName} />
-            <div className="flex flex-col gap-4 xl:flex-row">
+            <div className="flex flex-col gap-4 xl:flex-row h-1/2">
                 <div className="flex flex-col gap-4">
-                    <div className="xl:w-full">
+                    <div className="xl:w-full h-1/2">
                         <Toolbar  />
                     </div>
-                    <div className="xl:w-full">
+                    <div className="xl:w-full h-1/2">
                         <Subject  />
                     </div>
                 </div>
-                <div className="flex flex-col flex-auto gap-4">
+                <div className="flex flex-col flex-auto gap-4 ">
                     <TaskOverview />
                 </div>
             </div>
-            <div className="flex flex-row justify-between flex-auto gap-4">
+            <div className="flex flex-row justify-between flex-auto gap-4 ">
             <div className="xl:w-[20%]">
                     <Entity />
                 </div>

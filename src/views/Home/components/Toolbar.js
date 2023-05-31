@@ -10,7 +10,7 @@ const onClickToolbarBtn = (actionName) => {
 }
 const Toolbar = () => {
     return (
-        <Card>
+        <Card className="h-full">
             <div className="flex items-center justify-between mb-6">
                 <h4>도구 모음</h4>
             </div>
@@ -37,17 +37,6 @@ const Toolbar = () => {
                 </Button>
                 <Button onClick={() => onClickToolbarBtn('R2')} size="sm" className="mr-1">
                     R2
-                </Button>
-            </div>
-            <div className="mt-2">
-                <Button onClick={() => onClickToolbarBtn('+')} size="sm" className="mr-1">
-                    +
-                </Button>
-                <Button onClick={() => onClickToolbarBtn('-')} size="sm" className="mr-1">
-                    -
-                </Button>
-                <Button onClick={() => onClickToolbarBtn('ㅁ')} size="sm" className="mr-1">
-                    ㅁ
                 </Button>
             </div>
             <div className="mt-2">

@@ -51,8 +51,9 @@ const TaskOverview = ({  }) => {
       };
     return (
         <Card className="w-full h-full" bodyClass="h-full">
-           <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView minZoom={0.2} maxZoom={4}>
+           <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView >
                 <Background />
+                <Controls />
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
             </ReactFlow>
         </Card>
