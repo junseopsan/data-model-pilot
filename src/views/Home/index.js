@@ -11,15 +11,13 @@ import TaskOverview from './components/TaskOverview'
 import Entity from './components/Entity'
 import Property from './components/Property'
 const Home = () => {
-    const [dataModelName, setDataModelName] = useState('Data Model Pilot')
-
     return (
         <div className="flex flex-col h-full gap-4">
-            <DataModelHeader data={dataModelName} />
+            <DataModelHeader />
             <div className="flex flex-col gap-4 xl:flex-row h-1/2">
                 <div className="flex flex-col gap-4">
                     <div className="xl:w-full h-1/2">
-                        <Toolbar  />
+                        <Toolbar />
                     </div>
                     <div className="xl:w-full h-1/2">
                         <Subject  />

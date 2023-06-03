@@ -1,10 +1,13 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
-const ProjectDashboardHeader = ({ data }) => {
+const ProjectDashboardHeader = () => {
+    const modelName = useSelector(
+        (state) => state.base.common.modelName
+    )
     return (
         <div>
-            <h4 className="mb-1">모델명 : {data}</h4>
-            {/* <p>You have {data.taskCount} tasks on hand.</p> */}
+            <h4 className="mb-1">{modelName !== '' ? `모델명 : ${modelName}` : ''} </h4>
         </div>
     )
 }
