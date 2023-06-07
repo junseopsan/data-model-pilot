@@ -1,44 +1,66 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect  } from 'react'
 import { Card } from 'components/ui'
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background } from 'reactflow';
-import ZoomNode from './ZoomNode.js';
+import { useSelector, useDispatch } from 'react-redux'
 import 'reactflow/dist/style.css';
-
+import useDidMountEffect from 'utils/hooks/useDidMountEffect'
 // import '../index.css';
 
-const initialNodes = [
-    {
-        id: '1',
-        type: 'input',
-        data: { label: 'Input Node' },
-        position: { x: 250, y: 25 },
-        style: { backgroundColor: '#6ede87', color: 'white' },
-    },
-    {
-        id: '2',
-        // you can also pass a React component as a label
-        data: { label: <div>Default Node</div> },
-        position: { x: 100, y: 125 },
-        style: { backgroundColor: '#ff0072', color: 'white' },
-    },
-    {
-        id: '3',
-        type: 'output',
-        data: { label: 'Output Node' },
-        position: { x: 250, y: 250 },
-        style: { backgroundColor: '#6865A5', color: 'white' },
-    },
-  ];
+const exportJsonData = () => {
+    // const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      // JSON.stringify(data)
+    // )}`;
+    // const link = document.createElement("a");
+    // link.href = jsonString;
+    // link.download = "data.json";
+    
+    // link.click();
+  };  
   
-  const initialEdges = [
-    { id: 'e1-2', source: '1', target: '2' },
-    { id: 'e2-3', source: '2', target: '3', animated: true },
-  ];
   
-
 const TaskOverview = ({  }) => {
+    const realNode = useSelector(
+        (state) => state.base.common.nodes
+    )
+    const realEdge = useSelector(
+        (state) => state.base.common.edges
+    )
+    const initialNodes = [
+      {
+          id: '1',
+          type: 'input',
+          data: { label: 'Input Node' },
+          position: { x: 250, y: 25 },
+          style: { backgroundColor: '#6ede87', color: 'white' },
+      },
+      {
+          id: '2',
+          data: { label: <div>Default Node</div> },
+          position: { x: 100, y: 125 },
+          style: { backgroundColor: '#ff0072', color: 'white' },
+      },
+      {
+          id: '3',
+          type: 'output',
+          data: { label: 'Output Node' },
+          position: { x: 250, y: 250 },
+          style: { backgroundColor: '#6865A5', color: 'white' },
+      },
+  ];
+  const initialEdges = [
+      { id: 'e1-2', source: '1', target: '2' },
+      { id: 'e2-3', source: '2', target: '3', animated: true },
+  ];
+    
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const modelName = useSelector(
+      (state) => state.base.common.modelName
+  )
+    useDidMountEffect(() => {
+      if(modelName !== '') setNodes([])
+    }, [realNode]);
+    
     const nodeColor = (node) => {
         switch (node.type) {
           case 'input':
@@ -51,9 +73,15 @@ const TaskOverview = ({  }) => {
       };
     return (
         <Card className="w-full h-full" bodyClass="h-full">
-           <ReactFlow defaultNodes={nodes} defaultEdges={edges} fitView >
+           <ReactFlow 
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              fitView 
+            >
                 <Background />
-                <Controls />
+                <Controls showInteractive={false} />
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
             </ReactFlow>
         </Card>

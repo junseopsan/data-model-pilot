@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useSelector, useDispatch } from 'react-redux'
-import { setModelName } from 'store/base/commonSlice'
+import { useDispatch } from 'react-redux'
+import { setEdges, setModelName, setNodes } from 'store/base/commonSlice'
 
 const NewModelDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
@@ -11,6 +11,9 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     };
     const okayModelName = () =>{
         dispatch(setModelName(text))
+        dispatch(setNodes([]))
+        dispatch(setEdges([]))
+        setText('')
         onDialogClose()
     }
     const closeDialog = () => {
