@@ -1,30 +1,19 @@
 import React, { useCallback, useEffect  } from 'react'
 import { Card } from 'components/ui'
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background } from 'reactflow';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import 'reactflow/dist/style.css';
 import useDidMountEffect from 'utils/hooks/useDidMountEffect'
 // import '../index.css';
 
-const exportJsonData = () => {
-    // const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      // JSON.stringify(data)
-    // )}`;
-    // const link = document.createElement("a");
-    // link.href = jsonString;
-    // link.download = "data.json";
-    
-    // link.click();
-  };  
+
   
   
 const TaskOverview = ({  }) => {
     const realNode = useSelector(
         (state) => state.base.common.nodes
     )
-    const realEdge = useSelector(
-        (state) => state.base.common.edges
-    )
+    
     const initialNodes = [
       {
           id: '1',
@@ -51,7 +40,7 @@ const TaskOverview = ({  }) => {
       { id: 'e1-2', source: '1', target: '2' },
       { id: 'e2-3', source: '2', target: '3', animated: true },
   ];
-    
+
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const modelName = useSelector(
