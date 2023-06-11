@@ -2,29 +2,38 @@ import React, { useState } from 'react'
 import { Card, Button } from 'components/ui'
 import { Tooltip } from 'components/ui'
 import NewModelDialog from './NewModelDialog'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import Files from 'react-files'
+import { setEdges, setNodes, setModelInfo } from 'store/base/commonSlice'
 
 // import Event from 'views/account/ActivityLog/components/Event'
 // import TimelineAvatar from 'views/account/ActivityLog/components/TimelineAvatar'
 // import { useNavigate } from 'react-router-dom'
 // import isEmpty from 'lodash/isEmpty'
 
-
-
-
 const Toolbar = () => {
+    const dispatch = useDispatch()
     const [dialogIsOpen, setIsOpen] = useState(false)
+    const modelInfo = useSelector(
+        (state) => state.base.common.modelInfo
+      )
     const onClickToolbarBtn = (actionName) => {
         alert(`${actionName} 이 클릭되었습니다.`)
     }
     const realNode = useSelector(
         (state) => state.base.common.nodes
     )
+    const realEdge = useSelector(
+        (state) => state.base.common.edges
+    )
 
+    /**
+     * 저장
+     */
     const exportJsonData = () => {
         // create file in browser
         const fileName = "dataModelPilot";
-        const json = JSON.stringify(realNode, null, 2);
+        const json = JSON.stringify({nodes:[...realNode], edges:[...realEdge]}, null, 2);
         const blob = new Blob([json], { type: "application/json" });
         const href = URL.createObjectURL(blob);
 
@@ -39,6 +48,26 @@ const Toolbar = () => {
         document.body.removeChild(link);
         URL.revokeObjectURL(href);
     };  
+    /**
+     * 열기
+     */
+    const importJsonData = (files) => {
+        const file = files[0]
+        file.text()
+        .then(value => {
+            const result = JSON.parse(value)
+            dispatch(setNodes(result.nodes))
+            dispatch(setEdges(result.edges))
+
+            dispatch(setModelInfo({...modelInfo, isNewOpen: true}))
+
+         })
+    }
+
+    const handleError = (error, file) => {
+        console.log('error code ' + error.code + ': ' + error.message)
+    }
+
     return (
         <Card className="h-full">
             <div className="flex items-center justify-between mb-6">
@@ -52,9 +81,19 @@ const Toolbar = () => {
                 </Button>
             </Tooltip>
             <Tooltip title="열기" placement="top">
-                <Button onClick={() => onClickToolbarBtn('O')} size="sm" className="mr-1">
+                    <Files
+                        className='files-dropzone'
+                        onChange={importJsonData}
+                        onError={handleError}
+                        accepts={[".json"]}
+                        maxFileSize={10000000}
+                        minFileSize={0}
+                        clickable
+                    >
+                        <Button size="sm" className="mr-1">
                     O
                 </Button>
+                    </Files>
             </Tooltip>
             <Tooltip title="저장" placement="top">
                 <Button onClick={() => exportJsonData()} size="sm" className="mr-1">

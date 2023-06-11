@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 
 const ProjectDashboardHeader = () => {
     const modelName = useSelector(
-        (state) => state.base.common.modelName
+        (state) => state.base.common.modelInfo.modelName
     )
     return (
         <div>

@@ -1,7 +1,4 @@
 import React, { cloneElement } from 'react'
-import { Avatar } from 'components/ui'
-import Logo from 'components/template/Logo'
-import { APP_NAME } from 'constants/app.constant'
 
 const Side = ({ children, content, ...rest }) => {
     return (

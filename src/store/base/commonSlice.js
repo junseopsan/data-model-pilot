@@ -2,7 +2,11 @@ import { createSlice } from '@reduxjs/toolkit'
 
 export const initialState = {
     currentRouteKey: '',
-    modelName: '',
+    modelInfo:{
+        modelName: '',
+        isNewModel: false,
+        isNewOpen: false
+    },
     nodes: [
         {
             id: '1',
@@ -38,8 +42,8 @@ export const commonSlice = createSlice({
         setCurrentRouteKey: (state, action) => {
             state.currentRouteKey = action.payload
         },
-        setModelName: (state, action) => {
-            state.modelName = action.payload
+        setModelInfo: (state, action) => {
+            state.modelInfo = action.payload
         },
         setNodes: (state, action) => {
             state.nodes = action.payload
@@ -50,6 +54,6 @@ export const commonSlice = createSlice({
     },
 })
 
-export const { setCurrentRouteKey, setModelName, setNodes, setEdges } = commonSlice.actions
+export const { setCurrentRouteKey, setModelInfo, setNodes, setEdges } = commonSlice.actions
 
 export default commonSlice.reducer

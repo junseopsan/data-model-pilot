@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect  } from 'react'
+import React, { useCallback, useState, useEffect  } from 'react'
 import { Card } from 'components/ui'
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background } from 'reactflow';
 import { useSelector } from 'react-redux'
@@ -10,8 +10,13 @@ import useDidMountEffect from 'utils/hooks/useDidMountEffect'
   
   
 const TaskOverview = ({  }) => {
+  const [isNew, setIsNew] = useState(false)
+
     const realNode = useSelector(
         (state) => state.base.common.nodes
+    )
+    const realEdge = useSelector(
+        (state) => state.base.common.edges
     )
     
     const initialNodes = [
@@ -43,11 +48,22 @@ const TaskOverview = ({  }) => {
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const modelName = useSelector(
-      (state) => state.base.common.modelName
-  )
+    const modelInfo = useSelector(
+      (state) => state.base.common.modelInfo
+    )
+    
     useDidMountEffect(() => {
-      if(modelName !== '') setNodes([])
+      if(modelInfo.isNewModel) setNodes([])
+      if(modelInfo.isNewOpen){
+        setNodes(...realNode)
+        console.log(realNode)
+      } 
+      // setNodes(realNode)
+      // setEdges(realEdge)
+      // setNodes([])
+      // setNodes((nds) => nds.concat(realNode));
+
+      console.log('change!')
     }, [realNode]);
     
     const nodeColor = (node) => {

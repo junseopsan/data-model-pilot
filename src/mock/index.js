@@ -3,9 +3,9 @@ import appConfig from 'configs/app.config'
 
 import { signInUserData } from './data/authData'
 import {
-    projectList,
-    scrumboardData,
-    issueData,
+    // projectList,
+    // scrumboardData,
+    // issueData,
     projectDashboardData,
 } from './data/projectData'
 import { authFakeApi, projectFakeApi } from './fakeApi'

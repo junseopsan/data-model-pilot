@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useDispatch } from 'react-redux'
-import { setEdges, setModelName, setNodes } from 'store/base/commonSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { setEdges, setModelInfo, setNodes } from 'store/base/commonSlice'
 
 const NewModelDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
@@ -10,7 +10,7 @@ const NewModelDialog = ({ data, onDialogClose}) => {
         setText(e.target.value);
     };
     const okayModelName = () =>{
-        dispatch(setModelName(text))
+        dispatch(setModelInfo({modelName:text, isNewModel: true}))
         dispatch(setNodes([]))
         dispatch(setEdges([]))
         setText('')

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Card, Button, Table, Tag } from 'components/ui'
+import { Card, Table } from 'components/ui'
 import {
     useReactTable,
     getCoreRowModel,
