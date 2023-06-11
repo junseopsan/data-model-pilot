@@ -4,6 +4,7 @@ export const initialState = {
     currentRouteKey: '',
     modelInfo:{
         modelName: '',
+        anotherSaveName: '',
         isNewModel: false,
         isNewOpen: false
     },

@@ -1,23 +1,25 @@
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
-import { setEdges, setModelInfo, setNodes } from 'store/base/commonSlice'
+import { setModelInfo } from 'store/base/commonSlice'
 
 /**
- * 새 모델 팝업
- * @param {data {IsDialogOpen : boolean}}  팝업 오픈 여부 
+ * 다른 이름 저장 팝업
+ * @param {data {IsSaveDialogOpen : boolean}}  팝업 오픈 여부 
  * @returns 
  */
-const NewModelDialog = ({ data, onDialogClose}) => {
+const AnotherNameSavelDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
+    const modelInfo = useSelector(
+        (state) => state.base.common.modelInfo
+    )
+
     const onChange = (e) => {
         setText(e.target.value);
     };
-    const okayModelName = () =>{
-        dispatch(setModelInfo({modelName:text, isNewModel: true}))
-        dispatch(setNodes([]))
-        dispatch(setEdges([]))
+    const okayAnotherSaveName = () =>{
+        dispatch(setModelInfo({...modelInfo, anotherSaveName: text}))
         setText('')
         onDialogClose()
     }
@@ -28,14 +30,14 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     return (
         <div>
             <Dialog
-                isOpen={data.IsDialogOpen}
+                isOpen={data.IsSaveDialogOpen}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}
                 bodyOpenClassName="overflow-hidden"
             >
-                <h5 className="mb-4">새 모델 작성</h5>
+                <h5 className="mb-4">다른 이름 저장</h5>
                 <div>
-                    <Input placeholder="모델 명을 입력해주세요." onChange={onChange} value={text} />
+                    <Input placeholder="새로운 파일명을 입력해주세요." onChange={onChange} value={text} />
                 </div>
                 <div className="mt-6 text-right">
                     <Button
@@ -45,8 +47,8 @@ const NewModelDialog = ({ data, onDialogClose}) => {
                     >
                         닫기
                     </Button>
-                    <Button variant="solid" onClick={okayModelName} >
-                        확인
+                    <Button variant="solid" onClick={okayAnotherSaveName} >
+                        저장
                     </Button>
                 </div>
             </Dialog>
@@ -54,4 +56,4 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     )
 }
 
-export default NewModelDialog
+export default AnotherNameSavelDialog

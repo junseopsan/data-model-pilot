@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, Button } from 'components/ui'
 import { Tooltip } from 'components/ui'
 import NewModelDialog from './NewModelDialog'
+import AnotherNameSaveDialog from './AnotherNameSaveDialog'
 import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
 import { setEdges, setNodes, setModelInfo } from 'store/base/commonSlice'
@@ -13,10 +14,11 @@ import { setEdges, setNodes, setModelInfo } from 'store/base/commonSlice'
 
 const Toolbar = () => {
     const dispatch = useDispatch()
-    const [dialogIsOpen, setIsOpen] = useState(false)
+    const [IsDialogOpen, setIsDialogOpen] = useState(false)
+    const [IsSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
     const modelInfo = useSelector(
         (state) => state.base.common.modelInfo
-      )
+    )
     const onClickToolbarBtn = (actionName) => {
         alert(`${actionName} 이 클릭되었습니다.`)
     }
@@ -26,13 +28,19 @@ const Toolbar = () => {
     const realEdge = useSelector(
         (state) => state.base.common.edges
     )
-
+    /**
+     * 다른 이름 저장에 값 변경에 대한 다운로드 실행
+     */
+    useEffect(() => {
+        const exceptThings = ['', undefined]
+        if(!exceptThings.includes(modelInfo.anotherSaveName)) exportJsonData(modelInfo.anotherSaveName)
+    }, [modelInfo.anotherSaveName])
     /**
      * 저장
      */
-    const exportJsonData = () => {
+    const exportJsonData = (name) => {
         // create file in browser
-        const fileName = "dataModelPilot";
+        const fileName = name;
         const json = JSON.stringify({nodes:[...realNode], edges:[...realEdge]}, null, 2);
         const blob = new Blob([json], { type: "application/json" });
         const href = URL.createObjectURL(blob);
@@ -74,9 +82,10 @@ const Toolbar = () => {
                 <h4>도구 모음</h4>
             </div>
             <div className="mt-4">
-            <NewModelDialog data={{dialogIsOpen}} onDialogClose={() => setIsOpen(false)}  />
+            <NewModelDialog data={{IsDialogOpen}} onDialogClose={() => setIsDialogOpen(false)}  />
+            <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
             <Tooltip title="새 모델" placement="top">
-                <Button onClick={() => setIsOpen(true)} size="sm" className="mr-1">
+                <Button onClick={() => setIsDialogOpen(true)} size="sm" className="mr-1">
                     N
                 </Button>
             </Tooltip>
@@ -96,12 +105,12 @@ const Toolbar = () => {
                     </Files>
             </Tooltip>
             <Tooltip title="저장" placement="top">
-                <Button onClick={() => exportJsonData()} size="sm" className="mr-1">
+                <Button onClick={() => exportJsonData('dataModelPilot')} size="sm" className="mr-1">
                     S
                 </Button>
             </Tooltip>
             <Tooltip title="다른 이름 저장" placement="top">
-                <Button onClick={() => onClickToolbarBtn('SA')} size="sm" className="mr-1">
+                <Button onClick={() => setIsSaveDialogOpen(true)} size="sm" className="mr-1">
                     SA
                 </Button>
             </Tooltip>
