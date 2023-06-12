@@ -12,13 +12,13 @@ export const initialState = {
         {
             id: '1',
             type: 'input',
-            data: { label: 'Input Node' },
+            data: { label: '121212Input Node' },
             position: { x: 250, y: 25 },
             style: { backgroundColor: '#6ede87', color: 'white' },
         },
         {
             id: '2',
-            data: { label: <div>111 22 33 55 Default Node</div> },
+            data: { label: '123123123 Node' },
             position: { x: 100, y: 125 },
             style: { backgroundColor: '#ff0072', color: 'white' },
         },
@@ -32,7 +32,7 @@ export const initialState = {
     ],
     edges: [
         { id: 'e1-2', source: '1', target: '2' },
-        { id: 'e2-3', source: '2', target: '3', animated: true },
+        { id: 'e2-3', source: '2', target: '1', animated: false },
     ],
 }
 

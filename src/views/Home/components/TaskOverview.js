@@ -5,13 +5,8 @@ import { useSelector } from 'react-redux'
 import 'reactflow/dist/style.css';
 import useDidMountEffect from 'utils/hooks/useDidMountEffect'
 // import '../index.css';
-
-
   
-  
-const TaskOverview = ({  }) => {
-  const [isNew, setIsNew] = useState(false)
-
+const TaskOverview = () => {
     const realNode = useSelector(
         (state) => state.base.common.nodes
     )
@@ -29,7 +24,7 @@ const TaskOverview = ({  }) => {
       },
       {
           id: '2',
-          data: { label: <div>Default Node</div> },
+          data: { label: <div>1efault Node</div> },
           position: { x: 100, y: 125 },
           style: { backgroundColor: '#ff0072', color: 'white' },
       },
@@ -46,25 +41,25 @@ const TaskOverview = ({  }) => {
       { id: 'e2-3', source: '2', target: '3', animated: true },
   ];
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const modelInfo = useSelector(
       (state) => state.base.common.modelInfo
     )
     
-    useDidMountEffect(() => {
+    useEffect(() => {
+      setEdges(initialEdges)
+      setNodes(initialNodes)
+    }, []);
+    
+    useEffect(() => {
       if(modelInfo.isNewModel) setNodes([])
       if(modelInfo.isNewOpen){
-        setNodes(...realNode)
-        console.log(realNode)
+        setNodes(realNode)
+        setEdges(realEdge)
       } 
-      // setNodes(realNode)
-      // setEdges(realEdge)
-      // setNodes([])
-      // setNodes((nds) => nds.concat(realNode));
+    }, [realNode, realEdge]);
 
-      console.log('change!')
-    }, [realNode]);
     
     const nodeColor = (node) => {
         switch (node.type) {
