@@ -3,8 +3,6 @@ import { Card } from 'components/ui'
 import ReactFlow, { useNodesState, useEdgesState, addEdge, MiniMap, Controls, Background } from 'reactflow';
 import { useSelector } from 'react-redux'
 import 'reactflow/dist/style.css';
-import useDidMountEffect from 'utils/hooks/useDidMountEffect'
-// import '../index.css';
   
 const TaskOverview = () => {
     const realNode = useSelector(
@@ -13,33 +11,6 @@ const TaskOverview = () => {
     const realEdge = useSelector(
         (state) => state.base.common.edges
     )
-    
-    const initialNodes = [
-      {
-          id: '1',
-          type: 'input',
-          data: { label: 'Input Node' },
-          position: { x: 250, y: 25 },
-          style: { backgroundColor: '#6ede87', color: 'white' },
-      },
-      {
-          id: '2',
-          data: { label: <div>1efault Node</div> },
-          position: { x: 100, y: 125 },
-          style: { backgroundColor: '#ff0072', color: 'white' },
-      },
-      {
-          id: '3',
-          type: 'output',
-          data: { label: 'Output Node' },
-          position: { x: 250, y: 250 },
-          style: { backgroundColor: '#6865A5', color: 'white' },
-      },
-  ];
-  const initialEdges = [
-      { id: 'e1-2', source: '1', target: '2' },
-      { id: 'e2-3', source: '2', target: '3', animated: true },
-  ];
 
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -48,8 +19,8 @@ const TaskOverview = () => {
     )
     
     useEffect(() => {
-      setEdges(initialEdges)
-      setNodes(initialNodes)
+      setEdges(realEdge)
+      setNodes(realNode)
     }, []);
     
     useEffect(() => {
