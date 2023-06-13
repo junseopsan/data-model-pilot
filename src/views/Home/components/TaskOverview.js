@@ -19,11 +19,6 @@ const TaskOverview = () => {
     )
     
     useEffect(() => {
-      setEdges(realEdge)
-      setNodes(realNode)
-    }, []);
-    
-    useEffect(() => {
       if(modelInfo.isNewModel) setNodes([])
       if(modelInfo.isNewOpen){
         setNodes(realNode)
