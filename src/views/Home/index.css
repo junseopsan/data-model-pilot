@@ -23,4 +23,26 @@
   .placeholder div:last-child {
     margin-bottom: 0;
   }
-  
+  .backdrop {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 999;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .alert{
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    min-width: 300px; /* Dialog will be no smaller than this */
+    max-width: 600px; /* Dialog will wrap after this width */
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px; 
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin-left: -width;
+    margin-top: -height;
+  }

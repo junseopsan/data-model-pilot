@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useDispatch, useSelector } from 'react-redux'
-import { setEdges, setModelInfo, setNodes } from 'store/base/commonSlice'
+import { useDispatch } from 'react-redux'
+import { setStoreEdges, setModelInfo, setStoreNodes } from 'store/base/commonSlice'
 
 /**
  * 새 모델 팝업
@@ -16,8 +16,8 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     };
     const okayModelName = () =>{
         dispatch(setModelInfo({modelName:text, isNewModel: true}))
-        dispatch(setNodes([]))
-        dispatch(setEdges([]))
+        dispatch(setStoreNodes([]))
+        dispatch(setStoreEdges([]))
         setText('')
         onDialogClose()
     }
@@ -28,7 +28,7 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     return (
         <div>
             <Dialog
-                isOpen={data.IsDialogOpen}
+                isOpen={data.IsModelDialogOpen}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}
                 bodyOpenClassName="overflow-hidden"
