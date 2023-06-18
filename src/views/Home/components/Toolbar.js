@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Button } from 'components/ui'
 import { Tooltip } from 'components/ui'
-import NewModelDialog from './NewModelDialog'
-import AnotherNameSaveDialog from './AnotherNameSaveDialog'
+import NewModelDialog from '../dialogs/NewModelDialog'
+import NewEntityDialog from '../dialogs/NewEntityDialog'
+import AnotherNameSaveDialog from '../dialogs/AnotherNameSaveDialog'
 import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
-import { setEdges, setNodes, setModelInfo } from 'store/base/commonSlice'
+import { setStoreEdges, setStoreNodes, setModelInfo, setAlertInfo } from 'store/base/commonSlice'
 
 // import Event from 'views/account/ActivityLog/components/Event'
 // import TimelineAvatar from 'views/account/ActivityLog/components/TimelineAvatar'
@@ -14,7 +15,8 @@ import { setEdges, setNodes, setModelInfo } from 'store/base/commonSlice'
 
 const Toolbar = () => {
     const dispatch = useDispatch()
-    const [IsDialogOpen, setIsDialogOpen] = useState(false)
+    const [IsEntityDialogOpen, setIsEntityDialogOpen] = useState(false)
+    const [IsModelDialogOpen, setIsModelDialogOpen] = useState(false)
     const [IsSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
     const modelInfo = useSelector(
         (state) => state.base.common.modelInfo
@@ -22,12 +24,13 @@ const Toolbar = () => {
     const onClickToolbarBtn = (actionName) => {
         alert(`${actionName} 이 클릭되었습니다.`)
     }
-    const realNode = useSelector(
-        (state) => state.base.common.nodes
+    const storeNodes = useSelector(
+        (state) => state.base.common.storeNodes
     )
-    const realEdge = useSelector(
-        (state) => state.base.common.edges
+    const storeEdges = useSelector(
+        (state) => state.base.common.storeEdges
     )
+    
     /**
      * 다른 이름 저장에 값 변경에 대한 다운로드 실행
      */
@@ -41,7 +44,7 @@ const Toolbar = () => {
     const exportJsonData = (name) => {
         // create file in browser
         const fileName = name;
-        const json = JSON.stringify({nodes:[...realNode], edges:[...realEdge]}, null, 2);
+        const json = JSON.stringify({nodes:[...storeNodes], edges:[...storeEdges]}, null, 2);
         const blob = new Blob([json], { type: "application/json" });
         const href = URL.createObjectURL(blob);
 
@@ -64,12 +67,21 @@ const Toolbar = () => {
         file.text()
         .then(value => {
             const result = JSON.parse(value)
-            dispatch(setNodes(result.nodes))
-            dispatch(setEdges(result.edges))
+            dispatch(setStoreNodes(result.nodes))
+            dispatch(setStoreEdges(result.edges))
 
             dispatch(setModelInfo({...modelInfo, isNewOpen: true}))
 
          })
+    }
+
+    const onClickEntityPopup = () =>{
+        if(!modelInfo.isNewModel){
+            // dispatch(setAlertInfo({isAlertOpen: true, alertText: '먼저 새 모델을 작성해주세요.',}))
+            alert('먼저 새 모델을 작성해주세요.')
+            return false;
+        }
+        setIsEntityDialogOpen(true)
     }
 
     const handleError = (error, file) => {
@@ -82,10 +94,11 @@ const Toolbar = () => {
                 <h4>도구 모음</h4>
             </div>
             <div className="mt-4">
-            <NewModelDialog data={{IsDialogOpen}} onDialogClose={() => setIsDialogOpen(false)}  />
+            <NewEntityDialog data={{IsEntityDialogOpen}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
+            <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
             <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
             <Tooltip title="새 모델" placement="top">
-                <Button onClick={() => setIsDialogOpen(true)} size="sm" className="mr-1">
+                <Button onClick={() => setIsModelDialogOpen(true)} size="sm" className="mr-1">
                     N
                 </Button>
             </Tooltip>
@@ -117,7 +130,7 @@ const Toolbar = () => {
             </div>
             <div className="mt-2">
             <Tooltip title="엔터티 추가" placement="top">
-                <Button onClick={() => onClickToolbarBtn('E')} size="sm" className="mr-1">
+                <Button onClick={() => onClickEntityPopup()} size="sm" className="mr-1">
                     E
                 </Button>
             </Tooltip>
