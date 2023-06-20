@@ -1,37 +1,27 @@
-import { useCallback,useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react'
 import { Handle, Position } from 'reactflow';
-
-const handleStyle = { left: 300 };
+import EntityTable from './EntityTable'
 
 function TextUpdaterNode({ data, isConnectable }) {
     const [text, setText] = useState("");
-    const onChange = useCallback((evt) => {
-        console.log(evt.target.value);
-    }, []);
+    
     const onTitleChange = (e) => {
         setText(e.target.value);
     };
+    useEffect(()=>{
+      setText(data.title)
+    }, [])
 
-    useEffect(() => {
-        setText(data.title)
-    }, [data.title])
-    
   return (
     <div className="text-updater-node">
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
       <div>
         <label htmlFor="text">
-            <input id="title" name="title" value={text} onChange={onTitleChange} className="nodrag" />
+            <input id="title" className="updater-title" name="title" value={text} onChange={onTitleChange} />
         </label>
-        <textarea id="content" name="content" onChange={onChange} className="nodrag" />
+        <EntityTable />
+        {/* <textarea id="content" name="content"  className="nodrag" /> */}
       </div>
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id="a"
-        style={handleStyle}
-        isConnectable={isConnectable}
-      />
       <Handle type="source" position={Position.Bottom} id="b" isConnectable={isConnectable} />
     </div>
   );

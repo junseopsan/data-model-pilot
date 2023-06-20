@@ -4,10 +4,12 @@ import ReactFlow, { useNodesState, useEdgesState, addEdge, applyEdgeChanges, app
 import { useDispatch, useSelector } from 'react-redux'
 import TextUpdaterNode from '../nodes/TextUpdaterNode';
 import '../../../assets/styles/reactFlow/text-updater-node.css'
-import { setStoreEdges, setStoreNodes, setEntityInfo, setModelInfo, setAlertInfo } from 'store/base/commonSlice'
+import { setStoreEdges, setNewEntityName, setStoreNodes, setEntityInfo, setModelInfo, setAlertInfo } from 'store/base/commonSlice'
 
 import 'reactflow/dist/style.css';
   
+// we define the nodeTypes outside of the component to prevent re-renderings
+// you could also use useMemo inside the component
 const nodeTypes = { textUpdater: TextUpdaterNode };
 
 const TaskOverview = () => {
@@ -55,16 +57,18 @@ const TaskOverview = () => {
 
     useEffect(()=> {
       if(entityInfo.isNewEntity){
-        const newEntityInfo = { id: `node-${storeNodes.length}`, type: 'textUpdater', position: { x: storeNodes.length*1+storeNodes.length*200, y: 0 }, data: { title: entityInfo.entityName } }
+        const newEntityInfo = { 
+          id: `node-${storeNodes.length}`, 
+          type: 'textUpdater', 
+          position: { x: storeNodes.length*1+storeNodes.length*200, y: 0 }, 
+          data: { title: entityInfo.entityName }
+      }
         console.log('newEntityInfo', newEntityInfo)
-        console.log('storeNodes', storeNodes)
         const nodes = storeNodes.concat(newEntityInfo)
         console.log('nodes', nodes)
         dispatch(setStoreNodes(nodes))
-        dispatch(setEntityInfo({}))
-
       } 
-    },[entityInfo.isNewEntity])
+    },[entityInfo])
 
     
     const nodeColor = (node) => {

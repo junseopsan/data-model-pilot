@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useDispatch, useSelector } from 'react-redux'
-import { setStoreEdges, setModelInfo, setStoreNodes, setEntityInfo} from 'store/base/commonSlice'
+import { useDispatch } from 'react-redux'
+import { setEntityInfo } from 'store/base/commonSlice'
 
 /**
  * New Node Dialog
@@ -14,9 +14,6 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
     const onChange = (e) => {
         setText(e.target.value);
     };
-    const modelInfo = useSelector(
-        (state) => state.base.common.modelInfo
-    )
 
     const okayEntityName = () =>{
         dispatch(setEntityInfo({entityName:text, isNewEntity: true}))

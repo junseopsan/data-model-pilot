@@ -42,9 +42,10 @@ const Toolbar = () => {
      * 저장
      */
     const exportJsonData = (name) => {
+        if(!modelInfo.isNewModel) alert('새 모델을 생성해주세요.')
         // create file in browser
         const fileName = name;
-        const json = JSON.stringify({nodes:[...storeNodes], edges:[...storeEdges]}, null, 2);
+        const json = JSON.stringify({modelTitle:modelInfo.modelName, nodes:[...storeNodes], edges:[...storeEdges]}, null, 2);
         const blob = new Blob([json], { type: "application/json" });
         const href = URL.createObjectURL(blob);
 
