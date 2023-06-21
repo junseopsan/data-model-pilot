@@ -17,3 +17,7 @@
     font-size: 12px;
   }
   
+  .text-updater-node .type input{
+    width: 42px;
+    height: 20px;
+  }

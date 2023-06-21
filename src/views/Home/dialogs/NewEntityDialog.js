@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setEntityInfo } from 'store/base/commonSlice'
 
 /**
@@ -10,18 +10,24 @@ import { setEntityInfo } from 'store/base/commonSlice'
  */
 const NewEntityDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
+    const storeNodes = useSelector(
+        (state) => state.base.common.storeNodes
+    )
     const [text, setText] = useState("");
+    useEffect(()=>{
+        const nodeLength = storeNodes.length
+        setText(`엔터티 ${Number(nodeLength)+1}`)
+    }, [storeNodes])
+
+
     const onChange = (e) => {
         setText(e.target.value);
     };
-
     const okayEntityName = () =>{
         dispatch(setEntityInfo({entityName:text, isNewEntity: true}))
-        setText('')
         onDialogClose()
     }
     const closeDialog = () => {
-        setText('')
         onDialogClose()
     }
     return (

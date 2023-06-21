@@ -4,7 +4,7 @@ import ReactFlow, { useNodesState, useEdgesState, addEdge, applyEdgeChanges, app
 import { useDispatch, useSelector } from 'react-redux'
 import TextUpdaterNode from '../nodes/TextUpdaterNode';
 import '../../../assets/styles/reactFlow/text-updater-node.css'
-import { setStoreEdges, setNewEntityName, setStoreNodes, setEntityInfo, setModelInfo, setAlertInfo } from 'store/base/commonSlice'
+import { setStoreNodes } from 'store/base/commonSlice'
 
 import 'reactflow/dist/style.css';
   
@@ -61,7 +61,11 @@ const TaskOverview = () => {
           id: `node-${storeNodes.length}`, 
           type: 'textUpdater', 
           position: { x: storeNodes.length*1+storeNodes.length*200, y: 0 }, 
-          data: { title: entityInfo.entityName }
+          data: { title: entityInfo.entityName },
+          style: {
+            width: 220,
+            height: 200,
+          },
       }
         console.log('newEntityInfo', newEntityInfo)
         const nodes = storeNodes.concat(newEntityInfo)

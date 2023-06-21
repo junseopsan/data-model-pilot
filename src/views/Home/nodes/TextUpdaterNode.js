@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Handle, Position } from 'reactflow';
+import React, { memo, useEffect, useState } from 'react'
+import { Handle, Position, NodeResizer } from 'reactflow';
 import EntityTable from './EntityTable'
 
-function TextUpdaterNode({ data, isConnectable }) {
+const TextUpdaterNode = ({ data, isConnectable, selected}) => {
     const [text, setText] = useState("");
     
     const onTitleChange = (e) => {
@@ -14,6 +14,7 @@ function TextUpdaterNode({ data, isConnectable }) {
 
   return (
     <div className="text-updater-node">
+      <NodeResizer color="#ff0071" isVisible={selected} minWidth={100} minHeight={30} />
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
       <div>
         <label htmlFor="text">
@@ -27,4 +28,4 @@ function TextUpdaterNode({ data, isConnectable }) {
   );
 }
 
-export default TextUpdaterNode;
+export default memo(TextUpdaterNode);

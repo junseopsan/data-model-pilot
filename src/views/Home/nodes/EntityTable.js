@@ -59,15 +59,15 @@ function useSkipper() {
 function EntityTable() {
     const columns = useMemo(
         () => [
-            { header: 'ID', accessorKey: 'id' },
+            { header: 'Type', accessorKey: 'type' },
             { header: 'Contents', accessorKey: 'contents' },
         ],
         []
     )
     const [data, setData] = useState(() => [
       {
-        "id": "newspaper",
-        "contents": "dinner"
+        "type": "1",
+        "contents": "text"
       },
     ])
     const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
@@ -102,33 +102,14 @@ function EntityTable() {
     
     return (
         <>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </Th>
-                                )
-                            })}
-                        </Tr>
-                    ))}
-                </THead>
+            <Table compact>
                 <TBody>
                     {table.getRowModel().rows.map((row) => {
                         return (
-                            <Tr key={row.id}>
+                            <Tr key={row.id} >
                                 {row.getVisibleCells().map((cell) => {
                                     return (
-                                        <Td key={cell.id}>
+                                        <Td key={cell.id} className={cell.id.split('_')[1]}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
