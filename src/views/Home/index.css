@@ -46,3 +46,7 @@
     margin-left: -width;
     margin-top: -height;
   }
+
+  .entityArea .overflow-auto{
+    height: 217px;
+  }

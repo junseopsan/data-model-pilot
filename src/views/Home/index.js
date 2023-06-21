@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react'
-
-import { Loading } from 'components/shared'
-import { Alert } from 'components/ui'
-import { useDispatch, useSelector } from 'react-redux'
+// import {  useSelector } from 'react-redux'
 import DataModelHeader from './components/DataModelHeader'
-import { getProjectDashboardData } from './store/dataSlice'
 import Toolbar from './components/Toolbar'
 import Subject from './components/Subject'
 import DetailInfo from './components/DetailInfo'
@@ -14,16 +10,16 @@ import Property from './components/Property'
 import './index.css'
 
 const Home = () => {
-    const [isAlertOpen, setIsAlertOpen] = useState(false)
-    const [alertText, setAlertText] = useState(false)
+    // const [isAlertOpen, setIsAlertOpen] = useState(false)
+    // const [alertText, setAlertText] = useState(false)
 
-    const getAlertInfo = useSelector((state) => state.base.common.alertInfo)
+    // const getAlertInfo = useSelector((state) => state.base.common.alertInfo)
 
-    useEffect(()=>{
-        console.log(getAlertInfo)
+    // useEffect(()=>{
+    //     console.log(getAlertInfo)
         // setIsAlertOpen(getAlertInfo.isAlertOpen)
         // setAlertText(getAlertInfo.alertText)
-    },[getAlertInfo])
+    // },[getAlertInfo])
 
     return (
         <div className="flex flex-col h-full gap-4">
