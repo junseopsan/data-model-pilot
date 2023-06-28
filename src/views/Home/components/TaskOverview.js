@@ -61,15 +61,15 @@ const TaskOverview = () => {
           id: `node-${storeNodes.length}`, 
           type: 'textUpdater', 
           position: { x: storeNodes.length*1+storeNodes.length*200, y: 0 }, 
-          data: { title: entityInfo.entityName },
+          data: { title: entityInfo.entityName, id: `node-${storeNodes.length}` },
           style: {
             width: 220,
             height: 200,
           },
       }
-        console.log('newEntityInfo', newEntityInfo)
-        const nodes = storeNodes.concat(newEntityInfo)
-        console.log('nodes', nodes)
+      const nodes = storeNodes.concat(newEntityInfo)
+      // // console.log('newEntityInfo', newEntityInfo)
+      //   console.log('nodes', nodes)
         dispatch(setStoreNodes(nodes))
       } 
     },[entityInfo])

@@ -50,3 +50,19 @@
   .entityArea .overflow-auto{
     height: 217px;
   }
+
+  .entityArea .rowOn{
+    font-weight: bold;
+    color:firebrick;
+  }
+
+  .entityTable .type {
+    width: 50px;
+    text-align: center;
+  }
+  .entityTable .overflow-auto {
+  }
+
+  .react-flow__node{
+    height: auto !important;
+  }

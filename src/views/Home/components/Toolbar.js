@@ -6,7 +6,7 @@ import NewEntityDialog from '../dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../dialogs/AnotherNameSaveDialog'
 import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
-import { setStoreEdges, setStoreNodes, setModelInfo, setAlertInfo } from 'store/base/commonSlice'
+import { setStoreEdges, setStoreNodes, setModelInfo, setEntityInfo } from 'store/base/commonSlice'
 
 // import Event from 'views/account/ActivityLog/components/Event'
 // import TimelineAvatar from 'views/account/ActivityLog/components/TimelineAvatar'
@@ -18,6 +18,7 @@ const Toolbar = () => {
     const [IsEntityDialogOpen, setIsEntityDialogOpen] = useState(false)
     const [IsModelDialogOpen, setIsModelDialogOpen] = useState(false)
     const [IsSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
+    const [entityTitle, setEntityTitle] = useState("");
     const modelInfo = useSelector(
         (state) => state.base.common.modelInfo
     )
@@ -30,6 +31,11 @@ const Toolbar = () => {
     const storeEdges = useSelector(
         (state) => state.base.common.storeEdges
     )
+    
+    useEffect(()=>{
+        const nodeLength = storeNodes.length
+        setEntityTitle(`엔터티 ${Number(nodeLength)+1}`)
+    }, [storeNodes])
     
     /**
      * 다른 이름 저장에 값 변경에 대한 다운로드 실행
@@ -78,11 +84,12 @@ const Toolbar = () => {
 
     const onClickEntityPopup = () =>{
         if(!modelInfo.isNewModel){
-            // dispatch(setAlertInfo({isAlertOpen: true, alertText: '먼저 새 모델을 작성해주세요.',}))
             alert('먼저 새 모델을 작성해주세요.')
             return false;
         }
-        setIsEntityDialogOpen(true)
+    
+        dispatch(setEntityInfo({entityName:entityTitle, isNewEntity: true}))
+        // setIsEntityDialogOpen(true)
     }
 
     const handleError = (error, file) => {

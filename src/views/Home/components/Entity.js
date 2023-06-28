@@ -12,87 +12,47 @@ import {
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-function IndeterminateCheckbox({ indeterminate, onChange, ...rest }) {
-    const ref = useRef(null)
-
-    useEffect(() => {
-        if (typeof indeterminate === 'boolean') {
-            ref.current.indeterminate = !rest.checked && indeterminate
-        }
-    }, [ref, indeterminate])
-
-    return <Checkbox ref={ref} onChange={(_, e) => onChange(e)} {...rest} />
-}
-
 const EntityArea = () => {
-    const [rowSelection, setRowSelection] = useState({})
+    const [selectedRow, setSelectedRow] = useState('')
     const storeNodes = useSelector(
         (state) => state.base.common.storeNodes
     )
+    const [data, setData] = React.useState(() => [])
+    
     useEffect(()=>{
-        const getTitleList = storeNodes.map( item => ( {title:item.data.title } ))
+        const getTitleList = storeNodes.map( item => ({ title:item.data.title }))
         setData(getTitleList)
     },[storeNodes])
+
+    const onRowClick = (row => {
+        console.log(row.id)
+        // setSelectedRow(row.id)
+    })
     
-    const columns = useMemo(() => {
-        return [
+    const columns = useMemo(
+        () => [
             {
-                id: 'select',
-                header: ({ table }) => (
-                    <div></div>
-                ),
-                cell: ({ row }) => (
-                    <div className="px-1">
-                        <IndeterminateCheckbox
-                            {...{
-                                checked: row.getIsSelected(),
-                                disabled: !row.getCanSelect(),
-                                indeterminate: row.getIsSomeSelected(),
-                                onChange: row.getToggleSelectedHandler(),
-                            }}
-                        />
-                    </div>
-                ),
-            },
-            {
-                header: '엔티티명',
+                header: '엔터티 명',
                 accessorKey: 'title',
             },
-        ]
-    }, [])
-
-
-    const [data, setData] = React.useState(() => [
-        {
-            title: 'Design sign up flow',
-        },
-        {
-            title: 'Update contact page',
-        },
-        {
-            title: 'Update contact page',
-        },
-    ])
-
-
+        ],
+        []
+    )
     
      const table = useReactTable({
         data,
         columns,
-        state: {
-            rowSelection,
-        },
-        enableRowSelection: true, //enable row selection for all rows
-        // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
-        onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
     })
+
+    useEffect(() => {
+        // setSelectedRow('')
+    }, []);
+
     return (
         <Card className="" bodyClass="h-72 max-h-72 entityArea">
             <div className="flex items-center justify-between mb-6">
-                엔터티 영역
+                엔터티 영역 
             </div>
             <Table compact>
                 <THead>
@@ -117,7 +77,7 @@ const EntityArea = () => {
                 <TBody>
                     {table.getRowModel().rows.map((row) => {
                         return (
-                            <Tr key={row.id}>
+                            <Tr key={row.id}  className={row.id === selectedRow ? 'rowOn' : ''}>
                                 {row.getVisibleCells().map((cell) => {
                                     return (
                                         <Td key={cell.id}>
