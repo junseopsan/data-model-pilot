@@ -2,36 +2,25 @@ import React, { memo, useEffect, useState } from 'react'
 import { Handle, Position, NodeResizer } from 'reactflow';
 import EntityTable from './EntityTable'
 import { useDispatch, useSelector } from 'react-redux'
-import { setStoreNodes } from 'store/base/commonSlice'
+import { setStoreData, setUpdateData } from 'store/base/commonSlice'
 import cloneDeep from 'lodash/cloneDeep'
 
 const TextUpdaterNode = ({ data, isConnectable, selected}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
     const [nodeId, setNodeId] = useState("");
-    const storeNodes = useSelector(
-      (state) => state.base.common.storeNodes
+    const getData = useSelector(
+      (state) => state.base.common.storeData
   )
     const onTitleChange = (e) => {
         setText(e.target.value);
-        console.log(e.target.value)
-        console.log(nodeId)
-        
-        const getNode = storeNodes.filter(item => item.id === nodeId)
-        const clonedNode = cloneDeep(getNode);
-        clonedNode[0].data.title = e.target.value
-        console.log(clonedNode)
-        // dispatch(setStoreNodes([]))
-        const list =[...clonedNode, ...storeNodes.filter(item => item.id !== nodeId)].sort((a, b) => {return a.id.split('-')[1]-b.id.split('-')[1]});
-
-        dispatch(setStoreNodes(list))
+        const clonedNode = cloneDeep(getData);
+        clonedNode.nodes.filter(item=> item.id === nodeId)[0].data.label = e.target.value
+        dispatch(setStoreData(clonedNode))
     };
     useEffect(()=>{
-      setText(data.title)
-      console.log(data)
+      setText(data.label)
       setNodeId(data.id)
-
-      // storeNodes[0].data.title = '111'
     }, [])
 
   return (
@@ -40,11 +29,9 @@ const TextUpdaterNode = ({ data, isConnectable, selected}) => {
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
       <div className="entityTable">
         <label htmlFor="text">
-            {/* <span>{{nodeId}}</span> */}
             <input id="title" className="updater-title" name="title" value={text} onChange={onTitleChange} />
         </label>
         <EntityTable />
-        {/* <textarea id="content" name="content"  className="nodrag" /> */}
       </div>
       <Handle type="source" position={Position.Bottom} id="b" isConnectable={isConnectable} />
     </div>

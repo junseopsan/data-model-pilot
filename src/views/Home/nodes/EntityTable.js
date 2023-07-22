@@ -13,40 +13,12 @@ const { Tr, Th, Td, THead, TBody } = Table
 function EntityTable() {
     const columns = useMemo(
         () => [
-            { header: 'Type', accessorKey: 'type',width: 50,},
-            { header: 'EntityContent', accessorKey: 'entityContent' },
+            { header: 'Type', accessorKey: 'type', width: 50,},
+            { header: 'EntityContent', accessorKey: 'label' },
         ],
         []
     )
     const [data, setData] = useState(() => [
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
-      {
-        "type": "#",
-        "entityContent": "text"
-      },
       {
         "type": "#",
         "entityContent": "text"

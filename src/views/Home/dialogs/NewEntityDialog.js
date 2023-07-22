@@ -10,16 +10,7 @@ import { setEntityInfo } from 'store/base/commonSlice'
  */
 const NewEntityDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
-    const storeNodes = useSelector(
-        (state) => state.base.common.storeNodes
-    )
     const [text, setText] = useState("");
-    useEffect(()=>{
-        const nodeLength = storeNodes.length
-        setText(`엔터티 ${Number(nodeLength)+1}`)
-    }, [storeNodes])
-
-
     const onChange = (e) => {
         setText(e.target.value);
     };
@@ -30,6 +21,7 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
     const closeDialog = () => {
         onDialogClose()
     }
+    
     return (
         <div>
             <Dialog

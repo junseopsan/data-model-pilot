@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react'
 import { Card, Table, Checkbox } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
-
 import {
     flexRender,
     getCoreRowModel,
@@ -12,28 +11,60 @@ import {
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const EntityArea = () => {
-    const [selectedRow, setSelectedRow] = useState('')
-    const storeNodes = useSelector(
-        (state) => state.base.common.storeNodes
-    )
-    const [data, setData] = React.useState(() => [])
-    
-    useEffect(()=>{
-        const getTitleList = storeNodes.map( item => ({ title:item.data.title }))
-        setData(getTitleList)
-    },[storeNodes])
 
-    const onRowClick = (row => {
-        console.log(row.id)
-        // setSelectedRow(row.id)
-    })
+function IndeterminateCheckbox({ indeterminate, onChange, ...rest }) {
+    const ref = useRef(null)
+    
+    useEffect(() => {
+        if (typeof indeterminate === 'boolean') {
+            ref.current.indeterminate = !rest.checked && indeterminate
+        }
+    }, [ref, indeterminate])
+    
+    return <Checkbox ref={ref} onChange={(_, e) => onChange(e)} {...rest} />
+}
+
+const EntityArea = () => {
+    const dispatch = useDispatch()
+    const [rowSelection, setRowSelection] = useState({})
+    const [data, setData] = React.useState(() => [])
+    const getData = useSelector(
+        (state) => state.base.common.storeData
+    )
+    useEffect(()=>{
+        if(getData && getData.nodes?.length > 0){
+            const getTitleList = getData.nodes.map(item => item.data)
+            setData(getTitleList)
+        }
+    },[getData])
+    
+    // useEffect(()=>{
+    //     console.log(rowSelection)
+    // },[rowSelection])
+
+    // const onRowClick = (row => {
+    // })
     
     const columns = useMemo(
         () => [
             {
+                id: 'select',
+                cell: ({ row }) => (
+                  <div className="px-1">
+                    <IndeterminateCheckbox
+                      {...{
+                        checked: row.getIsSelected(),
+                        disabled: !row.getCanSelect(),
+                        indeterminate: row.getIsSomeSelected(),
+                        onChange: row.getToggleSelectedHandler(),
+                      }}
+                    />
+                  </div>
+                ),
+              },
+            {
                 header: '엔터티 명',
-                accessorKey: 'title',
+                accessorKey: 'label',
             },
         ],
         []
@@ -42,22 +73,23 @@ const EntityArea = () => {
      const table = useReactTable({
         data,
         columns,
+        state: {
+            rowSelection,
+        },
+        enableRowSelection: true, //enable row selection for all rows
+        onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
+        enableMultiRowSelection: false
     })
-
-    useEffect(() => {
-        // setSelectedRow('')
-    }, []);
-
     return (
         <Card className="" bodyClass="h-72 max-h-72 entityArea">
             <div className="flex items-center justify-between mb-6">
-                엔터티 영역 
+                엔터티 영역  
             </div>
-            <Table compact>
+            <Table compact >
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
+                        <Tr key={headerGroup.id} >
                             {headerGroup.headers.map((header) => {
                                 return (
                                     <Th
@@ -77,7 +109,7 @@ const EntityArea = () => {
                 <TBody>
                     {table.getRowModel().rows.map((row) => {
                         return (
-                            <Tr key={row.id}  className={row.id === selectedRow ? 'rowOn' : ''}>
+                            <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
                                     return (
                                         <Td key={cell.id}>

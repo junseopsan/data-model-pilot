@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
 import { useDispatch } from 'react-redux'
-import { setStoreEdges, setModelInfo, setStoreNodes } from 'store/base/commonSlice'
+import { setStoreData, setModelInfo } from 'store/base/commonSlice'
 
 /**
  * 새 모델 팝업
@@ -16,8 +16,7 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     };
     const okayModelName = () =>{
         dispatch(setModelInfo({modelName:text, isNewModel: true}))
-        dispatch(setStoreNodes([]))
-        dispatch(setStoreEdges([]))
+        dispatch(setStoreData([]))
         setText('')
         onDialogClose()
     }

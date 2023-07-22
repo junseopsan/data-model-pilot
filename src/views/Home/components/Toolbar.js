@@ -6,12 +6,7 @@ import NewEntityDialog from '../dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../dialogs/AnotherNameSaveDialog'
 import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
-import { setStoreEdges, setStoreNodes, setModelInfo, setEntityInfo } from 'store/base/commonSlice'
-
-// import Event from 'views/account/ActivityLog/components/Event'
-// import TimelineAvatar from 'views/account/ActivityLog/components/TimelineAvatar'
-// import { useNavigate } from 'react-router-dom'
-// import isEmpty from 'lodash/isEmpty'
+import { setStoreData, setModelInfo, setEntityInfo } from 'store/base/commonSlice'
 
 const Toolbar = () => {
     const dispatch = useDispatch()
@@ -25,17 +20,15 @@ const Toolbar = () => {
     const onClickToolbarBtn = (actionName) => {
         alert(`${actionName} 이 클릭되었습니다.`)
     }
-    const storeNodes = useSelector(
-        (state) => state.base.common.storeNodes
-    )
-    const storeEdges = useSelector(
-        (state) => state.base.common.storeEdges
+    
+    const storeData = useSelector(
+        (state) => state.base.common.storeData
     )
     
     useEffect(()=>{
-        const nodeLength = storeNodes.length
+        const nodeLength = storeData.nodes?.length
         setEntityTitle(`엔터티 ${Number(nodeLength)+1}`)
-    }, [storeNodes])
+    }, [storeData])
     
     /**
      * 다른 이름 저장에 값 변경에 대한 다운로드 실행
@@ -51,7 +44,7 @@ const Toolbar = () => {
         if(!modelInfo.isNewModel) alert('새 모델을 생성해주세요.')
         // create file in browser
         const fileName = name;
-        const json = JSON.stringify({modelTitle:modelInfo.modelName, nodes:[...storeNodes], edges:[...storeEdges]}, null, 2);
+        const json = JSON.stringify({modelTitle:modelInfo.modelName, ...storeData}, null, 2);
         const blob = new Blob([json], { type: "application/json" });
         const href = URL.createObjectURL(blob);
 
@@ -74,22 +67,18 @@ const Toolbar = () => {
         file.text()
         .then(value => {
             const result = JSON.parse(value)
-            dispatch(setStoreNodes(result.nodes))
-            dispatch(setStoreEdges(result.edges))
-
-            dispatch(setModelInfo({...modelInfo, isNewOpen: true}))
-
+            dispatch(setModelInfo({...modelInfo, modelName: result.modelTitle, isNewModel: true, isNewOpen: true}))
+            delete result.modelTitle
+            dispatch(setStoreData(result))
          })
     }
 
-    const onClickEntityPopup = () =>{
+    const onClickAddEntity = () =>{
         if(!modelInfo.isNewModel){
             alert('먼저 새 모델을 작성해주세요.')
             return false;
         }
-    
         dispatch(setEntityInfo({entityName:entityTitle, isNewEntity: true}))
-        // setIsEntityDialogOpen(true)
     }
 
     const handleError = (error, file) => {
@@ -138,7 +127,7 @@ const Toolbar = () => {
             </div>
             <div className="mt-2">
             <Tooltip title="엔터티 추가" placement="top">
-                <Button onClick={() => onClickEntityPopup()} size="sm" className="mr-1">
+                <Button onClick={() => onClickAddEntity()} size="sm" className="mr-1">
                     E
                 </Button>
             </Tooltip>
