@@ -38,9 +38,13 @@ const EntityArea = () => {
         }
     },[getData])
     
-    // useEffect(()=>{
-    //     console.log(rowSelection)
-    // },[rowSelection])
+    useEffect(()=>{
+        if(Object.keys(rowSelection).length > 0){
+            const getSelectionRowKey = Object.keys(rowSelection)[0]
+            const getSelectionRowId = getData.nodes[getSelectionRowKey].data.id
+            console.log('getSelectionRowId', getSelectionRowId)
+        }
+    },[rowSelection])
 
     // const onRowClick = (row => {
     // })
@@ -77,9 +81,9 @@ const EntityArea = () => {
             rowSelection,
         },
         enableRowSelection: true, //enable row selection for all rows
+        enableMultiRowSelection: false,
         onRowSelectionChange: setRowSelection,
-        getCoreRowModel: getCoreRowModel(),
-        enableMultiRowSelection: false
+        getCoreRowModel: getCoreRowModel()
     })
     return (
         <Card className="" bodyClass="h-72 max-h-72 entityArea">

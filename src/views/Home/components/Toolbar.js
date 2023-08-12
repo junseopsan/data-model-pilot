@@ -6,7 +6,7 @@ import NewEntityDialog from '../dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../dialogs/AnotherNameSaveDialog'
 import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
-import { setStoreData, setModelInfo, setEntityInfo } from 'store/base/commonSlice'
+import { setStoreData, setEdgeType, setModelInfo, setEntityInfo } from 'store/base/commonSlice'
 
 const Toolbar = () => {
     const dispatch = useDispatch()
@@ -70,6 +70,7 @@ const Toolbar = () => {
             dispatch(setModelInfo({...modelInfo, modelName: result.modelTitle, isNewModel: true, isNewOpen: true}))
             delete result.modelTitle
             dispatch(setStoreData(result))
+            // dispatch(setModelInfo({...modelInfo, isNewModel: false, isNewOpen: false}))
          })
     }
 
@@ -81,16 +82,21 @@ const Toolbar = () => {
         dispatch(setEntityInfo({entityName:entityTitle, isNewEntity: true}))
     }
 
+    const onClickChangeEdge = (type) => {
+        if(type === 'R1') dispatch(setEdgeType(false)) // 식별 관계선
+        else if(type === 'R2') dispatch(setEdgeType(true)) // 비식별 관계선
+    }
+
     const handleError = (error, file) => {
         console.log('error code ' + error.code + ': ' + error.message)
     }
 
     return (
         <Card className="h-full">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-2">
                 <h4>도구 모음</h4>
             </div>
-            <div className="mt-4">
+            <div className="mt-1">
             <NewEntityDialog data={{IsEntityDialogOpen}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
             <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
             <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
@@ -131,13 +137,13 @@ const Toolbar = () => {
                     E
                 </Button>
             </Tooltip>
-            <Tooltip title="식별 관계 추가" placement="top">
-                <Button onClick={() => onClickToolbarBtn('R1')} size="sm" className="mr-1">
+            <Tooltip title="식별 관계선 선택" placement="top">
+                <Button onClick={() => onClickChangeEdge('R1')} size="sm" className="mr-1">
                     R1
                 </Button>
             </Tooltip>
-            <Tooltip title="비식별 관계 추가" placement="top">
-                <Button onClick={() => onClickToolbarBtn('R2')} size="sm" className="mr-1">
+            <Tooltip title="비식별 관계선 선택" placement="top">
+                <Button onClick={() => onClickChangeEdge('R2')} size="sm" className="mr-1">
                     R2
                 </Button>
             </Tooltip>

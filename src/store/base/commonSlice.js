@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 export const initialState = {
     currentRouteKey: '',
+    edgeType: '',
     entityInfo:{
         entityName: '',
         isNewEntity: false,
@@ -13,6 +14,19 @@ export const initialState = {
         isNewOpen: false
     },
     storeData: [],
+    storeProperties: [
+        {
+            id:'',
+            contents:[
+                {
+                    number: '',
+                    typeName: '',
+                    discrimination: '',
+                    isNecessary: ''
+                }
+            ]
+        }
+    ],
 }
 
 export const commonSlice = createSlice({
@@ -22,11 +36,17 @@ export const commonSlice = createSlice({
         setCurrentRouteKey: (state, action) => {
             state.currentRouteKey = action.payload
         },
+        setEdgeType: (state, action) => {
+            state.edgeType = action.payload
+        },
         setModelInfo: (state, action) => {
             state.modelInfo = action.payload
         },
         setEntityInfo: (state, action) => {
             state.entityInfo = action.payload
+        },
+        setProperties: (state, action) => {
+            state.storeProperties = action.payload
         },
         setStoreData: (state, action) => {
             state.storeData = action.payload
@@ -34,6 +54,6 @@ export const commonSlice = createSlice({
     },
 })
 
-export const { setCurrentRouteKey, setModelInfo, setEntityInfo, setStoreData } = commonSlice.actions
+export const { setCurrentRouteKey, setEdgeType, setModelInfo, setEntityInfo, setProperties, setStoreData } = commonSlice.actions
 
 export default commonSlice.reducer

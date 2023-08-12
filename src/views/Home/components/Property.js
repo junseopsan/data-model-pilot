@@ -38,19 +38,7 @@ const Property = () => {
             name: 'Member',
             discrimination: true,
             necessary: false,
-        },
-        {
-            number: '2',
-            name: 'Customer',
-            discrimination: true,
-            necessary: false,
-        },
-        {
-            number: '3',
-            name: 'Items',
-            discrimination: true,
-            necessary: false,
-        },
+        }
     ]
 
     const table = useReactTable({

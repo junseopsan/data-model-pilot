@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, HTMLProps, useCallback, useState, useEffect, useMemo  } from 'react'
+import React, { useRef, HTMLAttributes, HTMLProps, useCallback, useState, useEffect, useMemo  } from 'react'
 
 import { Card } from 'components/ui'
 import ReactFlow, {
@@ -11,20 +11,27 @@ import ReactFlow, {
   applyEdgeChanges, 
   applyNodeChanges, 
   MiniMap, Controls, 
-  Background
+  Background,
+  updateEdge,
+  MarkerType,
+  ConnectionMode,
+  ConnectionLineType
 } from 'reactflow';
+import ConnectionLine from './ConnectionLine';
+import { Notification, toast, Button } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
 import TextUpdaterNode from '../nodes/TextUpdaterNode';
 import '../../../assets/styles/reactFlow/text-updater-node.css'
-import { setStoreData } from 'store/base/commonSlice'
-
+import { setStoreData, setModelInfo } from 'store/base/commonSlice'
 import 'reactflow/dist/style.css';
   
 // we define the nodeTypes outside of the component to prevent re-renderings
 // you could also use useMemo inside the component
 const getNodeId = () => `randomnode_${+new Date()}`;
+const proOptions = { account: 'paid-pro', hideAttribution: true };
 
 const TaskOverview = () => {
+    const edgeUpdateSuccessful = useRef(true);
     const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
     const dispatch = useDispatch()
     const [nodes, setNodes] = useNodesState([]);
@@ -40,10 +47,13 @@ const TaskOverview = () => {
     const modelInfo = useSelector(
       (state) => state.base.common.modelInfo
     )
+    const edgeType = useSelector(
+      (state) => state.base.common.edgeType
+    )
 
     useEffect(()=>{
       onLoadUpdate()
-    },[modelInfo.isNewOpen])
+    },[modelInfo])
 
     useEffect(() => {
       onSave()
@@ -67,26 +77,13 @@ const TaskOverview = () => {
       (connection) => setEdges((eds) => addEdge(connection, eds)),
       [setEdges]
     );
-    
+
     const onSave = useCallback(() => {
       if (rfInstance) {
         const flow = rfInstance.toObject();
         dispatch(setStoreData(flow))
       }
     }, [rfInstance]);
-
-    // const onRestore = useCallback(() => {
-    //   const restoreFlow = async () => {
-    //     const flow = JSON.parse(localStorage.getItem(flowKey));
-    //     if (flow) {
-    //       const { x = 0, y = 0, zoom = 1 } = flow.viewport;
-    //       setNodes(flow.nodes || []);
-    //       setEdges(flow.edges || []);
-    //       setViewport({ x, y, zoom });
-    //     }
-    //   };
-    //   restoreFlow();
-    // }, [setNodes, setViewport]);
 
     const onAdd = useCallback(() => {
       const newNode = {
@@ -117,8 +114,18 @@ const TaskOverview = () => {
         onAdd()
       } 
     },[entityInfo])
+    
+    useEffect(()=> {
+      const getEdgeType = edgeType ? '비식별관계선' : '식별관계선'
+      if(edgeType !== '') triggerMessage(`${getEdgeType}이 선택되었습니다.`)
+    },[edgeType])
 
-
+    const defaultEdgeOptions = {
+      type: 'smoothstep',
+      markerEnd: { type: MarkerType.ArrowClosed },
+      style: { strokeWidth: 2 },
+      animated: edgeType
+    };
     
     const nodeColor = (node) => {
         switch (node.type) {
@@ -130,18 +137,38 @@ const TaskOverview = () => {
             return '#ff0072';
       }
     };
+
+    const triggerMessage = (msg) => {
+      toast.push(
+          <Notification type="info" duration={2000}>
+              {msg || '네!'}
+          </Notification>,
+          {
+              placement: 'top-center',
+          }
+      )
+    }
       
     return (
         <Card className="w-full h-full" bodyClass="h-full">
            <ReactFlow 
               nodes={nodes}
               edges={edges}
+              style={{ backgroundColor: '#1a202c' }}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
-              nodeTypes={nodeTypes}
               onInit={setRfInstance}
-            >
+              
+              proOptions={proOptions}
+              nodeTypes={nodeTypes}
+
+              defaultEdgeOptions={defaultEdgeOptions}
+              connectionLineType={ConnectionLineType.SmoothStep}
+              fitView
+              connectionMode={ConnectionMode.Loose}
+              connectionLineComponent={ConnectionLine}
+              >
                 <Background />
                 <Controls showInteractive={false} />
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
@@ -152,8 +179,12 @@ const TaskOverview = () => {
     )
 }
 
-export default () => (
-  <ReactFlowProvider>
-    <TaskOverview />
-  </ReactFlowProvider>
-);
+function ReactFlowWrapper(props) {
+  return (
+    <ReactFlowProvider>
+      <TaskOverview {...props} />
+    </ReactFlowProvider>
+  );
+}
+
+export default ReactFlowWrapper;

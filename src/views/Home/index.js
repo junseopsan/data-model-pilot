@@ -37,7 +37,7 @@ const Home = () => {
                     <TaskOverview />
                 </div>
             </div>
-            <div className="flex flex-row justify-between flex-auto gap-4 ">
+            <div className="flex flex-row justify-between flex-auto gap-4 mt-1">
             <div className="xl:w-[20%]">
                     <Entity />
                 </div>
