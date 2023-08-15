@@ -31,7 +31,6 @@ const getNodeId = () => `randomnode_${+new Date()}`;
 const proOptions = { account: 'paid-pro', hideAttribution: true };
 
 const TaskOverview = () => {
-    const edgeUpdateSuccessful = useRef(true);
     const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
     const dispatch = useDispatch()
     const [nodes, setNodes] = useNodesState([]);

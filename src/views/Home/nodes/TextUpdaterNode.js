@@ -35,10 +35,10 @@ const TextUpdaterNode = ({ data, isConnectableStart, selected}) => {
         </label>
         <EntityTable />
       </div>
-      <Handle id="top" style={handleStyle} isConnectableStart={true} position={Position.Top} type="source" />
-      <Handle id="right" style={handleStyle} isConnectableStart={true} position={Position.Right} type="source" />
-      <Handle id="bottom" style={handleStyle} isConnectableStart={true} position={Position.Bottom} type="source" />
-      <Handle id="left" style={handleStyle} isConnectableStart={true} position={Position.Left} type="source" />
+      <Handle id="top"  isConnectableStart={true} position={Position.Top} type="source" />
+      <Handle id="right"  isConnectableStart={true} position={Position.Right} type="source" />
+      <Handle id="bottom"  isConnectableStart={true} position={Position.Bottom} type="source" />
+      <Handle id="left"  isConnectableStart={true} position={Position.Left} type="source" />
     </div>
   );
 }
