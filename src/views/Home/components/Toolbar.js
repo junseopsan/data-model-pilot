@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button } from 'components/ui'
+import { Card, Button, Notification, toast } from 'components/ui'
 import { Tooltip } from 'components/ui'
 import NewModelDialog from '../dialogs/NewModelDialog'
 import NewEntityDialog from '../dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../dialogs/AnotherNameSaveDialog'
 import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
-import { setStoreData, setEdgeType, setModelInfo, setEntityInfo } from 'store/base/commonSlice'
+import { setStoreData, setEdgeType, setModelInfo, setEntityInfo, setIsUndo, setIsRedo} from 'store/base/commonSlice'
+import EventBus from "../../../utils/hooks/EventBus";
 
 const Toolbar = () => {
     const dispatch = useDispatch()
@@ -14,21 +15,34 @@ const Toolbar = () => {
     const [IsModelDialogOpen, setIsModelDialogOpen] = useState(false)
     const [IsSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
     const [entityTitle, setEntityTitle] = useState("");
+    const [undo, setUndo] = useState(true);
+    const [redo, setRedo] = useState(true);
+
     const modelInfo = useSelector(
         (state) => state.base.common.modelInfo
     )
-    const onClickToolbarBtn = (actionName) => {
-        alert(`${actionName} 이 클릭되었습니다.`)
-    }
-    
+    const isUndo = useSelector(
+        (state) => state.base.common.isUndo
+    )
+    const isRedo = useSelector(
+        (state) => state.base.common.isRedo
+    )
     const storeData = useSelector(
         (state) => state.base.common.storeData
     )
-    
+
     useEffect(()=>{
         const nodeLength = storeData.nodes?.length
         setEntityTitle(`엔터티 ${Number(nodeLength)+1}`)
     }, [storeData])
+    
+    useEffect(()=>{
+        setUndo(isUndo)
+    }, [isUndo])
+    
+    useEffect(()=>{
+        setRedo(isRedo)
+    }, [isRedo])
     
     /**
      * 다른 이름 저장에 값 변경에 대한 다운로드 실행
@@ -37,27 +51,54 @@ const Toolbar = () => {
         const exceptThings = ['', undefined]
         if(!exceptThings.includes(modelInfo.anotherSaveName)) exportJsonData(modelInfo.anotherSaveName)
     }, [modelInfo.anotherSaveName])
+
+    /**
+     * 저장하기전 검사
+     */
+    const validEntityData = (type) => {
+        const nodeLength = storeData.nodes?.length
+        if(!modelInfo.isNewModel){
+            EventBus.emit("SHOW-MSG", '먼저 새 모델을 작성해주세요.'); 
+            return false;
+        } 
+        
+        if(type === 'none' && storeData.length < 1 || nodeLength < 1){
+            EventBus.emit("SHOW-MSG", '엔터티를 하나 이상 추가해주세요.'); 
+            return false;
+        }
+        return true
+    }
+    
+    /**
+     * 다른 이름 저장
+     */
+    const exportTheOhterJsonData = () => {
+        if(validEntityData('none')) setIsSaveDialogOpen(true)
+    }
+    
     /**
      * 저장
      */
     const exportJsonData = (name) => {
-        if(!modelInfo.isNewModel) alert('새 모델을 생성해주세요.')
-        // create file in browser
-        const fileName = name;
-        const json = JSON.stringify({modelTitle:modelInfo.modelName, ...storeData}, null, 2);
-        const blob = new Blob([json], { type: "application/json" });
-        const href = URL.createObjectURL(blob);
+        if(validEntityData('none')){
+            // create file in browser
+            const fileName = name;
+            const json = JSON.stringify({modelTitle:modelInfo.modelName, ...storeData}, null, 2);
+            const blob = new Blob([json], { type: "application/json" });
+            const href = URL.createObjectURL(blob);
+    
+            // create "a" HTLM element with href to file
+            const link = document.createElement("a");
+            link.href = href;
+            link.download = fileName + ".json";
+            document.body.appendChild(link);
+            link.click();
+    
+            // clean up "a" element & remove ObjectURL
+            document.body.removeChild(link);
+            URL.revokeObjectURL(href);
+        }
 
-        // create "a" HTLM element with href to file
-        const link = document.createElement("a");
-        link.href = href;
-        link.download = fileName + ".json";
-        document.body.appendChild(link);
-        link.click();
-
-        // clean up "a" element & remove ObjectURL
-        document.body.removeChild(link);
-        URL.revokeObjectURL(href);
     };  
     /**
      * 열기
@@ -74,17 +115,37 @@ const Toolbar = () => {
          })
     }
 
+    /**
+     * 엔터티 추가
+     */
     const onClickAddEntity = () =>{
-        if(!modelInfo.isNewModel){
-            alert('먼저 새 모델을 작성해주세요.')
-            return false;
-        }
-        dispatch(setEntityInfo({entityName:entityTitle, isNewEntity: true}))
+        if(validEntityData('pass')) dispatch(setEntityInfo({entityName:entityTitle, isNewEntity: true}))
     }
 
+    /**
+     * 관계선 선택
+     * @param {R1 : 식별 관계선, R2 : 비식별 관계선} type 
+     */
     const onClickChangeEdge = (type) => {
-        if(type === 'R1') dispatch(setEdgeType(false)) // 식별 관계선
-        else if(type === 'R2') dispatch(setEdgeType(true)) // 비식별 관계선
+        if(validEntityData('none')){
+            if(type === 'R1') dispatch(setEdgeType(false)) 
+            else if(type === 'R2') dispatch(setEdgeType(true))
+        }
+        
+    }
+
+    const onClickUndoRedo = (type) => {
+        if(type === 'U'){
+            EventBus.emit("UNDO-EVENT", null);
+            EventBus.emit("SHOW-MSG", '실행이 취소되었습니다.');
+            return false
+        }
+        if(type === 'R'){
+            EventBus.emit("REDO-EVENT", null);
+            EventBus.emit("SHOW-MSG", '실행을 되돌렸습니다.');
+            return false
+        }
+        return false;
     }
 
     const handleError = (error, file) => {
@@ -126,7 +187,7 @@ const Toolbar = () => {
                 </Button>
             </Tooltip>
             <Tooltip title="다른 이름 저장" placement="top">
-                <Button onClick={() => setIsSaveDialogOpen(true)} size="sm" className="mr-1">
+                <Button onClick={() => exportTheOhterJsonData()} size="sm" className="mr-1">
                     SA
                 </Button>
             </Tooltip>
@@ -150,12 +211,12 @@ const Toolbar = () => {
             </div>
             <div className="mt-2">
             <Tooltip title="되돌리기" placement="top">
-                <Button onClick={() => onClickToolbarBtn('U')} size="sm" className="mr-1">
+                <Button onClick={() => onClickUndoRedo('U')} size="sm" className="mr-1" disabled={undo}  >
                     UD
                 </Button>
             </Tooltip>
             <Tooltip title="다시실행" placement="top">
-                <Button onClick={() => onClickToolbarBtn('R')} size="sm" className="mr-1">
+                <Button onClick={() => onClickUndoRedo('R')} size="sm" className="mr-1" disabled={redo}>
                     RD
                 </Button>
             </Tooltip>

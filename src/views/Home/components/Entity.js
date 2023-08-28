@@ -32,7 +32,7 @@ const EntityArea = () => {
         (state) => state.base.common.storeData
     )
     useEffect(()=>{
-        if(getData && getData.nodes?.length > 0){
+        if(getData && getData.nodes){
             const getTitleList = getData.nodes.map(item => item.data)
             setData(getTitleList)
         }
@@ -42,7 +42,6 @@ const EntityArea = () => {
         if(Object.keys(rowSelection).length > 0){
             const getSelectionRowKey = Object.keys(rowSelection)[0]
             const getSelectionRowId = getData.nodes[getSelectionRowKey].data.id
-            console.log('getSelectionRowId', getSelectionRowId)
         }
     },[rowSelection])
 

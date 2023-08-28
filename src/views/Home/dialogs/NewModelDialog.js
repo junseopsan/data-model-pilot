@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
 import { useDispatch } from 'react-redux'
 import { setStoreData, setModelInfo } from 'store/base/commonSlice'
-
 /**
  * 새 모델 팝업
  * @param {data {IsDialogOpen : boolean}}  팝업 오픈 여부 

@@ -1,4 +1,4 @@
-import React, { useRef, HTMLAttributes, HTMLProps, useCallback, useState, useEffect, useMemo  } from 'react'
+import React, { useCallback, useState, useEffect, useMemo  } from 'react'
 
 import { Card } from 'components/ui'
 import ReactFlow, {
@@ -8,11 +8,8 @@ import ReactFlow, {
   addEdge,
   useReactFlow,
   Panel,
-  applyEdgeChanges, 
-  applyNodeChanges, 
   MiniMap, Controls, 
   Background,
-  updateEdge,
   MarkerType,
   ConnectionMode,
   ConnectionLineType
@@ -20,23 +17,26 @@ import ReactFlow, {
 import ConnectionLine from './ConnectionLine';
 import { Notification, toast, Button } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
+import { setStoreData, setIsUndo, setIsRedo } from 'store/base/commonSlice'
 import TextUpdaterNode from '../nodes/TextUpdaterNode';
-import '../../../assets/styles/reactFlow/text-updater-node.css'
-import { setStoreData, setModelInfo } from 'store/base/commonSlice'
+import useUndoRedo from '../../../utils/hooks/useUndoRedo.ts';
+import EventBus from "../../../utils/hooks/EventBus";
 import 'reactflow/dist/style.css';
-  
+import '../../../assets/styles/reactFlow/text-updater-node.css'
+
 // we define the nodeTypes outside of the component to prevent re-renderings
 // you could also use useMemo inside the component
 const getNodeId = () => `randomnode_${+new Date()}`;
 const proOptions = { account: 'paid-pro', hideAttribution: true };
 
 const TaskOverview = () => {
+    const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
     const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
-    const dispatch = useDispatch()
-    const [nodes, setNodes] = useNodesState([]);
-    const [edges, setEdges] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
     const { setViewport } = useReactFlow();
+    const dispatch = useDispatch()
     const getData = useSelector(
       (state) => state.base.common.storeData
     )
@@ -49,6 +49,57 @@ const TaskOverview = () => {
     const edgeType = useSelector(
       (state) => state.base.common.edgeType
     )
+    const defaultEdgeOptions = {
+      type: 'smoothstep',
+      markerEnd: { type: MarkerType.ArrowClosed },
+      style: { strokeWidth: 2 },
+      animated: edgeType
+    };
+
+    useEffect(() => {
+      EventBus.on("SHOW-MSG", (msg) => {
+        triggerMessage(msg)
+      });
+      return () => {
+        EventBus.off("SHOW-MSG");
+      };
+    }, []);
+
+    useEffect(() => {
+      EventBus.on("UNDO-EVENT", () => {
+        const undoBtn = document.getElementById("undo")
+        undoBtn.click()
+      });
+      return () => {
+        EventBus.off("UNDO-EVENT");
+      };
+    }, []);
+
+    useEffect(() => {
+      EventBus.on("REDO-EVENT", () => {
+        const redoBtn = document.getElementById("redo")
+        redoBtn.click()
+      });
+      return () => {
+        EventBus.off("REDO-EVENT");
+      };
+    }, []);
+
+    useEffect(()=> {
+      dispatch(setIsUndo(canUndo))
+      dispatch(setIsRedo(canRedo))
+    },[canUndo, canRedo])
+
+    useEffect(()=> {
+      if(entityInfo.isNewEntity){
+        onAdd()
+      } 
+    },[entityInfo])
+    
+    useEffect(()=> {
+      const getEdgeType = edgeType ? '비식별관계선' : '식별관계선'
+      if(edgeType !== '') triggerMessage(`${getEdgeType}이 선택되었습니다.`)
+    },[edgeType])
 
     useEffect(()=>{
       onLoadUpdate()
@@ -58,23 +109,13 @@ const TaskOverview = () => {
       onSave()
     },[nodes, edges])
     
-    const onNodesChange = useCallback(
-      (changes) =>{ 
-        setNodes((nds) => applyNodeChanges(changes, nds))
-      },
-      [setNodes]
-    );
-    
-    const onEdgesChange = useCallback(
-      (changes) =>{
-        setEdges((eds) => applyEdgeChanges(changes, eds))
-      },
-      [setEdges]
-    );
-
     const onConnect = useCallback(
-      (connection) => setEdges((eds) => addEdge(connection, eds)),
-      [setEdges]
+      (connection) => {
+        takeSnapshot();
+        // 👇 make adding edges undoable
+        setEdges((edges) => addEdge(connection, edges));
+      },
+      [setEdges, takeSnapshot]
     );
 
     const onSave = useCallback(() => {
@@ -95,10 +136,11 @@ const TaskOverview = () => {
         },
         style: { width: 220, height: 200, },
       };
+      takeSnapshot();
       setNodes((nds) =>
         nds.concat(newNode)
       );
-    }, [setNodes]);
+    }, [setNodes, takeSnapshot]);
 
     const onLoadUpdate =() => {
       if(modelInfo.isNewOpen){
@@ -108,32 +150,14 @@ const TaskOverview = () => {
       }
     };
 
-    useEffect(()=> {
-      if(entityInfo.isNewEntity){
-        onAdd()
-      } 
-    },[entityInfo])
-    
-    useEffect(()=> {
-      const getEdgeType = edgeType ? '비식별관계선' : '식별관계선'
-      if(edgeType !== '') triggerMessage(`${getEdgeType}이 선택되었습니다.`)
-    },[edgeType])
-
-    const defaultEdgeOptions = {
-      type: 'smoothstep',
-      markerEnd: { type: MarkerType.ArrowClosed },
-      style: { strokeWidth: 2 },
-      animated: edgeType
-    };
-    
     const nodeColor = (node) => {
-        switch (node.type) {
-          case 'input':
-            return '#6ede87';
-          case 'output':
-            return '#6865A5';
-          default:
-            return '#ff0072';
+      switch (node.type) {
+        case 'input':
+          return '#6ede87';
+        case 'output':
+          return '#6865A5';
+        default:
+          return '#ff0072';
       }
     };
 
@@ -147,7 +171,7 @@ const TaskOverview = () => {
           }
       )
     }
-      
+    
     return (
         <Card className="w-full h-full" bodyClass="h-full">
            <ReactFlow 
@@ -161,18 +185,24 @@ const TaskOverview = () => {
               
               proOptions={proOptions}
               nodeTypes={nodeTypes}
-
               defaultEdgeOptions={defaultEdgeOptions}
+
               connectionLineType={ConnectionLineType.SmoothStep}
-              fitView
               connectionMode={ConnectionMode.Loose}
               connectionLineComponent={ConnectionLine}
+              fitView
               >
                 <Background />
                 <Controls showInteractive={false} />
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
                 <Panel position="top-right">
               </Panel>
+              <Panel position="bottom-center">
+              <div hidden>
+                <button id="undo" disabled={canUndo} onClick={undo} />
+                <button id="redo" disabled={canRedo} onClick={redo}/>
+              </div>
+            </Panel>
             </ReactFlow>
         </Card>
     )
