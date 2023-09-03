@@ -9,6 +9,8 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 
+import styles from '../../../assets/styles/reactFlow/styles.module.css'
+
 const { Tr, Th, Td, THead, TBody } = Table
 
 
@@ -25,9 +27,9 @@ function IndeterminateCheckbox({ indeterminate, onChange, ...rest }) {
 }
 
 const EntityArea = () => {
-    const dispatch = useDispatch()
     const [rowSelection, setRowSelection] = useState({})
     const [data, setData] = React.useState(() => [])
+    const [selectRow, setSelectRow] = useState('');
     const getData = useSelector(
         (state) => state.base.common.storeData
     )
@@ -112,7 +114,7 @@ const EntityArea = () => {
                 <TBody>
                     {table.getRowModel().rows.map((row) => {
                         return (
-                            <Tr key={row.id}>
+                             <Tr key={row.id} className={row.index === selectRow.index ? styles.selectedRow : ''} onClick={(e) => { setSelectRow(row); e.stopPropagation() }}>
                                 {row.getVisibleCells().map((cell) => {
                                     return (
                                         <Td key={cell.id}>

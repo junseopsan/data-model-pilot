@@ -31,10 +31,6 @@ const Toolbar = () => {
         (state) => state.base.common.storeData
     )
 
-    useEffect(()=>{
-        const nodeLength = storeData.nodes?.length
-        setEntityTitle(`엔터티 ${Number(nodeLength)+1}`)
-    }, [storeData])
     
     useEffect(()=>{
         setUndo(isUndo)
@@ -61,8 +57,7 @@ const Toolbar = () => {
             EventBus.emit("SHOW-MSG", '먼저 새 모델을 작성해주세요.'); 
             return false;
         } 
-        
-        if(type === 'none' && storeData.length < 1 || nodeLength < 1){
+        if(type === 'none' && storeData.length < 1 || type === 'none' && nodeLength < 1){
             EventBus.emit("SHOW-MSG", '엔터티를 하나 이상 추가해주세요.'); 
             return false;
         }

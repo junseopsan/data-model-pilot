@@ -37,7 +37,7 @@ const TaskOverview = () => {
     const [rfInstance, setRfInstance] = useState(null);
     const { setViewport } = useReactFlow();
     const dispatch = useDispatch()
-    const getData = useSelector(
+    const storeData = useSelector(
       (state) => state.base.common.storeData
     )
     const entityInfo = useSelector(
@@ -92,7 +92,8 @@ const TaskOverview = () => {
 
     useEffect(()=> {
       if(entityInfo.isNewEntity){
-        onAdd()
+        const length = storeData.nodes ? storeData.nodes.length +1 : 1 || 1
+        onAdd(length)
       } 
     },[entityInfo])
     
@@ -107,7 +108,7 @@ const TaskOverview = () => {
 
     useEffect(() => {
       onSave()
-    },[nodes, edges])
+    },[nodes, edges ])
     
     const onConnect = useCallback(
       (connection) => {
@@ -124,12 +125,12 @@ const TaskOverview = () => {
         dispatch(setStoreData(flow))
       }
     }, [rfInstance]);
-
-    const onAdd = useCallback(() => {
+    
+    const onAdd = useCallback((length) => {
       const newNode = {
         id: getNodeId(), 
         type: 'textUpdater',
-        data: { label: 'new entity', id: getNodeId() },
+        data: { label: `엔터티${length}`, id: getNodeId() },
         position: {
           x: Math.random() * 1500,
           y: Math.random() * 390,
@@ -144,9 +145,9 @@ const TaskOverview = () => {
 
     const onLoadUpdate =() => {
       if(modelInfo.isNewOpen){
-        setNodes(getData.nodes || []);
-        setEdges(getData.edges || []);
-        setViewport(getData.viewport)
+        setNodes(storeData.nodes || []);
+        setEdges(storeData.edges || []);
+        setViewport(storeData.viewport)
       }
     };
 
