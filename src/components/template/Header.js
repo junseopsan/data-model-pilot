@@ -15,16 +15,16 @@ const Header = (props) => {
                     container && 'container mx-auto'
                 )}
             >
-                <div className="header-action header-action-start">
-                    {headerStart}
+                <div className="header-action header-action-end">
+                    {headerEnd}
                 </div>
                 {headerMiddle && (
                     <div className="header-action header-action-middle">
                         {headerMiddle}
                     </div>
                 )}
-                <div className="header-action header-action-end">
-                    {headerEnd}
+                <div className="header-action header-action-start">
+                    {headerStart}
                 </div>
             </div>
         </header>

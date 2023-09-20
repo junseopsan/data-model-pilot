@@ -7,7 +7,7 @@ const ProjectDashboardHeader = () => {
     )
     return (
         <div>
-            <h4 className="mb-1">{modelName !== '' ? `모델명 : ${modelName}` : ''} </h4>
+            <h4 className="">{modelName !== '' ? `모델명 : ${modelName}` : ''} </h4>
         </div>
     )
 }

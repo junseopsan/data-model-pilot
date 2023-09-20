@@ -10,35 +10,25 @@ import Property from './components/Property'
 import './index.css'
 
 const Home = () => {
-    // const [isAlertOpen, setIsAlertOpen] = useState(false)
-    // const [alertText, setAlertText] = useState(false)
-
-    // const getAlertInfo = useSelector((state) => state.base.common.alertInfo)
-
-    // useEffect(()=>{
-    //     console.log(getAlertInfo)
-        // setIsAlertOpen(getAlertInfo.isAlertOpen)
-        // setAlertText(getAlertInfo.alertText)
-    // },[getAlertInfo])
 
     return (
-        <div className="flex flex-col h-full gap-4">
+        <div className="flex flex-col h-full">
             <DataModelHeader />
-            <div className="flex flex-col gap-4 xl:flex-row h-1/2">
-                <div className="flex flex-col gap-4">
-                    <div className="xl:w-full h-1/2">
+            <div className="flex flex-col h-full xl:flex-row">
+                <div className="flex flex-col gap-2">
+                    {/* <div className="xl:w-full h-1/2">
                         <Toolbar />
-                    </div>
-                    <div className="xl:w-full h-1/2">
+                    </div> */}
+                    {/* <div className="xl:w-full h-1/2">
                         <Subject  />
-                    </div>
+                    </div> */}
                 </div>
-                <div className="flex flex-col flex-auto gap-4 ">
+                <div className="flex flex-col flex-auto gap-2 ">
                     <TaskOverview />
                 </div>
             </div>
             <div className="flex flex-row justify-between flex-auto gap-4 mt-1">
-            <div className="xl:w-[20%]">
+                {/* <div className="xl:w-[20%]">
                     <Entity />
                 </div>
                 <div className="xl:w-[60%]">
@@ -46,7 +36,7 @@ const Home = () => {
                 </div>
                 <div className="xl:w-[20%]">
                     <DetailInfo />
-                </div>
+                </div> */}
             </div>
             {/* { isAlertOpen && (
                 <div class="backdrop" >
