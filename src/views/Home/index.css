@@ -8,6 +8,64 @@
     padding: 10px;
     line-height: 1.2;
   }
+  .MenuIconBox{
+    height: 21px;
+    font-size: 30px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .favoriteHeaderBox{
+    display: flex;
+    height: 48px;
+  }
+  
+  .menu_box{
+    height: 35px;
+  }
+  .titleBox{
+    font-weight: bold;
+    font-size: medium;
+    line-height: 53px;
+    height: 59px;
+  }
+  .menu_items{
+    display: flex;
+    flex-flow: column;
+    height: auto !important;
+  }
+  
+  .favoriteBox{
+    top: -33px;
+    left: 203px;
+    position: relative;
+    width: 25px;
+  }
+
+  .favoriteBox img {
+    width: 25px;
+    height: auto;
+    cursor: pointer;
+  }
+
+  .openTool .tooltip-wrapper{
+    margin-right: 15px;
+  }
+
+  .toolBarDiv{
+    padding:5px 0;
+    width: inherit;
+    display: flex;
+    justify-content: space-between;
+
+  }
+
+  .dropdown-menu.bottom-end{
+    left: 0px !important;
+    top:63px;
+    width: 250px;
+  }
   
   .react-flow__node-zoom img {
     pointer-events: none;

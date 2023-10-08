@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import Files from 'react-files'
 import { setStoreData, setEdgeType, setModelInfo, setEntityInfo, setIsUndo, setIsRedo} from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
+import classNames from 'classnames'
 
 const Toolbar = () => {
     const dispatch = useDispatch()
@@ -148,75 +149,103 @@ const Toolbar = () => {
     }
 
     return (
-        <Card className="h-full">
-            <div className="flex items-center justify-between mb-2">
+        <div className="h-full">
+            {/* <div className="flex items-center justify-between mb-2">
                 <h4>도구 모음</h4>
-            </div>
-            <div className="mt-1">
-            <NewEntityDialog data={{IsEntityDialogOpen}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
-            <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
-            <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
-            <Tooltip title="새 모델" placement="top">
-                <Button onClick={() => setIsModelDialogOpen(true)} size="sm" className="mr-1">
-                    N
-                </Button>
-            </Tooltip>
-            <Tooltip title="열기" placement="top">
-                    <Files
-                        className='files-dropzone'
-                        onChange={importJsonData}
-                        onError={handleError}
-                        accepts={[".json"]}
-                        maxFileSize={10000000}
-                        minFileSize={0}
-                        clickable
-                    >
-                        <Button size="sm" className="mr-1">
-                    O
-                </Button>
-                    </Files>
-            </Tooltip>
-            <Tooltip title="저장" placement="top">
-                <Button onClick={() => exportJsonData('dataModelPilot')} size="sm" className="mr-1">
-                    S
-                </Button>
-            </Tooltip>
-            <Tooltip title="다른 이름 저장" placement="top">
-                <Button onClick={() => exportTheOhterJsonData()} size="sm" className="mr-1">
-                    SA
-                </Button>
-            </Tooltip>
-            </div>
-            <div className="mt-2">
-            <Tooltip title="엔터티 추가" placement="top">
-                <Button onClick={() => onClickAddEntity()} size="sm" className="mr-1">
-                    E
-                </Button>
-            </Tooltip>
-            <Tooltip title="식별 관계선 선택" placement="top">
-                <Button onClick={() => onClickChangeEdge('R1')} size="sm" className="mr-1">
+            </div> */}
+            <div>
+                <NewEntityDialog data={{IsEntityDialogOpen}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
+                <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
+                <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
+                <div className={classNames('toolBarDiv')}>
+                    <Tooltip title="새 모델" placement="top">
+                        <Button onClick={() => setIsModelDialogOpen(true)} size="sm" className="mr-1">
+                            N
+                        </Button>
+                        <span className={classNames('flex justify-center items-center')}>새 모델 </span>
+                    </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                    <Tooltip title="열기" placement="top">
+                            <Files
+                                className='files-dropzone'
+                                onChange={importJsonData}
+                                onError={handleError}
+                                accepts={[".json"]}
+                                maxFileSize={10000000}
+                                minFileSize={0}
+                                clickable
+                            >
+                                <Button size="sm" className="mr-1">
+                            O
+                        </Button>
+                        </Files>
+                        <span className={classNames('flex justify-center items-center')}> 열기 </span>
+                    </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                    <Tooltip title="저장" placement="top">
+                        <Button onClick={() => exportJsonData('dataModelPilot')} size="sm" className="mr-1">
+                            S
+                        </Button>
+                        <span className={classNames('flex justify-center items-center')}> 저장 </span>
+                    </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                    <Tooltip title="다른 이름 저장" placement="top">
+                        <Button onClick={() => exportTheOhterJsonData()} size="sm" className="mr-1">
+                            SA
+                        </Button>
+                        <span className={classNames('flex justify-center items-center')}> 다른 이름 저장 </span>
+                    </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                    <Tooltip title="엔터티 추가" placement="top">
+                        <Button onClick={() => onClickAddEntity()} size="sm" className="mr-1">
+                        E
+                        </Button>
+                        <span className={classNames('flex justify-center items-center')}>엔터티 추가</span>
+                    </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                <Tooltip title="식별 관계선 선택" placement="top">
+                    <Button onClick={() => onClickChangeEdge('R1')} size="sm" className="mr-1">
                     R1
-                </Button>
-            </Tooltip>
-            <Tooltip title="비식별 관계선 선택" placement="top">
-                <Button onClick={() => onClickChangeEdge('R2')} size="sm" className="mr-1">
+                    </Button>
+                    <span className={classNames('flex justify-center items-center')}>식별 관계선 선택</span>
+                </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                <Tooltip title="비식별 관계선 선택" placement="top">
+                    <Button onClick={() => onClickChangeEdge('R2')} size="sm" className="mr-1">
                     R2
-                </Button>
-            </Tooltip>
+                    </Button>
+                    <span className={classNames('flex justify-center items-center')}>비식별 관계선 선택</span>
+                </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                    <Tooltip title="되돌리기" placement="top">
+                        <Button onClick={() => onClickUndoRedo('U')} size="sm" className="mr-1" disabled={undo}  >
+                        UD
+                        </Button>
+                        <span className={classNames('flex justify-center items-center')}>되돌리기</span>
+                    </Tooltip>
+                </div>
+                <div className={classNames('toolBarDiv')}>
+                <Tooltip title="다시실행" placement="top">
+                    <Button onClick={() => onClickUndoRedo('R')} size="sm" className="mr-1" disabled={redo}>
+                    RD
+                    </Button>
+                    <span className={classNames('flex justify-center items-center')}>다시실행</span>
+                </Tooltip>    
+                </div>
+            {/* 
+            <div className="mt-2">
             </div>
             <div className="mt-2">
-            <Tooltip title="되돌리기" placement="top">
-                <Button onClick={() => onClickUndoRedo('U')} size="sm" className="mr-1" disabled={undo}  >
-                    UD
-                </Button>
-            </Tooltip>
-            <Tooltip title="다시실행" placement="top">
-                <Button onClick={() => onClickUndoRedo('R')} size="sm" className="mr-1" disabled={redo}>
-                    RD
-                </Button>
-            </Tooltip>
-            </div>
-        </Card>
+        </div> */}
+        </div>
+        </div>
     )
 }
 

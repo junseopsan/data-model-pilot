@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 // import {  useSelector } from 'react-redux'
-import DataModelHeader from './components/DataModelHeader'
 import Toolbar from './components/Toolbar'
 import Subject from './components/Subject'
 import DetailInfo from './components/DetailInfo'
@@ -13,7 +12,6 @@ const Home = () => {
 
     return (
         <div className="flex flex-col h-full">
-            <DataModelHeader />
             <div className="flex flex-col h-full xl:flex-row">
                 <div className="flex flex-col gap-2">
                     {/* <div className="xl:w-full h-1/2">

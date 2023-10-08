@@ -10,7 +10,7 @@ import i18n from 'i18next'
 
 import { HiCheck } from 'react-icons/hi'
 
-const languageList = [{ label: 'English', value: 'en', flag: 'us' }]
+const languageList = [{ label: 'English', value: 'en', flag: 'us' }, { label: 'Korean', value: 'ko', flag: 'ks' }]
 
 export const LanguageSelector = ({ className }) => {
     const [loading, setLoading] = useState(false)
@@ -63,7 +63,7 @@ export const LanguageSelector = ({ className }) => {
         <Dropdown renderTitle={selectedLanguage} placement="bottom-end">
             {languageList.map((lang) => (
                 <Dropdown.Item
-                    className="mb-1 justify-between"
+                    className="justify-between mb-1"
                     eventKey={lang.label}
                     key={lang.label}
                     onClick={() => onLanguageSelect(lang.value)}
@@ -77,7 +77,7 @@ export const LanguageSelector = ({ className }) => {
                         <span className="ltr:ml-2 rtl:mr-2">{lang.label}</span>
                     </span>
                     {locale === lang.value && (
-                        <HiCheck className="text-emerald-500 text-lg" />
+                        <HiCheck className="text-lg text-emerald-500" />
                     )}
                 </Dropdown.Item>
             ))}
