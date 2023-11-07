@@ -8,6 +8,7 @@
     padding: 10px;
     line-height: 1.2;
   }
+  .cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px;}
   .MenuIconBox{
     height: 21px;
     font-size: 30px;
@@ -22,7 +23,7 @@
   }
   
   .menu_box{
-    height: 35px;
+    height: 40px;
   }
   .titleBox{
     font-weight: bold;
@@ -33,11 +34,12 @@
   .menu_items{
     display: flex;
     flex-flow: column;
-    height: auto !important;
+    height: 40px !important;
+    padding-top: 5px;
   }
   
   .favoriteBox{
-    top: -33px;
+    top: -38px;
     left: 203px;
     position: relative;
     width: 25px;

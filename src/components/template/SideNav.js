@@ -43,6 +43,10 @@ const SideNav = () => {
     )
     const userAuthority = useSelector((state) => state.auth.user.authority)
 
+    const goMenu = () => {
+        alert('goMenu')
+    }
+
     const { larger } = useResponsive()
 
     const sideNavColor = () => {
@@ -72,6 +76,7 @@ const SideNav = () => {
             routeKey={currentRouteKey}
             userAuthority={userAuthority}
             direction={direction}
+            onMenuItemClick={goMenu}
         />
     )
 

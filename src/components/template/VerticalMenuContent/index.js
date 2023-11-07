@@ -12,6 +12,7 @@ import {
 } from 'constants/navigation.constant'
 import useMenuActive from 'utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 
 const { MenuGroup } = Menu
 
@@ -27,10 +28,35 @@ const VerticalMenuContent = (props) => {
     } = props
 
     const { t } = useTranslation()
-
+    const [subMenu, setSubMenu] = useState([]);
     const [defaulExpandKey, setDefaulExpandKey] = useState([])
 
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
+    const focusArea = useSelector(
+        (state) => state.base.common.focusArea
+    )
+    const modelInfo = useSelector(
+        (state) => state.base.common.modelInfo
+    )
+    const storeData = useSelector(
+        (state) => state.base.common.storeData
+    )
+
+    useEffect(() => {
+        let list = []
+        storeData.nodes?.forEach(item => {
+            list.push({
+                key: item.id,
+                title: item.data.label,
+                type: 'collapse',
+                menuType: 'entity',
+                subMenu: []
+            })
+        })
+        console.log('storeData list',list)
+        setSubMenu(list)
+
+    }, [storeData])
 
     useEffect(() => {
         if (defaulExpandKey.length === 0 && activedRoute?.parentKey) {
@@ -78,7 +104,7 @@ const VerticalMenuContent = (props) => {
                         userAuthority={userAuthority}
                         authority={nav.authority}
                     >
-                        <MenuGroup label={t(nav.translateKey) || nav.title}>
+                       <MenuGroup label={t(nav.translateKey) || nav.title}>
                             {nav.subMenu.map((subNav) =>
                                 subNav.subMenu.length > 0 ? (
                                     <VerticalCollapsedMenuItem
@@ -103,8 +129,6 @@ const VerticalMenuContent = (props) => {
                         </MenuGroup>
                     </AuthorityCheck>
                 )
-            } else {
-                ;<MenuGroup label={nav.title} />
             }
         }
     }
@@ -117,7 +141,24 @@ const VerticalMenuContent = (props) => {
             defaultActiveKeys={activedRoute?.key ? [activedRoute.key] : []}
             defaultExpandedKeys={defaulExpandKey}
         >
-            {navigationTree.map((nav) => getNavItem(nav))}
+            <>
+                <div>
+                    {navigationTree.map((nav) => getNavItem(nav))}
+                </div>
+                <div>
+                    <div className='px-2 py-2 mt-1 mb-16 text-sm font-bold h-36 card-border card sm:px-1 md:px-2'>
+                    {
+                        focusArea === 'model' && (
+                            <>
+                                <div>모델명 : {modelInfo.modelName}</div>
+                                <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>{modelInfo.modelDescription}</div>
+                            </>
+                        )
+                    }
+                    </div>
+                </div>
+            </>
+            
         </Menu>
     )
 }

@@ -28,7 +28,7 @@ const Menu = React.forwardRef((props, ref) => {
         return `${menuDefaultClass}-${variant}`
     }
 
-    const menuClass = classNames(menuDefaultClass, menuColor(), className)
+    const menuClass = classNames(menuDefaultClass, menuColor(), className, 'flex flex-col h-full justify-between')
 
     return (
         <nav ref={ref} className={menuClass} {...rest}>

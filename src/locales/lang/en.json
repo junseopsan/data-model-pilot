@@ -1,19 +1,26 @@
 {
     "nav": {
-        "home": "Home",
-        "singleMenuItem": "Single menu item",
-        "collapseMenu": {
-            "collapseMenu": "Collapse menu item",
-            "item1": "Collapse menu item 1",
-            "item2": "Collapse menu item 2"
-        },
-        "groupMenu": {
-            "groupMenu": "Group menu",
+        "titleMenu": {
+            "titleMenu": "주제영역",
             "single": "Group single menu item",
             "collapse": {
-                "collapse": "Group collapse menu",
-                "item1": "Group collapse menu item 1",
-                "item2": "Group collapse menu item 2"
+                "collapse": "주제영역",
+                "item1": "Title collapse menu item 1",
+                "item2": "Title collapse menu item 2"
+            }
+        },
+        "entityMenu": {
+            "entityMenu": "엔티티 영역",
+            "single": "Entity single menu item",
+            "collapse": {
+                "collapse": "엔터티 제목111",
+                "item1": "컬럼 1",
+                "item2": "컬럼 2"
+            },
+            "collapse1": {
+                "collapse": "엔터티 제목2",
+                "item1": "컬럼 1",
+                "item2": "컬럼 2"
             }
         }
     }

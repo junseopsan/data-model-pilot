@@ -12,7 +12,6 @@ const MenuGroup = (props) => {
 
     const menuGroupDefaultClass = 'menu-group'
     const menuGroupClass = classNames(menuGroupDefaultClass, className)
-
     const entityHeaderId = useUniqueId('entity-header-')
 
     return (

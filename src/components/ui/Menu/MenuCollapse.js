@@ -8,7 +8,7 @@ import MenuContext from './context/menuContext'
 import { HiChevronDown } from 'react-icons/hi'
 
 const MenuCollapse = (props) => {
-    const { children, className, eventKey, expanded, label, onToggle } = props
+    const { children, className, eventKey, expanded, label, onToggle, isData } = props
 
     const [isExpanded, setIsExpanded] = useState(expanded)
 
@@ -55,31 +55,41 @@ const MenuCollapse = (props) => {
         <div className="menu-collapse">
             <div className={menuCollapseItemClass} onClick={toggleCollapse}>
                 <span className="flex items-center">{label}</span>
-                <motion.span
-                    className="text-lg mt-1"
-                    initial={{ transform: 'rotate(0deg)' }}
-                    animate={{
-                        transform: isExpanded
-                            ? 'rotate(-180deg)'
-                            : 'rotate(0deg)',
-                    }}
-                    transition={{ duration: 0.15 }}
-                >
-                    {sideCollapsed ? null : <HiChevronDown />}
-                </motion.span>
+                {
+                    isData && (
+                        <motion.span
+                            className="mt-1 text-lg"
+                            initial={{ transform: 'rotate(0deg)' }}
+                            animate={{
+                                transform: isExpanded
+                                    ? 'rotate(-180deg)'
+                                    : 'rotate(0deg)',
+                            }}
+                            transition={{ duration: 0.15 }}
+                        >
+                            {sideCollapsed ? null : <HiChevronDown />}
+                        </motion.span>
+                    )
+                }                
+
             </div>
             <CollapseContextProvider value={isExpanded}>
-                <motion.ul
-                    className={direction === 'rtl' ? 'mr-5' : 'ml-5'}
-                    initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
-                    animate={{
-                        opacity: isExpanded ? 1 : 0,
-                        height: isExpanded ? getChildrenHeight() : 0,
-                    }}
-                    transition={{ duration: 0.15 }}
-                >
-                    {children}
-                </motion.ul>
+                {
+                    isData && (
+                        <motion.ul
+                            className={direction === 'rtl' ? 'mr-5' : 'ml-5'}
+                            initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                            animate={{
+                                opacity: isExpanded ? 1 : 0,
+                                height: isExpanded ? getChildrenHeight() : 0,
+                            }}
+                            transition={{ duration: 0.15 }}
+                        >
+                            {children}
+                        </motion.ul>
+                    )
+                }
+                
             </CollapseContextProvider>
         </div>
     )

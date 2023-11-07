@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import classNames from 'classnames'
-import { Drawer } from 'components/ui'
+import { Drawer, Tooltip } from 'components/ui'
 import { HiOutlineCog } from 'react-icons/hi'
 import SidePanelContent from './SidePanelContent'
 import withHeaderItem from 'utils/hoc/withHeaderItem'
@@ -41,12 +41,10 @@ export const SidePanel = (props) => {
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
     useEffect(()=>{
-        console.log(isUndo)
         setUndo(isUndo)
     }, [isUndo])
     
     useEffect(()=>{
-        console.log(isRedo)
         setRedo(isRedo)
     }, [isRedo])
 
@@ -78,20 +76,26 @@ export const SidePanel = (props) => {
                 className={classNames('text-2xl', className, isUndodisabled())}
                 onClick={() => onClickUndoRedo('U')}
             >
-                <BiUndo />
+                <Tooltip title="되돌리기" placement="bottom">
+                    <BiUndo />
+                </Tooltip>
             </div>
             <div
                 className={classNames('text-2xl', className, isRedodisabled())}
                 onClick={() => onClickUndoRedo('R')}
             >
-                <BiRedo />
+                <Tooltip title="다시실행" placement="bottom">
+                    <BiRedo />
+                </Tooltip>
             </div>
             <div
                 className={classNames('text-2xl', className)}
                 onClick={openPanel}
                 {...rest}
             >
-                <HiOutlineCog />
+                <Tooltip title="설정" placement="bottom">
+                    <HiOutlineCog />
+                </Tooltip>
             </div>
             <Drawer
                 title="Theme Config"
