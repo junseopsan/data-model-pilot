@@ -5,7 +5,7 @@ import withHeaderItem from 'utils/hoc/withHeaderItem'
 import { useSelector, useDispatch } from 'react-redux'
 import VerticalMenuIcon from '../../components/template/VerticalMenuContent/VerticalMenuIcon'
 import { Trans } from 'react-i18next'
-import { MenuItem } from 'components/ui'
+import { MenuItem, Tooltip } from 'components/ui'
 import { Link } from 'react-router-dom'
 import NewModelDialog from '../../views/Home/dialogs/NewModelDialog'
 import NewEntityDialog from '../../views/Home/dialogs/NewEntityDialog'
@@ -83,7 +83,7 @@ export const HomeHeaderItem = ({ className }) => {
             setToolbarModelItemList(toolbarModelItemList)
         }
         const concatfavList = toolbarHomeList.concat(toolbarModelItemList)
-        const favoList = concatfavList.filter(item => item.isFavorite === true).map(mapItem => mapItem.shortLabel)
+        const favoList = concatfavList.filter(item => item.isFavorite === true).map(mapItem => ({shortLabel : mapItem.shortLabel, label: mapItem.label}))
         setFavoriteList(favoList)
 
         forceUpdate()
@@ -421,9 +421,10 @@ export const HomeHeaderItem = ({ className }) => {
                 {
                     favoriteList.map(item => {
                         return (
-                            <div onClick={() => onToolBarSelect(item)} className={classNames('text-2xl header-action-item header-action-item-hoverable')}>
-                                { item === 'N' && (<MdFiberNew/>) }
-                                { item === 'O' && 
+                            <div onClick={() => onToolBarSelect(item.shortLabel)} className={classNames('text-2xl header-action-item header-action-item-hoverable')}>
+                                <Tooltip title={item.label} placement="bottom">
+                                { item.shortLabel === 'N' && (<MdFiberNew/>) }
+                                { item.shortLabel === 'O' && 
                                     (
                                         <Files
                                             className='files-dropzone'
@@ -438,19 +439,17 @@ export const HomeHeaderItem = ({ className }) => {
                                         </Files>
                                     ) 
                                 }
-                                { item === 'S' && (<CiSaveUp1/>) }
-                                { item === 'SA' && (<CiSaveUp2/>) }
-                                { item === 'E' && (<AiOutlineMinusSquare/>) }
-                                { item === 'R1' && (<AiOutlineMinus/>) }
-                                { item === 'R2' && (<AiOutlineDash/>) }
-                                { item === 'MD' && (<CiMemoPad/>) }
+                                { item.shortLabel === 'S' && (<CiSaveUp1/>) }
+                                { item.shortLabel === 'SA' && (<CiSaveUp2/>) }
+                                { item.shortLabel === 'E' && (<AiOutlineMinusSquare/>) }
+                                { item.shortLabel === 'R1' && (<AiOutlineMinus/>) }
+                                { item.shortLabel === 'R2' && (<AiOutlineDash/>) }
+                                { item.shortLabel === 'MD' && (<CiMemoPad/>) }
+                                </Tooltip>
                             </div>
                         )
                     })
                 }
-            </div>
-            <div className={classNames('titleBox')}>
-                {modelInfo.modelName}
             </div>
         </>
     )

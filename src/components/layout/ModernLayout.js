@@ -5,6 +5,9 @@ import UserDropdown from 'components/template/UserDropdown'
 import MobileNav from 'components/template/MobileNav'
 import SideNav from 'components/template/SideNav'
 import View from 'views'
+import { useSelector } from 'react-redux'
+import classNames from 'classnames'
+
 import HomeHeaderItem from 'components/template/HomeHeaderItem'
 import { Card, Button, Notification, toast } from 'components/ui'
 
@@ -26,6 +29,19 @@ const HeaderActionsEnd = () => {
     )
 }
 
+const HeaderActionsMiddle = () => {
+    const modelInfo = useSelector(
+        (state) => state.base.common.modelInfo
+    )
+    return (
+        <>
+            <div className={classNames('titleBox')}>
+                {modelInfo.modelName}
+            </div>
+        </>
+    )
+}
+
 const ModernLayout = (props) => {
     return (
         <div className="flex flex-col flex-auto app-layout-modern">
@@ -34,6 +50,8 @@ const ModernLayout = (props) => {
                     <Header
                         className="border-b border-gray-200 dark:border-gray-700"
                         headerEnd={<HeaderActionsStart />}
+                        headerMiddle={<HeaderActionsMiddle />}
+
                         headerStart={<HeaderActionsEnd />}
                     />
                     <View {...props} />

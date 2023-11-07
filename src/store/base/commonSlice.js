@@ -5,6 +5,7 @@ export const initialState = {
     edgeType: '',
     isUndo: true,
     isRedo: true,
+    focusArea: '',
     undoRedoBtn:'',
     entityInfo:{
         entityName: '',
@@ -12,6 +13,7 @@ export const initialState = {
     },
     modelInfo:{
         modelName: '',
+        modelDescription: '',
         anotherSaveName: '',
         isNewModel: false,
         isNewOpen: false
@@ -48,6 +50,9 @@ export const commonSlice = createSlice({
         setIsRedo: (state, action) => {
             state.isRedo = action.payload
         },
+        setFocusArea: (state, action) => {
+            state.focusArea = action.payload
+        },
         setModelInfo: (state, action) => {
             state.modelInfo = action.payload
         },
@@ -63,6 +68,6 @@ export const commonSlice = createSlice({
     },
 })
 
-export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setModelInfo, setEntityInfo, setProperties, setStoreData  } = commonSlice.actions
+export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusArea, setModelInfo, setEntityInfo, setProperties, setStoreData  } = commonSlice.actions
 
 export default commonSlice.reducer
