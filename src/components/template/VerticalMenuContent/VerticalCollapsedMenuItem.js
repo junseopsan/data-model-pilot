@@ -21,8 +21,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
             list.push({
                 key: item.id,
                 title: item.data.label,
-                type: 'collapse',
-                menuType: 'entity',
+                type: 'item',
                 subMenu: []
             })
         })
@@ -32,39 +31,33 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     
     }, [storeData])
     return (
-        <AuthorityCheck userAuthority={userAuthority} authority={nav.authority}>
-            <MenuCollapse
-                label={
-                    <>
-                        <span>
-                            <Trans
-                                defaults={nav.title}
-                            />
-                        </span>
-                    </>
-                }
-                key={nav.key}
-                eventKey={nav.key}
-                expanded={false}
-                isData={isData}
-                className="mb-2"
-            >
-                {subMenu.map((subNav) => (
-                    <AuthorityCheck
-                        userAuthority={userAuthority}
-                        key={subNav.key}
-                    >
-                        <MenuItem eventKey={subNav.key}>
-                            <span>
-                                <Trans
-                                    defaults={subNav.title}
-                                />
-                            </span>
-                        </MenuItem>
-                    </AuthorityCheck>
-                ))}
-            </MenuCollapse>
-        </AuthorityCheck>
+        // 엔터티   
+        <MenuCollapse
+            label={
+                <>
+                    <span>
+                        <Trans
+                            defaults={`${nav.title}`}
+                        />
+                    </span>
+                </>
+            }
+            key={nav.key}
+            eventKey={nav.key}
+            expanded={false}
+            isData={isData}
+            className="mb-2"
+        >
+            {nav.itemMenu.map((itemMenu) => (
+                <MenuItem eventKey={itemMenu.key}>
+                    <span>
+                        <Trans
+                            defaults={`${itemMenu.title}`}
+                        />
+                    </span>
+                </MenuItem>
+            ))}
+        </MenuCollapse>
     )
 }
 
@@ -84,8 +77,7 @@ const CollapsedItem = ({ nav, onLinkClick, userAuthority, direction }) => {
             list.push({
                 key: item.id,
                 title: item.data.label,
-                type: 'collapse',
-                menuType: 'entity',
+                type: 'item',
                 subMenu: []
             })
         })
@@ -95,38 +87,31 @@ const CollapsedItem = ({ nav, onLinkClick, userAuthority, direction }) => {
     }, [storeData])
 
     return (
-        <AuthorityCheck userAuthority={userAuthority} authority={nav.authority}>
-            <Dropdown
-                trigger="hover"
-                renderTitle={menuItem}
-                placement={
-                    direction === 'rtl' ? 'middle-end-top' : 'middle-start-top'
-                }
-            >
-                {subMenu.map((subNav) => (
-                    <AuthorityCheck
-                        userAuthority={userAuthority}
-                        key={subNav.key}
-                    >
-                        <Dropdown.Item eventKey={subNav.key}>
-                            {subNav.title ? (
-                                <span>
-                                    <Trans
-                                        defaults={subNav.title}
-                                    />
-                                </span>
-                            ) : (
-                                <span>
-                                    <Trans
-                                        defaults={subNav.title}
-                                    />
-                                </span>
-                            )}
-                        </Dropdown.Item>
-                    </AuthorityCheck>
-                ))}
-            </Dropdown>
-        </AuthorityCheck>
+        <Dropdown
+            trigger="hover"
+            renderTitle={menuItem}
+            placement={
+                direction === 'rtl' ? 'middle-end-top' : 'middle-start-top'
+            }
+        >
+            {subMenu.map((subNav) => (
+                <Dropdown.Item eventKey={subNav.key}>
+                    {subNav.title ? (
+                        <span>
+                            <Trans
+                                defaults={`${subNav.title}`}
+                            />
+                        </span>
+                    ) : (
+                        <span>
+                            <Trans
+                                defaults={`${subNav.title}`}
+                            />
+                        </span>
+                    )}
+                </Dropdown.Item>
+            ))}
+        </Dropdown>
     )
 }
 

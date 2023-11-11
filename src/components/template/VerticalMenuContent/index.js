@@ -28,7 +28,7 @@ const VerticalMenuContent = (props) => {
     } = props
 
     const { t } = useTranslation()
-    const [subMenu, setSubMenu] = useState([]);
+    const [entity, setEntity] = useState([]);
     const [defaulExpandKey, setDefaulExpandKey] = useState([])
 
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
@@ -44,17 +44,25 @@ const VerticalMenuContent = (props) => {
 
     useEffect(() => {
         let list = []
+        
         storeData.nodes?.forEach(item => {
             list.push({
                 key: item.id,
                 title: item.data.label,
                 type: 'collapse',
                 menuType: 'entity',
-                subMenu: []
+                itemMenu: [
+                    {
+                        key: '1',
+                        title: '아이템 1',
+                        type: 'item',
+                        subMenu: []
+                    }
+                ]
             })
         })
-        console.log('storeData list',list)
-        setSubMenu(list)
+        console.log('entity :::: ',list)
+        setEntity(list)
 
     }, [storeData])
 
@@ -83,16 +91,26 @@ const VerticalMenuContent = (props) => {
             )
         }
 
-        if (nav.subMenu.length > 0 && nav.type === NAV_ITEM_TYPE_COLLAPSE) {
+        if (nav.type === NAV_ITEM_TYPE_COLLAPSE) {
             return (
-                <VerticalCollapsedMenuItem
-                    key={nav.key}
-                    nav={nav}
-                    onLinkClick={onMenuItemClick}
-                    sideCollapsed={collapsed}
-                    userAuthority={userAuthority}
-                    direction={direction}
-                />
+                <MenuGroup key={nav.key} label={`엔터티 영역`}>
+                    {
+                        
+                        entity.length > 0 && (
+                            entity.map((entityInfo) => (
+                                <VerticalCollapsedMenuItem
+                                    key={entityInfo.key}
+                                    nav={entityInfo}
+                                    onLinkClick={onMenuItemClick}
+                                    sideCollapsed={collapsed}
+                                    userAuthority={userAuthority}
+                                    direction={direction}
+                                />
+                                )
+                            )
+                        )
+                    }
+                </MenuGroup>
             )
         }
 
