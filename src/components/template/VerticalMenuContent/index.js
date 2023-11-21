@@ -13,6 +13,9 @@ import {
 import useMenuActive from 'utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { setStoreData } from 'store/base/commonSlice'
+import { useDispatch } from 'react-redux'
+import EventBus from "../../../utils/hooks/EventBus";
 
 const { MenuGroup } = Menu
 
@@ -26,45 +29,97 @@ const VerticalMenuContent = (props) => {
         onMenuItemClick,
         direction = themeConfig.direction,
     } = props
-
+    const dispatch = useDispatch()
     const { t } = useTranslation()
     const [entity, setEntity] = useState([]);
     const [defaulExpandKey, setDefaulExpandKey] = useState([])
 
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
-    const focusArea = useSelector(
-        (state) => state.base.common.focusArea
-    )
-    const modelInfo = useSelector(
-        (state) => state.base.common.modelInfo
+    const focusInfo = useSelector(
+        (state) => state.base.common.focusInfo
     )
     const storeData = useSelector(
         (state) => state.base.common.storeData
     )
+    const propertyInfo = useSelector(
+        (state) => state.base.common.propertyInfo
+    )
+    const changeEntity = useSelector(
+        (state) => state.base.common.entityInfo
+    )
+
+    // useEffect(() => {
+    //     EventBus.on("NEW-ENTITY-EVENT", () => {
+    //         let list = []
+    //         storeData.nodes?.forEach(item => {
+    //             list.push({
+    //                 ...item,
+    //                 nav:{
+    //                     key: item.id,
+    //                     title: item.data.label,
+    //                     description: item.data.description,
+    //                     type: 'collapse',
+    //                     menuType: 'entity',
+    //                     itemMenu: [
+    //                         // {
+    //                         //     key: '1',
+    //                         //     title: '아이템 1',
+    //                         //     type: 'item',
+    //                         //     subMenu: []
+    //                         // }
+    //                     ]
+    //                 }
+    //             })
+    //             console.log('list', list)
+    //         })
+    //     });
+    //     return () => {
+    //       EventBus.off("NEW-ENTITY-EVENT");
+    //     };
+    //   }, []);
 
     useEffect(() => {
         let list = []
-        
         storeData.nodes?.forEach(item => {
             list.push({
-                key: item.id,
-                title: item.data.label,
-                type: 'collapse',
-                menuType: 'entity',
-                itemMenu: [
-                    {
-                        key: '1',
-                        title: '아이템 1',
-                        type: 'item',
-                        subMenu: []
-                    }
-                ]
+                    key: item.id,
+                    title: item.data.label,
+                    description: item.data.description,
+                    type: 'collapse',
+                    menuType: 'entity',
+                    itemMenu: [
+                        // {
+                        //     key: '1',
+                        //     title: '아이템 1',
+                        //     type: 'item',
+                        //     subMenu: []
+                        // }
+                    ]
             })
+            console.log('list', list)
         })
-        console.log('entity :::: ',list)
         setEntity(list)
-
     }, [storeData])
+   
+    useEffect(() => {
+        // entityKey: "randomnode_1700552431484"
+        // propertyName: "zxczxc"
+        if(propertyInfo.isNewProperty){
+            const selectEntity = entity.filter(item => item.key === propertyInfo.entityKey)
+            const list = selectEntity[0]?.itemMenu.push({
+                key: `${propertyInfo.entityKey}`,
+                title: propertyInfo.propertyName,
+                type: 'item',
+                subMenu: []
+            })
+    
+            // const ssss = entity
+            // debugger
+            // setEntity(list)
+            console.log('entity ::' , entity)
+        }
+        
+    }, [propertyInfo])
 
     useEffect(() => {
         if (defaulExpandKey.length === 0 && activedRoute?.parentKey) {
@@ -166,12 +221,10 @@ const VerticalMenuContent = (props) => {
                 <div>
                     <div className='px-2 py-2 mt-1 mb-16 text-sm font-bold h-36 card-border card sm:px-1 md:px-2'>
                     {
-                        focusArea === 'model' && (
-                            <>
-                                <div>모델명 : {modelInfo.modelName}</div>
-                                <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>{modelInfo.modelDescription}</div>
-                            </>
-                        )
+                    <>
+                        <div>{ focusInfo.focusArea === 'model' ? '모델명' : '엔터티명'} : { focusInfo.focusName }</div>
+                        <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>{focusInfo.focusDescription}</div>
+                    </>
                     }
                     </div>
                 </div>

@@ -1,23 +1,25 @@
 import React, { useCallback, useState, useEffect, useMemo  } from 'react'
-
 import { Card } from 'components/ui'
 import ReactFlow, {
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
   addEdge,
-  useReactFlow,
+  // useNodes,
+  // useNodeId,
+  // useReactFlow,
   Panel,
   MiniMap, Controls, 
   Background,
   MarkerType,
   ConnectionMode,
-  ConnectionLineType
+  ConnectionLineType,
+  // useOnSelectionChange
 } from 'reactflow';
 import ConnectionLine from './ConnectionLine';
-import { Notification, toast, Button } from 'components/ui'
+import { Notification, toast } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
-import { setStoreData, setIsUndo, setIsRedo } from 'store/base/commonSlice'
+import { setStoreData, setIsUndo, setIsRedo, setFocusInfo } from 'store/base/commonSlice'
 import TextUpdaterNode from '../nodes/TextUpdaterNode';
 import useUndoRedo from '../../../utils/hooks/useUndoRedo.ts';
 import EventBus from "../../../utils/hooks/EventBus";
@@ -35,7 +37,8 @@ const TaskOverview = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
-    const { setViewport } = useReactFlow();
+    const [selectedNodes, setSelectedNodes] = useState([]);
+    const [selectedEdges, setSelectedEdges] = useState([]);
     const dispatch = useDispatch()
     const storeData = useSelector(
       (state) => state.base.common.storeData
@@ -51,11 +54,27 @@ const TaskOverview = () => {
     )
     const defaultEdgeOptions = {
       type: 'smoothstep',
+      // markerEnd: 'logo' ,
       markerEnd: { type: MarkerType.ArrowClosed },
       style: { strokeWidth: 2 },
       animated: edgeType
     };
 
+    const onNodeClick = (event, element) =>{
+      console.log('element', element)
+      const description = element.data.description
+      const text = element.data.label
+      dispatch(setFocusInfo({focusArea: 'entity', focusName: text, focusDescription: description}))
+    } ;
+
+    // useOnSelectionChange({
+    //   onChange: ({ nodes, edges }) => {
+    //     setSelectedNodes(nodes.map((node) => node.id)[0]);
+    //     setSelectedEdges(edges.map((edge) => edge.id));
+    //     console.log(selectedNodes)
+    //   },
+    // });
+    
     useEffect(() => {
       EventBus.on("SHOW-MSG", (msg) => {
         triggerMessage(msg)
@@ -91,9 +110,9 @@ const TaskOverview = () => {
     },[canUndo, canRedo])
 
     useEffect(()=> {
+      const getNewEntity = entityInfo
       if(entityInfo.isNewEntity){
-        const length = storeData.nodes ? storeData.nodes.length +1 : 1 || 1
-        onAdd(length)
+        onAdd(entityInfo)
       } 
     },[entityInfo])
     
@@ -126,11 +145,11 @@ const TaskOverview = () => {
       }
     }, [rfInstance]);
     
-    const onAdd = useCallback((length) => {
+    const onAdd = useCallback((data) => {
       const newNode = {
         id: getNodeId(), 
         type: 'textUpdater',
-        data: { label: `엔터티${length}`, id: getNodeId() },
+        data: { label: data.entityName, description: data.entityDescription, id: getNodeId() },
         position: {
           x: Math.random() * 1500,
           y: Math.random() * 390,
@@ -141,13 +160,13 @@ const TaskOverview = () => {
       setNodes((nds) =>
         nds.concat(newNode)
       );
+      // EventBus.emit("NEW-ENTITY-EVENT");
     }, [setNodes, takeSnapshot]);
 
     const onLoadUpdate =() => {
       if(modelInfo.isNewOpen){
         setNodes(storeData.nodes || []);
         setEdges(storeData.edges || []);
-        setViewport(storeData.viewport)
       }
     };
 
@@ -161,6 +180,12 @@ const TaskOverview = () => {
           return '#ff0072';
       }
     };
+
+    const FitViewOption = {
+      minZoom: 1,
+      maxZoom: 1,
+      duration: 500,
+    }
 
     const triggerMessage = (msg) => {
       toast.push(
@@ -192,6 +217,9 @@ const TaskOverview = () => {
               connectionMode={ConnectionMode.Loose}
               connectionLineComponent={ConnectionLine}
               fitView
+              fitViewOptions={FitViewOption}
+              onNodeClick={onNodeClick}
+
               >
                 <Background />
                 <Controls showInteractive={false} />

@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux'
 import classNames from 'classnames'
 
 import HomeHeaderItem from 'components/template/HomeHeaderItem'
-import { Card, Button, Notification, toast } from 'components/ui'
 
 const HeaderActionsStart = () => {
     return (

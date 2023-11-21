@@ -10,7 +10,7 @@
             }
         },
         "entityMenu": {
-            "entityMenu": "엔티티 영역",
+            "entityMenu": "엔터티 영역",
             "single": "Entity single menu item",
             "collapse": {
                 "collapse": "엔터티 제목111",

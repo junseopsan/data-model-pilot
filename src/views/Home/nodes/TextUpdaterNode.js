@@ -12,7 +12,6 @@ const TextUpdaterNode = ({ data, isConnectableStart, selected}) => {
     const getData = useSelector(
       (state) => state.base.common.storeData
     )
-    const handleStyle = { opacity: 0 };
 
     const onTitleChange = (e) => {
         setText(e.target.value);

@@ -8,6 +8,7 @@ import { Trans } from 'react-i18next'
 import { MenuItem, Tooltip } from 'components/ui'
 import { Link } from 'react-router-dom'
 import NewModelDialog from '../../views/Home/dialogs/NewModelDialog'
+import NewPropertyDialog from '../../views/Home/dialogs/NewPropertyDialog'
 import NewEntityDialog from '../../views/Home/dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../../views/Home/dialogs/AnotherNameSaveDialog'
 import EventBus from "../../utils/hooks/EventBus";
@@ -33,13 +34,13 @@ export const HomeHeaderItem = ({ className }) => {
         {index: 6, label: '비식별 관계선 선택', shortLabel: 'R2', isFavorite: false},
         {index: 7, label: '메모 추가', shortLabel: 'MD', isFavorite: false}
     ])
-    const locale = useSelector((state) => state.locale.currentLang)
 
     const dispatch = useDispatch()
+    const [IsPropertyDialogOpen, setIsPropertyDialogOpen] = useState(false)
+    const [selectEntity, setSelectEntity] = useState(false)
     const [IsEntityDialogOpen, setIsEntityDialogOpen] = useState(false)
     const [IsModelDialogOpen, setIsModelDialogOpen] = useState(false)
     const [IsSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
-    const [entityTitle, setEntityTitle] = useState("");
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
@@ -57,6 +58,16 @@ export const HomeHeaderItem = ({ className }) => {
         if(!exceptThings.includes(modelInfo.anotherSaveName)) exportJsonData(modelInfo.anotherSaveName)
     }, [modelInfo.anotherSaveName])
     
+    useEffect(() => {
+        EventBus.on("PROPERTY-OPEN-EVENT", (entity) => {
+            setIsPropertyDialogOpen(true)
+            setSelectEntity(entity)
+        });
+        return () => {
+          EventBus.off("PROPERTY-OPEN-EVENT");
+        };
+      }, []);
+
     const onToolBarSelect = (shortLabel) => {
         if(shortLabel === 'N') setIsModelDialogOpen(true)
         if(shortLabel === 'S') exportJsonData('dataModelPilot')
@@ -155,7 +166,7 @@ export const HomeHeaderItem = ({ className }) => {
      * 엔터티 추가
      */
     const onClickAddEntity = () =>{
-        if(validEntityData('pass')) dispatch(setEntityInfo({entityName:entityTitle, isNewEntity: true}))
+        if(validEntityData('pass')) setIsEntityDialogOpen(true)
     }
 
     /**
@@ -248,9 +259,9 @@ export const HomeHeaderItem = ({ className }) => {
         <>
             <div>
                 <NewEntityDialog data={{IsEntityDialogOpen}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
+                <NewPropertyDialog data=    {{IsPropertyDialogOpen, selectEntity}} onDialogClose={() => setIsPropertyDialogOpen(false)}  />
                 <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
                 <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
-                <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
             </div>
             <Dropdown renderTitle={selectedHomeMenu} placement="bottom-end">
                 {toolbarHomeList.map((toolbar, key) => (

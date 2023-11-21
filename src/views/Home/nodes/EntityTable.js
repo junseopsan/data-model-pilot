@@ -14,13 +14,14 @@ function EntityTable() {
     const columns = useMemo(
         () => [
             { header: 'Type', accessorKey: 'type', width: 50,},
-            { header: 'EntityContent', accessorKey: 'label' },
+            { header: 'EntityContent', accessorKey: 'entityContent' },
         ],
         []
     )
     const [data, setData] = useState(() => [
       {
-        "type": "#",
+        "id": "1",
+        "type": "###",
         "entityContent": "text"
       },
     ])

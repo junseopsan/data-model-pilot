@@ -5,11 +5,21 @@ export const initialState = {
     edgeType: '',
     isUndo: true,
     isRedo: true,
-    focusArea: '',
     undoRedoBtn:'',
+    propertyInfo:{
+        propertyName: '',
+        entityKey: '',
+        isNewProperty: false,
+    },
     entityInfo:{
         entityName: '',
+        entityDescription: '',
         isNewEntity: false,
+    },
+    focusInfo:{
+        focusArea: '',
+        focusName: '',
+        focusDescription: '',
     },
     modelInfo:{
         modelName: '',
@@ -19,19 +29,6 @@ export const initialState = {
         isNewOpen: false
     },
     storeData: [],
-    storeProperties: [
-        {
-            id:'',
-            contents:[
-                {
-                    number: '',
-                    typeName: '',
-                    discrimination: '',
-                    isNecessary: ''
-                }
-            ]
-        }
-    ],
 }
 
 export const commonSlice = createSlice({
@@ -50,8 +47,8 @@ export const commonSlice = createSlice({
         setIsRedo: (state, action) => {
             state.isRedo = action.payload
         },
-        setFocusArea: (state, action) => {
-            state.focusArea = action.payload
+        setFocusInfo: (state, action) => {
+            state.focusInfo = action.payload
         },
         setModelInfo: (state, action) => {
             state.modelInfo = action.payload
@@ -59,8 +56,8 @@ export const commonSlice = createSlice({
         setEntityInfo: (state, action) => {
             state.entityInfo = action.payload
         },
-        setProperties: (state, action) => {
-            state.storeProperties = action.payload
+        setPropertyInfo: (state, action) => {
+            state.propertyInfo = action.payload
         },
         setStoreData: (state, action) => {
             state.storeData = action.payload
@@ -68,6 +65,6 @@ export const commonSlice = createSlice({
     },
 })
 
-export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusArea, setModelInfo, setEntityInfo, setProperties, setStoreData  } = commonSlice.actions
+export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusInfo, setModelInfo, setEntityInfo, setPropertyInfo, setStoreData  } = commonSlice.actions
 
 export default commonSlice.reducer

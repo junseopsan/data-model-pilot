@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react'
-// import {  useSelector } from 'react-redux'
-import Toolbar from './components/Toolbar'
-import Subject from './components/Subject'
-import DetailInfo from './components/DetailInfo'
 import TaskOverview from './components/TaskOverview'
-import Entity from './components/Entity'
-import Property from './components/Property'
 import './index.css'
 
 const Home = () => {
