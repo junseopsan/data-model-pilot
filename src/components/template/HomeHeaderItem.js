@@ -85,6 +85,7 @@ export const HomeHeaderItem = ({ className }) => {
       }, []);
 
     const onToolBarSelect = (shortLabel) => {
+        console.log('toolbar', shortLabel);
         if(shortLabel === 'N') setIsModelDialogOpen(true)
         if(shortLabel === 'S') exportJsonData('dataModelPilot')
         if(shortLabel === 'SA') exportTheOhterJsonData()
