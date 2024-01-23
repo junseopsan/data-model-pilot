@@ -4,7 +4,6 @@ import { Button, Dialog, Input } from 'components/ui'
 import { useDispatch } from 'react-redux'
 import { setPropertyInfo } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
-import { useSelector } from 'react-redux'
 
 /**
  * 엔터티 프로퍼티 추가 팝업
@@ -28,7 +27,6 @@ const NewPropertyDialog = ({ data, onDialogClose}) => {
             setText('')
             onDialogClose()
         }
-
     }
     const closeDialog = () => {
         setText('')
@@ -42,7 +40,7 @@ const NewPropertyDialog = ({ data, onDialogClose}) => {
                 onRequestClose={onDialogClose}
                 bodyOpenClassName="overflow-hidden"
             >
-                <h5 className="mb-4">{data.selectEntity.title} 속성 추가</h5>
+                <h5 className="mb-4">{data.selectEntity.title} 엔터티 속성 추가</h5>
                 <div>
                     <Input placeholder="속성 명을 입력해주세요." onChange={onChange} value={text} />
                 </div>

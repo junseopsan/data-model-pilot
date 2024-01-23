@@ -29,6 +29,7 @@ export const initialState = {
         isNewOpen: false
     },
     storeData: [],
+    itemMenu: [],
 }
 
 export const commonSlice = createSlice({
@@ -62,9 +63,12 @@ export const commonSlice = createSlice({
         setStoreData: (state, action) => {
             state.storeData = action.payload
         },
+        setItemMenu: (state, action) => {
+            state.itemMenu = action.payload
+        },
     },
 })
 
-export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusInfo, setModelInfo, setEntityInfo, setPropertyInfo, setStoreData  } = commonSlice.actions
+export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusInfo, setModelInfo, setEntityInfo, setPropertyInfo, setStoreData, setItemMenu } = commonSlice.actions
 
 export default commonSlice.reducer

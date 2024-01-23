@@ -1,65 +1,85 @@
 import React, { useState, useEffect } from 'react'
 import { Menu, Dropdown } from 'components/ui'
 import { Trans } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { TiPlus } from "react-icons/ti";
 import EventBus from "../../../utils/hooks/EventBus";
+import { setItemMenu, setStoreData } from 'store/base/commonSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
 const { MenuItem, MenuCollapse } = Menu
 
+// 엔터티 영역 첫번째 Node
 const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
-    const [subMenu, setSubMenu] = useState([]);
+    const dispatch = useDispatch()
     const [isData, setIsData] = useState(false);
+    // const [itemMenu, setItemMenu] = useState([]);
+    const propertyInfo = useSelector(
+        (state) => state.base.common.propertyInfo
+    )
+    const itemMenu = useSelector(
+        (state) => state.base.common.itemMenu
+    )
+    const entityInfo = useSelector(
+        (state) => state.base.common.entityInfo
+    )
     const storeData = useSelector(
         (state) => state.base.common.storeData
     )
-                     
-    const openPropertyDialog = (entity) => {
-        console.log('entityTitle', entity)
+    const openPropertyDialog = (event, entity) => {
+        event.stopPropagation()
         EventBus.emit("PROPERTY-OPEN-EVENT", entity);
     }
+    const openEntityDialog = (event, entity) => {
+        event.stopPropagation()
+        EventBus.emit("ENTITY-UPDATE-EVENT", entity);
+    }
+    useEffect(() => {
+        nav.itemMenu?.length > 0 ? setIsData(true) : setIsData(false)
+    }, [nav])
     
     useEffect(() => {
-        let list = []
-        storeData.nodes?.forEach(item => {
-            list.push({
-                key: item.id,
-                title: item.data.label,
-                description: item.data.description,
-                type: 'item',
-                subMenu: []
-            })
-        })
-        list.length > 0 ? setIsData(true) : setIsData(false)
-        setSubMenu(list)
-    
-    }, [storeData])
+        if(propertyInfo.isNewProperty){
+            if(nav.key === propertyInfo.entityKey){
+                let itemMenus = []
+                storeData.nodes?.forEach((item, key) => {
+                    if(item.id === propertyInfo.entityKey){
+                        itemMenus.push({   
+                            id: item.id,
+                            key: `${propertyInfo.entityKey}_${propertyInfo.propertyName}`,
+                            title: propertyInfo.propertyName,
+                            type: 'item',
+                            subMenu: []
+                        })
+                    }
+                })
+                dispatch(setItemMenu(itemMenu.concat(itemMenus)))
+            }
+        }
+    }, [propertyInfo])
     
     return (
-        // 엔터티  
+        // 엔터티 영역 
         <>
             <MenuCollapse
                 label={
                     <>
-                    <div className="flex flex-row items-center justify-center justify-between w-[65px]">
-                        <div>
-                            <Trans
-                                defaults={`${nav.title}`}
-                            /> 
+                        <div className="flex flex-row items-center justify-between w-[65px]">
+                            <div onClick={(event) => { openEntityDialog(event, nav)}} className='relative transition duration-300 ease-in-out z-index: 99 hover:text-red-700 hover:font-bold'>
+                                <Trans defaults={`${nav.title}`} />
+                            </div>
+                            <div onClick={(event) => { openPropertyDialog(event, nav)}} className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'>
+                                <TiPlus /> 
+                            </div>
                         </div>
-                        <div onClick={() => { openPropertyDialog(nav)}} className='relative transition duration-300 ease-in-out z-index: 10 hover:text-red-700 '>
-                            <TiPlus />
-                        </div>
-                    </div>
                     </>
                 }
                 key={nav.key}
                 eventKey={nav.key}
-                expanded={false}
+                expanded={true}
                 isData={isData}
                 className="mb-2"
             >
-                {nav.itemMenu.map((itemMenu) => (
+                {nav.itemMenu?.map((itemMenu) => (
                     <MenuItem eventKey={itemMenu.key} key={itemMenu.key} >
                         <span>
                             <Trans
@@ -73,9 +93,9 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     )
 }
 
-const CollapsedItem = ({ nav, onLinkClick, userAuthority, direction }) => {
+const CollapsedItem = ({ entity, onLinkClick, userAuthority, direction }) => {
     const menuItem = (
-        <MenuItem key={nav.key} eventKey={nav.key} className="mb-2">
+        <MenuItem key={entity.key} eventKey={entity.key} className="mb-2">
         </MenuItem>
     )
     const [subMenu, setSubMenu] = useState([]);
@@ -111,12 +131,14 @@ const CollapsedItem = ({ nav, onLinkClick, userAuthority, direction }) => {
                     <Dropdown.Item eventKey={subNav.key} key={subNav.key}>
                         {subNav.title ? (
                             <span>
+                                ㅌㅌㅌㅌ
                                 <Trans
                                     defaults={`${subNav.title}`}
                                 />
                             </span>
                         ) : (
                             <span>
+                                ㅋㅋㅋㅋ
                                 <Trans
                                     defaults={`${subNav.title}`}
                                 />
@@ -131,7 +153,6 @@ const CollapsedItem = ({ nav, onLinkClick, userAuthority, direction }) => {
 }
 
 const VerticalCollapsedMenuItem = ({ sideCollapsed, ...rest }) => {
-    const [isPropertyDialogOpen, setIsPropertyDialogOpen] = useState(false)
     return sideCollapsed ? (
         <>
             <CollapsedItem {...rest} />

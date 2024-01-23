@@ -3,6 +3,7 @@ import { Button, Dialog, Input } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
 import { setEntityInfo, setStoreData } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
+import cloneDeep from 'lodash/cloneDeep'
 
 /**
  * New Node Dialog
@@ -13,7 +14,11 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
     const [description, setDescription] = useState("");
+    const [entityLength, setEntityLength] = useState(0);
 
+    const storeData = useSelector(
+        (state) => state.base.common.storeData
+    )
     const onChange = (e) => {
         setText(e.target.value);
     };
@@ -25,9 +30,17 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
         else if(description === '') EventBus.emit("SHOW-MSG", '엔터티 정의를 입력해주세요.'); 
         else return true
     }
+    const getNodeId = () => `randomnode_${+new Date()}`;
     const okayEntityName = () =>{
         if(entityValidation()){
-            dispatch(setEntityInfo({entityName:text, entityDescription:description, isNewEntity: true}))
+            if(!data.isEntityUpdate) dispatch(setEntityInfo({entityName:text, entityDescription:description, isNewEntity: true, entityId: getNodeId()}))
+            else{
+                const clonedNode = cloneDeep(storeData);
+                const changeNode = clonedNode.nodes.filter(item=> item.id === data.selectEntity.key)
+                changeNode[0].data.label = text
+                changeNode[0].data.description = description
+                EventBus.emit("CHANGE-NODES", changeNode[0]);
+            }
             setText('')
             setDescription('')
             onDialogClose()
@@ -36,16 +49,20 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
     const closeDialog = () => {
         onDialogClose()
     }
+    useEffect(() => {
+        setText(data.selectEntity.title)
+        setDescription(data.selectEntity.description)
+    }, [data])
     
     return (
         <div>
             <Dialog
-                isOpen={data.IsEntityDialogOpen}
+                isOpen={data.isEntityDialogOpen}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}
                 bodyOpenClassName="overflow-hidden"
             >
-                <h5 className="mb-4">새 엔터티 작성</h5>
+                <h5 className="mb-4">{data.isEntityUpdate ? '엔터티 수정' : '새 엔터티 작성'}</h5>
                 <div>
                     <Input placeholder="엔터티 명을 입력해주세요." onChange={onChange} value={text} />
                 </div>

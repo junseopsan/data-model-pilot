@@ -6,7 +6,7 @@ const Subject = () => {
         <Card className="h-full">
             <div className="flex justify-between mb-6 h-[120px]">
                 <div>
-                <h4>주제 영역</h4>
+                    <h4>주제 영역</h4>
                 </div>
                 <div></div>
             </div>

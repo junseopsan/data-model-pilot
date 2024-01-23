@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo  } from 'react'
+import React, { useCallback, useState, useEffect, useMemo, useReducer  } from 'react'
 import { Card } from 'components/ui'
 import ReactFlow, {
   ReactFlowProvider,
@@ -28,7 +28,6 @@ import '../../../assets/styles/reactFlow/text-updater-node.css'
 
 // we define the nodeTypes outside of the component to prevent re-renderings
 // you could also use useMemo inside the component
-const getNodeId = () => `randomnode_${+new Date()}`;
 const proOptions = { account: 'paid-pro', hideAttribution: true };
 
 const TaskOverview = () => {
@@ -37,8 +36,9 @@ const TaskOverview = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
-    const [selectedNodes, setSelectedNodes] = useState([]);
+    const [updateNode, setUpdateNode] = useState(null);
     const [selectedEdges, setSelectedEdges] = useState([]);
+    
     const dispatch = useDispatch()
     const storeData = useSelector(
       (state) => state.base.common.storeData
@@ -67,14 +67,6 @@ const TaskOverview = () => {
       dispatch(setFocusInfo({focusArea: 'entity', focusName: text, focusDescription: description}))
     } ;
 
-    // useOnSelectionChange({
-    //   onChange: ({ nodes, edges }) => {
-    //     setSelectedNodes(nodes.map((node) => node.id)[0]);
-    //     setSelectedEdges(edges.map((edge) => edge.id));
-    //     console.log(selectedNodes)
-    //   },
-    // });
-    
     useEffect(() => {
       EventBus.on("SHOW-MSG", (msg) => {
         triggerMessage(msg)
@@ -103,6 +95,29 @@ const TaskOverview = () => {
         EventBus.off("REDO-EVENT");
       };
     }, []);
+    
+    useEffect(() => {
+      EventBus.on("FLOW-SAVE", () => {
+        onSave()
+      });
+      return () => {
+        EventBus.off("FLOW-SAVE");
+      };
+    }, []);
+
+    useEffect(() => {
+      EventBus.on("CHANGE-NODES", (data) => {
+        console.log(data)
+        let flow = rfInstance?.toObject();
+        if(flow && flow.nodes.length > 0){
+          const getNodes = flow.nodes.map(item => item.id === data.id ? data : item)
+          setNodes(getNodes);
+        }
+      });
+      return () => {
+        EventBus.off("CHANGE-NODES");
+      };
+    }, [rfInstance]);
 
     useEffect(()=> {
       dispatch(setIsUndo(canUndo))
@@ -110,10 +125,7 @@ const TaskOverview = () => {
     },[canUndo, canRedo])
 
     useEffect(()=> {
-      const getNewEntity = entityInfo
-      if(entityInfo.isNewEntity){
-        onAdd(entityInfo)
-      } 
+      if(entityInfo.isNewEntity) onAdd(entityInfo)
     },[entityInfo])
     
     useEffect(()=> {
@@ -124,44 +136,14 @@ const TaskOverview = () => {
     useEffect(()=>{
       onLoadUpdate()
     },[modelInfo])
+    
+    useEffect(()=>{
+      // console.log(storeData)
+    },[storeData])
 
     useEffect(() => {
       onSave()
-    },[nodes, edges ])
-    
-    const onConnect = useCallback(
-      (connection) => {
-        takeSnapshot();
-        // 👇 make adding edges undoable
-        setEdges((edges) => addEdge(connection, edges));
-      },
-      [setEdges, takeSnapshot]
-    );
-
-    const onSave = useCallback(() => {
-      if (rfInstance) {
-        const flow = rfInstance.toObject();
-        dispatch(setStoreData(flow))
-      }
-    }, [rfInstance]);
-    
-    const onAdd = useCallback((data) => {
-      const newNode = {
-        id: getNodeId(), 
-        type: 'textUpdater',
-        data: { label: data.entityName, description: data.entityDescription, id: getNodeId() },
-        position: {
-          x: Math.random() * 1500,
-          y: Math.random() * 390,
-        },
-        style: { width: 220, height: 200, },
-      };
-      takeSnapshot();
-      setNodes((nds) =>
-        nds.concat(newNode)
-      );
-      // EventBus.emit("NEW-ENTITY-EVENT");
-    }, [setNodes, takeSnapshot]);
+    },[nodes, edges])
 
     const onLoadUpdate =() => {
       if(modelInfo.isNewOpen){
@@ -169,6 +151,42 @@ const TaskOverview = () => {
         setEdges(storeData.edges || []);
       }
     };
+
+    // 👇 make adding edges undoable
+    const onConnect = useCallback(
+      (connection) => {
+        takeSnapshot();
+        setEdges((edges) => addEdge(connection, edges));
+      },
+      [setEdges, takeSnapshot]
+    );
+
+    const onSave = useCallback((type) => {
+      if (rfInstance) {
+        const flow = rfInstance.toObject();
+        console.log('flow ::', flow)
+        dispatch(setStoreData(flow))
+      }
+      
+    }, [rfInstance]);
+    
+    const onAdd = useCallback((data) => {
+      const newNode = {
+        id: data.entityId, 
+        type: 'textUpdater',
+        data: { label: data.entityName, description: data.entityDescription, id: data.entityId },
+        itemMenu:[],
+        position: {
+          x: Math.random() * 1500,
+          y: Math.random() * 390,
+        },
+        style: { width: 220, height: 200, },
+      };
+      takeSnapshot();
+      setNodes((nds) => nds.concat(newNode))
+      },
+      [setNodes, takeSnapshot]
+    );
 
     const nodeColor = (node) => {
       switch (node.type) {
@@ -203,7 +221,6 @@ const TaskOverview = () => {
            <ReactFlow 
               nodes={nodes}
               edges={edges}
-              style={{ backgroundColor: '#1a202c' }}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
@@ -212,32 +229,36 @@ const TaskOverview = () => {
               proOptions={proOptions}
               nodeTypes={nodeTypes}
               defaultEdgeOptions={defaultEdgeOptions}
-
+              
               connectionLineType={ConnectionLineType.SmoothStep}
               connectionMode={ConnectionMode.Loose}
               connectionLineComponent={ConnectionLine}
               fitView
               fitViewOptions={FitViewOption}
               onNodeClick={onNodeClick}
+              
+              style={{ backgroundColor: '#1a202c' }}
 
               >
                 <Background />
                 <Controls showInteractive={false} />
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
-                <Panel position="top-right">
-              </Panel>
-              <Panel position="bottom-center">
-              <div hidden>
-                <button id="undo" disabled={canUndo} onClick={undo} />
-                <button id="redo" disabled={canRedo} onClick={redo}/>
-              </div>
-            </Panel>
+                <Panel position="bottom-center">
+                  <div hidden>
+                    <button id="undo" disabled={canUndo} onClick={undo} />
+                    <button id="redo" disabled={canRedo} onClick={redo}/>
+                  </div>
+                </Panel>
             </ReactFlow>
         </Card>
     )
 }
 
 function ReactFlowWrapper(props) {
+  const reRender = () => {
+    // calling the forceUpdate() method
+    this.forceUpdate();
+  };
   return (
     <ReactFlowProvider>
       <TaskOverview {...props} />

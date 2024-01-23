@@ -38,7 +38,8 @@ export const HomeHeaderItem = ({ className }) => {
     const dispatch = useDispatch()
     const [IsPropertyDialogOpen, setIsPropertyDialogOpen] = useState(false)
     const [selectEntity, setSelectEntity] = useState(false)
-    const [IsEntityDialogOpen, setIsEntityDialogOpen] = useState(false)
+    const [isEntityUpdate, setIsEntityUpdate] = useState(false)
+    const [isEntityDialogOpen, setIsEntityDialogOpen] = useState(false)
     const [IsModelDialogOpen, setIsModelDialogOpen] = useState(false)
     const [IsSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
     const [, updateState] = React.useState();
@@ -65,6 +66,21 @@ export const HomeHeaderItem = ({ className }) => {
         });
         return () => {
           EventBus.off("PROPERTY-OPEN-EVENT");
+        };
+      }, []);
+    
+      useEffect(() => {
+        EventBus.on("ENTITY-UPDATE-EVENT", (entity) => {
+            console.log(entity)
+            setIsEntityUpdate(true)
+            setSelectEntity(entity)
+            setTimeout(()=> {
+                console.log(isEntityUpdate)
+                setIsEntityDialogOpen(true)
+            },100)
+        });
+        return () => {
+          EventBus.off("ENTITY-UPDATE-EVENT");
         };
       }, []);
 
@@ -127,25 +143,27 @@ export const HomeHeaderItem = ({ className }) => {
      * 저장
      */
     const exportJsonData = (name) => {
-        if(validEntityData('none')){
-            // create file in browser
-            const fileName = name;
-            const json = JSON.stringify({modelTitle:modelInfo.modelName, ...storeData}, null, 2);
-            const blob = new Blob([json], { type: "application/json" });
-            const href = URL.createObjectURL(blob);
-    
-            // create "a" HTLM element with href to file
-            const link = document.createElement("a");
-            link.href = href;
-            link.download = fileName + ".json";
-            document.body.appendChild(link);
-            link.click();
-    
-            // clean up "a" element & remove ObjectURL
-            document.body.removeChild(link);
-            URL.revokeObjectURL(href);
-        }
-
+        EventBus.emit("FLOW-SAVE");
+        setTimeout(()=> {
+            if(validEntityData('none')){
+                // create file in browser
+                const fileName = name;
+                const json = JSON.stringify({modelTitle:modelInfo.modelName, ...storeData}, null, 2);
+                const blob = new Blob([json], { type: "application/json" });
+                const href = URL.createObjectURL(blob);
+        
+                // create "a" HTLM element with href to file
+                const link = document.createElement("a");
+                link.href = href;
+                link.download = fileName + ".json";
+                document.body.appendChild(link);
+                link.click();
+        
+                // clean up "a" element & remove ObjectURL
+                document.body.removeChild(link);
+                URL.revokeObjectURL(href);
+            }
+        },2000)
     };  
     /**
      * 열기
@@ -166,7 +184,10 @@ export const HomeHeaderItem = ({ className }) => {
      * 엔터티 추가
      */
     const onClickAddEntity = () =>{
-        if(validEntityData('pass')) setIsEntityDialogOpen(true)
+        if(validEntityData('pass')){
+            setIsEntityUpdate(false)
+            setIsEntityDialogOpen(true)
+        } 
     }
 
     /**
@@ -258,8 +279,8 @@ export const HomeHeaderItem = ({ className }) => {
     return (
         <>
             <div>
-                <NewEntityDialog data={{IsEntityDialogOpen}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
-                <NewPropertyDialog data=    {{IsPropertyDialogOpen, selectEntity}} onDialogClose={() => setIsPropertyDialogOpen(false)}  />
+                <NewEntityDialog data={{isEntityDialogOpen, selectEntity, isEntityUpdate}} onDialogClose={() => setIsEntityDialogOpen(false)}  />
+                <NewPropertyDialog data={{IsPropertyDialogOpen, selectEntity}} onDialogClose={() => setIsPropertyDialogOpen(false)}  />
                 <NewModelDialog data={{IsModelDialogOpen}} onDialogClose={() => setIsModelDialogOpen(false)}  />
                 <AnotherNameSaveDialog data={{IsSaveDialogOpen}} onDialogClose={() => setIsSaveDialogOpen(false)}  />
             </div>

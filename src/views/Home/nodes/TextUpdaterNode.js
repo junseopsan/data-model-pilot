@@ -1,43 +1,60 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { useCallback, memo, useEffect, useState } from 'react'
 import { Handle, Position, NodeResizer } from 'reactflow';
 import EntityTable from './EntityTable'
 import { useDispatch, useSelector } from 'react-redux'
 import { setStoreData, setUpdateData } from 'store/base/commonSlice'
-import cloneDeep from 'lodash/cloneDeep'
+import EventBus from "../../../utils/hooks/EventBus";
 
-const TextUpdaterNode = ({ data, isConnectableStart, selected}) => {
-    const dispatch = useDispatch()
+const TextUpdaterNode = ({ data, isConnectableStart, isConnectable, selected}) => {
     const [text, setText] = useState("");
-    const [nodeId, setNodeId] = useState("");
-    const getData = useSelector(
+    const storeData = useSelector(
       (state) => state.base.common.storeData
     )
-
-    const onTitleChange = (e) => {
-        setText(e.target.value);
-        const clonedNode = cloneDeep(getData);
-        clonedNode.nodes.filter(item=> item.id === nodeId)[0].data.label = e.target.value
-        dispatch(setStoreData(clonedNode))
-    };
-    
+    const [, updateState] = useState();
+    // const forceUpdate = useCallback(()=> updateState({}), []) 
     useEffect(()=>{
       setText(data.label)
-      setNodeId(data.id)
     }, [])
+
+    function useForceUpdate(){
+      const [value, setValue] = useState(0); // integer state
+      return () => setValue(value => value + 1); // update state to force render
+      // A function that increment 👆🏻 the previous state like here 
+      // is better than directly setting `setValue(value + 1)`
+    }
+
+    const forceUpdate = useForceUpdate();
+    useEffect(()=>{
+
+      const list = storeData.nodes.map(item => item.data.label)
+      // list.forEach(item => {
+      //   console.log(item)
+      // });
+      // debugger
+      forceUpdate()
+    }, [data])
 
   return (
     <div className="text-updater-node">
       <NodeResizer color="#ff0071" isVisible={selected} minWidth={100} minHeight={30} />
       <div className="entityTable">
-        <label htmlFor="text">
-            <input id="title" className="updater-title" name="title" value={text} onChange={onTitleChange} />
+        <label className="updater-title" htmlFor="text">
+          {text}
         </label>
         <EntityTable />
       </div>
+      <Handle id="top_left" isConnectableStart={true} position={Position.Top} style={{left: 20}} type="source"/>
       <Handle id="top"  isConnectableStart={true} position={Position.Top} type="source" />
+      <Handle id="top_right" isConnectableStart={true} position={Position.Top} style={{left: 200}} type="source"/>
+      <Handle id="right_top"  isConnectableStart={true} position={Position.Right} style={{top: 12}} type="source" />
       <Handle id="right"  isConnectableStart={true} position={Position.Right} type="source" />
-      <Handle id="bottom"  isConnectableStart={true} position={Position.Bottom} type="source" />
+      <Handle id="right_bottom"  isConnectableStart={true} position={Position.Right} style={{top: 62}} type="source" />
+      <Handle id="left_top"  isConnectableStart={true} position={Position.Left} style={{top: 12}} type="source" />
       <Handle id="left"  isConnectableStart={true} position={Position.Left} type="source" />
+      <Handle id="left_bottom"  isConnectableStart={true} position={Position.Left} style={{top: 62}} type="source" />
+      <Handle id="bottom_left" isConnectableStart={true} position={Position.Bottom} style={{left: 20}} type="source"/>
+      <Handle id="bottom"  isConnectableStart={true} position={Position.Bottom} type="source" />
+      <Handle id="bottom_right" isConnectableStart={true} position={Position.Bottom} style={{left: 200}} type="source"/>
     </div>
   );
 }

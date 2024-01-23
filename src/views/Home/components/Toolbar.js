@@ -107,7 +107,6 @@ const Toolbar = () => {
             dispatch(setModelInfo({...modelInfo, modelName: result.modelTitle, isNewModel: true, isNewOpen: true}))
             delete result.modelTitle
             dispatch(setStoreData(result))
-            // dispatch(setModelInfo({...modelInfo, isNewModel: false, isNewOpen: false}))
          })
     }
 

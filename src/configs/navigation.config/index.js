@@ -37,18 +37,18 @@ const navigationConfig = [
                 title: '엔터티',
                 type: 'collapse',
                 subMenu: [
-                    {
-                        key: 'entityMenu1',
-                        title: 'Entity Menu item 1',
-                        type: 'item',
-                        subMenu: [],
-                    },
-                    {
-                        key: 'entityMenu2',
-                        title: 'Entity Menu item 2',
-                        type: 'item',
-                        subMenu: [],
-                    },
+                    // {
+                    //     key: 'entityMenu1',
+                    //     title: 'Entity Menu item 1',
+                    //     type: 'item',
+                    //     subMenu: [],
+                    // },
+                    // {
+                    //     key: 'entityMenu2',
+                    //     title: 'Entity Menu item 2',
+                    //     type: 'item',
+                    //     subMenu: [],
+                    // },
                 ],
             },
         ],
