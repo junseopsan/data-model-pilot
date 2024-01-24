@@ -7,8 +7,9 @@ import SideNav from 'components/template/SideNav'
 import View from 'views'
 import { useSelector } from 'react-redux'
 import classNames from 'classnames'
-
+import { useDispatch } from 'react-redux'
 import HomeHeaderItem from 'components/template/HomeHeaderItem'
+import { setStoreData, setModelInfo, setFocusInfo } from 'store/base/commonSlice'
 
 const HeaderActionsStart = () => {
     return (
@@ -29,12 +30,17 @@ const HeaderActionsEnd = () => {
 }
 
 const HeaderActionsMiddle = () => {
+    const dispatch = useDispatch()
     const modelInfo = useSelector(
         (state) => state.base.common.modelInfo
     )
+    const focusModelInfo = () =>{
+        dispatch(setFocusInfo({focusArea: 'model', focusName: modelInfo.modelName, focusDescription: modelInfo.modelDescription}))
+    }
+
     return (
         <>
-            <div className={classNames('titleBox')}>
+            <div className={classNames('titleBox cursor-pointer')} onClick={focusModelInfo}>
                 {modelInfo.modelName}
             </div>
         </>
