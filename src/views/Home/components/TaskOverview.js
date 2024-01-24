@@ -61,7 +61,6 @@ const TaskOverview = () => {
     };
 
     const onNodeClick = (event, element) =>{
-      console.log('element', element)
       const description = element.data.description
       const text = element.data.label
       dispatch(setFocusInfo({focusArea: 'entity', focusName: text, focusDescription: description}))
@@ -187,6 +186,7 @@ const TaskOverview = () => {
       },
       [setNodes, takeSnapshot]
     );
+    
 
     const nodeColor = (node) => {
       switch (node.type) {
@@ -240,6 +240,7 @@ const TaskOverview = () => {
               style={{ backgroundColor: '#1a202c' }}
 
               >
+                
                 <Background />
                 <Controls showInteractive={false} />
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />

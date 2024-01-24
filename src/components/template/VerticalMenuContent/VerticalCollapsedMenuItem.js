@@ -3,7 +3,7 @@ import { Menu, Dropdown } from 'components/ui'
 import { Trans } from 'react-i18next'
 import { TiPlus } from "react-icons/ti";
 import EventBus from "../../../utils/hooks/EventBus";
-import { setItemMenu, setStoreData } from 'store/base/commonSlice'
+import { setItemMenu, setFocusInfo } from 'store/base/commonSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 const { MenuItem, MenuCollapse } = Menu
@@ -33,6 +33,14 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
         event.stopPropagation()
         EventBus.emit("ENTITY-UPDATE-EVENT", entity);
     }
+    const onMenuItem = (item) => {
+        dispatch(setFocusInfo({
+            focusArea: 'property',
+            focusName: item.title,
+            focusDiscription: ''
+        }))
+    }
+
     useEffect(() => {
         nav.itemMenu?.length > 0 ? setIsData(true) : setIsData(false)
     }, [nav])
@@ -79,8 +87,8 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 isData={isData}
                 className="mb-2"
             >
-                {nav.itemMenu?.map((itemMenu) => (
-                    <MenuItem eventKey={itemMenu.key} key={itemMenu.key} >
+                {nav.itemMenu?.map((itemMenu, i) => (
+                    <MenuItem eventKey={itemMenu.key} key={i} onClick={() => onMenuItem(itemMenu)}>
                         <span>
                             <Trans
                                 defaults={`${itemMenu.title}`}

@@ -18,7 +18,7 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
 
     const storeData = useSelector(
         (state) => state.base.common.storeData
-    )
+    );
     const onChange = (e) => {
         setText(e.target.value);
     };

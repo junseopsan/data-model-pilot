@@ -6,11 +6,15 @@ import {
     getPaginationRowModel,
     flexRender,
   } from '@tanstack/react-table'
-import { Table, Input } from 'components/ui'
+import { Table, Input } from 'components/ui';
+import { useSelector } from 'react-redux'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-function EntityTable() {
+function EntityTable(props) {
+    const { entityId } = props;
+    const { itemMenu } = useSelector((state) => state.base.common);
+
     const columns = useMemo(
         () => [
             { header: 'Type', accessorKey: 'type', width: 50,},
@@ -33,10 +37,17 @@ function EntityTable() {
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     })
+
+    const generatorDom = () => {
+        return itemMenu.filter(item => item.id === entityId).map((item, i) => (
+            <div key={i}>{item.title}</div>
+        ))
+    }
     
     return (
         <>
-            <Table compact>
+            {generatorDom()}
+            {/* <Table compact>
                 <TBody>
                     {table.getRowModel().rows.map((row) => {
                         return (
@@ -55,7 +66,7 @@ function EntityTable() {
                         )
                     })}
                 </TBody>
-            </Table>
+            </Table> */}
         </>
     )
 }

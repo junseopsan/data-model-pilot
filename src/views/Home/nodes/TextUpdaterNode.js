@@ -5,34 +5,35 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setStoreData, setUpdateData } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
 
-const TextUpdaterNode = ({ data, isConnectableStart, isConnectable, selected}) => {
+const TextUpdaterNode = (props) => {
+    const { data, selected } = props;
     const [text, setText] = useState("");
-    const storeData = useSelector(
-      (state) => state.base.common.storeData
-    )
-    const [, updateState] = useState();
+    // const storeData = useSelector(
+    //   (state) => state.base.common.storeData
+    // )
+    // const [, updateState] = useState();
     // const forceUpdate = useCallback(()=> updateState({}), []) 
     useEffect(()=>{
       setText(data.label)
-    }, [])
-
-    function useForceUpdate(){
-      const [value, setValue] = useState(0); // integer state
-      return () => setValue(value => value + 1); // update state to force render
-      // A function that increment 👆🏻 the previous state like here 
-      // is better than directly setting `setValue(value + 1)`
-    }
-
-    const forceUpdate = useForceUpdate();
-    useEffect(()=>{
-
-      const list = storeData.nodes.map(item => item.data.label)
-      // list.forEach(item => {
-      //   console.log(item)
-      // });
-      // debugger
-      forceUpdate()
     }, [data])
+
+    // function useForceUpdate(){
+    //   const [value, setValue] = useState(0); // integer state
+    //   return () => setValue(value => value + 1); // update state to force render
+    //   // A function that increment 👆🏻 the previous state like here 
+    //   // is better than directly setting `setValue(value + 1)`
+    // }
+
+    // const forceUpdate = useForceUpdate();
+    // useEffect(()=>{
+
+    //   const list = storeData.nodes.map(item => item.data.label)
+    //   // list.forEach(item => {
+    //   //   console.log(item)
+    //   // });
+    //   // debugger
+    //   forceUpdate()
+    // }, [data])
 
   return (
     <div className="text-updater-node">
@@ -41,7 +42,7 @@ const TextUpdaterNode = ({ data, isConnectableStart, isConnectable, selected}) =
         <label className="updater-title" htmlFor="text">
           {text}
         </label>
-        <EntityTable />
+        <EntityTable entityId={data.id} />
       </div>
       <Handle id="top_left" isConnectableStart={true} position={Position.Top} style={{left: 20}} type="source"/>
       <Handle id="top"  isConnectableStart={true} position={Position.Top} type="source" />
@@ -59,4 +60,4 @@ const TextUpdaterNode = ({ data, isConnectableStart, isConnectable, selected}) =
   );
 }
 
-export default memo(TextUpdaterNode);
+export default TextUpdaterNode;

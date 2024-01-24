@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Menu } from 'components/ui'
+import { Menu, Checkbox } from 'components/ui'
 import { AuthorityCheck } from 'components/shared'
 import VerticalSingleMenuItem from './VerticalSingleMenuItem'
 import VerticalCollapsedMenuItem from './VerticalCollapsedMenuItem'
@@ -11,9 +11,8 @@ import {
     NAV_ITEM_TYPE_ITEM,
 } from 'constants/navigation.constant'
 import useMenuActive from 'utils/hooks/useMenuActive'
-import { useSelector } from 'react-redux'
-import { setStoreData } from 'store/base/commonSlice'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { itemMenu, setItemMenu } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
 
 const { MenuGroup } = Menu
@@ -141,6 +140,41 @@ const VerticalMenuContent = (props) => {
         }
     }
 
+    const onCheckbox = (e) => {
+        const { name, checked } = e.target;
+        console.log('e', e, name, checked);
+        // useDispatch(
+        //     setItemMenu()
+        // )
+    };
+
+    const focusGaneratorDom = () => {
+        const { focusArea, focusName, focusDiscription } = focusInfo;
+        let title = '';
+        switch (focusArea) {
+            case 'model': title = '모델명'; break;
+            case 'entity': title = '엔터티명'; break;
+            case 'property': title = '속성명'; break;
+            default:  break;
+        }
+        return (
+            <>
+                <div>{title} : {focusName}</div>
+                <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
+                    {
+                        focusArea === 'property' ? 
+                        <>
+                            <Checkbox name='null' onClick={onCheckbox} checked>Null허용여부</Checkbox>
+                            <Checkbox name='disc' onClick={onCheckbox}>식별허용여부</Checkbox>
+                        </>
+                        : focusDiscription
+                    }
+                    
+                </div>
+            </>
+        )
+    }
+
     return (
         <Menu
             className="px-4 pb-4"
@@ -155,12 +189,7 @@ const VerticalMenuContent = (props) => {
                 </div>
                 <div>
                     <div className='px-2 py-2 mt-1 mb-16 text-sm font-bold h-36 card-border card sm:px-1 md:px-2'>
-                    {
-                    <>
-                        <div>{ focusInfo.focusArea === 'model' ? '모델명' : '엔터티명'} : { focusInfo.focusName }</div>
-                        <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>{focusInfo.focusDescription}</div>
-                    </>
-                    }
+                    {focusGaneratorDom()}
                     </div>
                 </div>
             </>
