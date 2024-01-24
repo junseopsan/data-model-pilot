@@ -149,7 +149,7 @@ const VerticalMenuContent = (props) => {
     };
 
     const focusGaneratorDom = () => {
-        const { focusArea, focusName, focusDiscription } = focusInfo;
+        const { focusArea, focusName, focusDescription } = focusInfo;
         let title = '';
         switch (focusArea) {
             case 'model': title = '모델명'; break;
@@ -159,7 +159,7 @@ const VerticalMenuContent = (props) => {
         }
         return (
             <>
-                <div>{title} : {focusName}</div>
+                <div className='h-5'>{title ? `${title}:` : ` `}  {focusName}</div>
                 <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
                     {
                         focusArea === 'property' ? 
@@ -167,7 +167,7 @@ const VerticalMenuContent = (props) => {
                             <Checkbox name='null' onClick={onCheckbox} checked>Null허용여부</Checkbox>
                             <Checkbox name='disc' onClick={onCheckbox}>식별허용여부</Checkbox>
                         </>
-                        : focusDiscription
+                        : focusDescription
                     }
                     
                 </div>

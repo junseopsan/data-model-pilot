@@ -40,7 +40,7 @@ function EntityTable(props) {
 
     const generatorDom = () => {
         return itemMenu.filter(item => item.id === entityId).map((item, i) => (
-            <div key={i}>{item.title}</div>
+            <div className='h-auto px-2 mt-2 border border-gray-200 rounded-md updater-title !font-light opacity-80' key={i}>{item.title}</div>
         ))
     }
     

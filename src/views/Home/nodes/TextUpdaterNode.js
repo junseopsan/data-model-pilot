@@ -36,12 +36,12 @@ const TextUpdaterNode = (props) => {
     // }, [data])
 
   return (
-    <div className="text-updater-node">
+    <div className="!h-auto text-updater-node">
       <NodeResizer color="#ff0071" isVisible={selected} minWidth={100} minHeight={30} />
       <div className="entityTable">
-        <label className="updater-title" htmlFor="text">
+        <div className="px-2 border-gray-200 rounded-md h-7 updater-title opacity-80" htmlFor="text">
           {text}
-        </label>
+        </div>
         <EntityTable entityId={data.id} />
       </div>
       <Handle id="top_left" isConnectableStart={true} position={Position.Top} style={{left: 20}} type="source"/>
