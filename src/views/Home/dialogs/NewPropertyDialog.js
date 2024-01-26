@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setPropertyInfo } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
 
@@ -13,13 +13,24 @@ import EventBus from "../../../utils/hooks/EventBus";
 const NewPropertyDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
+    const { itemMenu } = useSelector(state => state.base.common);
 
     const onChange = (e) => {
         setText(e.target.value);
     };
     const modelValidation = () => {
-        if(text === '') EventBus.emit("SHOW-MSG", '속성 명을 입력해주세요.'); 
-        else return true
+        let errorMes = '';
+        if (text === '') {
+            errorMes = '속성 명을 입력해주세요.';
+        } else if (itemMenu.some(s => s.title === text)) {
+            errorMes = '동일한 속성 명이 존재합니다.';
+        }
+        
+        if (errorMes) {
+            EventBus.emit("SHOW-MSG", errorMes);
+        } else {
+            return true;
+        }
     }
     const okayModelName = () =>{
         if(modelValidation()){
