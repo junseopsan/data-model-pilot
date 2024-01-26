@@ -38,9 +38,15 @@ function EntityTable(props) {
         getPaginationRowModel: getPaginationRowModel(),
     })
 
+    const checkDom = (item) => {
+        return `${item.nullCheck ? 'Null Yes ' : ''}${item.discCheck ? '식별 Yes' : ''}`
+    };
+
     const generatorDom = () => {
         return itemMenu.filter(item => item.id === entityId).map((item, i) => (
-            <div className='h-auto px-2 mt-2 border border-gray-200 rounded-md updater-title !font-light opacity-80' key={i}>{item.title}</div>
+            <div className='h-auto px-2 mt-2 border border-gray-200 rounded-md updater-title !font-light opacity-80' key={i}>
+                {item.title} {checkDom(item)}
+            </div>
         ))
     }
     

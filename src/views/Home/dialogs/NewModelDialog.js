@@ -13,6 +13,7 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
     const [description, setDescription] = useState("");
+
     const onChange = (e) => {
         setText(e.target.value);
     };
@@ -26,9 +27,9 @@ const NewModelDialog = ({ data, onDialogClose}) => {
     }
     const okayModelName = () =>{
         if(modelValidation()){
-            dispatch(setModelInfo({modelName:text, modelDescription:description, isNewModel: true}))
+            dispatch(setModelInfo({ modelName:text, modelDescription:description, isNewModel: true }))
             dispatch(setStoreData([]))
-            dispatch(setFocusInfo({focusArea: 'model', focusName: text, focusDescription: description}))
+            dispatch(setFocusInfo({ focusArea: 'model', focusName: text, focusDescription: description }))
             setText('')
             setDescription('')
             onDialogClose()

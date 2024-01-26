@@ -31,11 +31,9 @@ const HeaderActionsEnd = () => {
 
 const HeaderActionsMiddle = () => {
     const dispatch = useDispatch()
-    const modelInfo = useSelector(
-        (state) => state.base.common.modelInfo
-    )
+    const { modelInfo } = useSelector((state) => state.base.common)
     const focusModelInfo = () =>{
-        dispatch(setFocusInfo({focusArea: 'model', focusName: modelInfo.modelName, focusDescription: modelInfo.modelDescription}))
+        dispatch(setFocusInfo({ focusArea: 'model', focusName: modelInfo.modelName, focusDescription: modelInfo.modelDescription }))
     }
 
     return (

@@ -10,6 +10,8 @@ export const initialState = {
         propertyName: '',
         entityKey: '',
         isNewProperty: false,
+        nullCheck: false,
+        discCheck: false
     },
     entityInfo:{
         entityName: '',
@@ -19,7 +21,7 @@ export const initialState = {
     focusInfo:{
         focusArea: '',
         focusName: '',
-        focusDescription: '',
+        focusDescription: ''
     },
     modelInfo:{
         modelName: '',

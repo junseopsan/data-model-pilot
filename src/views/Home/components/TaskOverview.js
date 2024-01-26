@@ -40,18 +40,8 @@ const TaskOverview = () => {
     const [selectedEdges, setSelectedEdges] = useState([]);
     
     const dispatch = useDispatch()
-    const storeData = useSelector(
-      (state) => state.base.common.storeData
-    )
-    const entityInfo = useSelector(
-      (state) => state.base.common.entityInfo
-    )
-    const modelInfo = useSelector(
-      (state) => state.base.common.modelInfo
-    )
-    const edgeType = useSelector(
-      (state) => state.base.common.edgeType
-    )
+    const { storeData, entityInfo, modelInfo, edgeType, focusInfo } = useSelector(state => state.base.common)
+
     const defaultEdgeOptions = {
       type: 'smoothstep',
       // markerEnd: 'logo' ,
@@ -63,7 +53,7 @@ const TaskOverview = () => {
     const onNodeClick = (event, element) =>{
       const description = element.data.description
       const text = element.data.label
-      dispatch(setFocusInfo({focusArea: 'entity', focusName: text, focusDescription: description}))
+      dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description }))
     } ;
 
     useEffect(() => {

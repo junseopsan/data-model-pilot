@@ -56,7 +56,9 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                             key: `${propertyInfo.entityKey}_${propertyInfo.propertyName}`,
                             title: propertyInfo.propertyName,
                             type: 'item',
-                            subMenu: []
+                            subMenu: [],
+                            nullCheck: false,
+                            discCheck: false
                         })
                     }
                 })

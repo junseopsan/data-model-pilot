@@ -12,7 +12,7 @@ import {
 } from 'constants/navigation.constant'
 import useMenuActive from 'utils/hooks/useMenuActive'
 import { useDispatch, useSelector } from 'react-redux'
-import { itemMenu, setItemMenu } from 'store/base/commonSlice'
+import { setItemMenu, setFocusInfo } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
 
 const { MenuGroup } = Menu
@@ -26,19 +26,12 @@ const VerticalMenuContent = (props) => {
         userAuthority = [],
         onMenuItemClick,
         direction = themeConfig.direction,
-    } = props
+    } = props;
+    const dispatch = useDispatch();
     const [sideNav, setSideNav] = useState([]);
     const [defaulExpandKey, setDefaulExpandKey] = useState([])
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
-    const focusInfo = useSelector(
-        (state) => state.base.common.focusInfo
-    )
-    const storeData = useSelector(
-        (state) => state.base.common.storeData
-    )
-    const itemMenu = useSelector(
-        (state) => state.base.common.itemMenu
-    )
+    const { focusInfo, storeData, itemMenu } = useSelector(state => state.base.common);
 
     useEffect(() => {
         let nav = []
@@ -140,12 +133,24 @@ const VerticalMenuContent = (props) => {
         }
     }
 
+    const checkboxChecked = (name) => {
+        const { focusName } = focusInfo;
+        return itemMenu.some(s => (s.title === focusName && s[name]));
+    };
+
     const onCheckbox = (e) => {
         const { name, checked } = e.target;
-        console.log('e', e, name, checked);
-        // useDispatch(
-        //     setItemMenu()
-        // )
+        const { focusName } = focusInfo;
+
+        dispatch(setItemMenu(
+            itemMenu.map(item => {
+                const obj = { ...item };
+                if (obj.title === focusName) {
+                    obj[name] = checked;
+                }
+                return obj;
+            })
+        ))
     };
 
     const focusGaneratorDom = () => {
@@ -164,8 +169,8 @@ const VerticalMenuContent = (props) => {
                     {
                         focusArea === 'property' ? 
                         <>
-                            <Checkbox name='null' onClick={onCheckbox} checked>Null허용여부</Checkbox>
-                            <Checkbox name='disc' onClick={onCheckbox}>식별허용여부</Checkbox>
+                            <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
+                            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
                         </>
                         : focusDescription
                     }

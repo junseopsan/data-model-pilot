@@ -23,7 +23,12 @@ const NewPropertyDialog = ({ data, onDialogClose}) => {
     }
     const okayModelName = () =>{
         if(modelValidation()){
-            dispatch(setPropertyInfo({propertyName:text, entityKey: data.selectEntity.key, isNewProperty: true}))
+            dispatch(
+                setPropertyInfo({
+                    propertyName:text, entityKey: data.selectEntity.key, isNewProperty: true,
+                    nullCheck: false, discCheck: false
+                })
+            )
             setText('')
             onDialogClose()
         }
