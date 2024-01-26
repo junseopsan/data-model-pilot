@@ -134,18 +134,18 @@ const VerticalMenuContent = (props) => {
     }
 
     const checkboxChecked = (name) => {
-        const { focusName } = focusInfo;
-        return itemMenu.some(s => (s.title === focusName && s[name]));
+        const { key } = focusInfo;
+        return itemMenu.some(s => (s.key === key && s[name]));
     };
 
     const onCheckbox = (e) => {
         const { name, checked } = e.target;
-        const { focusName } = focusInfo;
+        const { key } = focusInfo;
 
         dispatch(setItemMenu(
             itemMenu.map(item => {
                 const obj = { ...item };
-                if (obj.title === focusName) {
+                if (obj.key === key) {
                     obj[name] = checked;
                 }
                 return obj;

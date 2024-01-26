@@ -35,6 +35,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     }
     const onMenuItem = (item) => {
         dispatch(setFocusInfo({
+            key: item.key,
             focusArea: 'property',
             focusName: item.title,
             focusDiscription: ''

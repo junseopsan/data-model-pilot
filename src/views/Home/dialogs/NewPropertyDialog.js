@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Dialog, Input } from 'components/ui'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setPropertyInfo } from 'store/base/commonSlice'
 import EventBus from "../../../utils/hooks/EventBus";
 
@@ -13,7 +13,10 @@ import EventBus from "../../../utils/hooks/EventBus";
 const NewPropertyDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
-    const { itemMenu } = useSelector(state => state.base.common);
+
+    useEffect(() => {
+        setText('');
+    }, []);
 
     const onChange = (e) => {
         setText(e.target.value);
@@ -22,7 +25,7 @@ const NewPropertyDialog = ({ data, onDialogClose}) => {
         let errorMes = '';
         if (text === '') {
             errorMes = '속성 명을 입력해주세요.';
-        } else if (itemMenu.some(s => s.title === text)) {
+        } else if (data.selectEntity.itemMenu.some(s => s.title === text)) {
             errorMes = '동일한 속성 명이 존재합니다.';
         }
         
@@ -40,8 +43,7 @@ const NewPropertyDialog = ({ data, onDialogClose}) => {
                     nullCheck: false, discCheck: false
                 })
             )
-            setText('')
-            onDialogClose()
+            closeDialog()
         }
     }
     const closeDialog = () => {
@@ -52,8 +54,8 @@ const NewPropertyDialog = ({ data, onDialogClose}) => {
         <div>
             <Dialog
                 isOpen={data.IsPropertyDialogOpen}
-                onClose={onDialogClose}
-                onRequestClose={onDialogClose}
+                onClose={closeDialog}
+                onRequestClose={closeDialog}
                 bodyOpenClassName="overflow-hidden"
             >
                 <h5 className="mb-4">{data.selectEntity.title} 엔터티 속성 추가</h5>
