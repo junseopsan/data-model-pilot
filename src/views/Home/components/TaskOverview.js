@@ -7,7 +7,7 @@ import ReactFlow, {
   addEdge,
   // useNodes,
   // useNodeId,
-  // useReactFlow,
+  useReactFlow,
   Panel,
   MiniMap, Controls, 
   Background,
@@ -36,8 +36,10 @@ const TaskOverview = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
-    const [updateNode, setUpdateNode] = useState(null);
-    const [selectedEdges, setSelectedEdges] = useState([]);
+    const { setViewport, zoomIn, zoomOut } = useReactFlow();
+    const handleTransform = useCallback(() => {
+      setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 800 });
+    }, [setViewport]);
     
     const dispatch = useDispatch()
     const { storeData, entityInfo, modelInfo, edgeType, focusInfo } = useSelector(state => state.base.common)
@@ -232,7 +234,7 @@ const TaskOverview = () => {
               >
                 
                 <Background />
-                <Controls showInteractive={false} />
+                <Controls showInteractive={false} onZoomIn={()=> zoomIn({ duration: 800 })}  onZoomOut={()=> zoomOut({ duration: 800 })} onFitView={()=> handleTransform()} ></Controls>/>
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
                 <Panel position="bottom-center">
                   <div hidden>
