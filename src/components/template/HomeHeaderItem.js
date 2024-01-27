@@ -60,6 +60,11 @@ export const HomeHeaderItem = ({ className }) => {
     }, [modelInfo.anotherSaveName])
     
     useEffect(() => {
+        onFavoriteClick('N', 'home')
+        onFavoriteClick('E', 'modelItem')
+    }, [])
+    
+    useEffect(() => {
         EventBus.on("PROPERTY-OPEN-EVENT", (entity) => {
             setIsPropertyDialogOpen(true)
             setSelectEntity(entity)

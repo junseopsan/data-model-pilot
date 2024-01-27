@@ -130,3 +130,7 @@
     background-color: #fff;
     border: 1.5px solid #c02f2f;
   }
+
+  .react-flow__controls{
+    z-index: 9999;
+  }
