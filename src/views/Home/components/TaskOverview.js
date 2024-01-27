@@ -232,14 +232,19 @@ const TaskOverview = () => {
               style={{ backgroundColor: '#1a202c' }}
 
               >
-                
                 <Background />
-                <Controls showInteractive={false} onZoomIn={()=> zoomIn({ duration: 800 })}  onZoomOut={()=> zoomOut({ duration: 800 })} onFitView={()=> handleTransform()} ></Controls>/>
                 <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
+                <Controls showZoom={false} showInteractive={false} fitViewOptions={{duration:1000}}></Controls>
                 <Panel position="bottom-center">
                   <div hidden>
                     <button id="undo" disabled={canUndo} onClick={undo} />
                     <button id="redo" disabled={canRedo} onClick={redo}/>
+                  </div>
+                </Panel>
+                <Panel position="bottom-left">
+                  <div className="!relative flex flex-col justify-between !bottom-[27px]">
+                    <button className="p-2 leading-[1px] font-bold text-black bg-white h-[27px] !w-[26px]" onClick={() => zoomIn({ duration: 800 })}>+</button>
+                    <button className="p-2 leading-[1px] font-bold text-black bg-white h-[27px] !w-[26px]" onClick={() => zoomOut({ duration: 800 })}>-</button>
                   </div>
                 </Panel>
             </ReactFlow>
