@@ -116,13 +116,17 @@
     color:firebrick;
   }
 
+  .entityTable {
+    background: #c02f2f;
+    opacity: 0.8;
+  }
+
   .entityTable .type {
     width: 50px;
     text-align: center;
   }
-  .entityTable .overflow-auto {
-  }
 
   .react-flow__node{
-    height: auto !important;
+    background-color: #fff;
+    border: 1.5px solid #c02f2f;
   }

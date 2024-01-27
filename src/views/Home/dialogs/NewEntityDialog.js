@@ -14,7 +14,6 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
     const dispatch = useDispatch()
     const [text, setText] = useState("");
     const [description, setDescription] = useState("");
-    const [entityLength, setEntityLength] = useState(0);
 
     const storeData = useSelector(
         (state) => state.base.common.storeData
@@ -53,6 +52,11 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
         setText(data.selectEntity.title)
         setDescription(data.selectEntity.description)
     }, [data])
+    
+    useEffect(() => {
+        setText('')
+        setDescription('')
+    }, [])
     
     return (
         <div>
