@@ -74,8 +74,8 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
             <MenuCollapse
                 label={
                     <>
-                        <div className="flex flex-row items-center justify-between w-[65px]">
-                            <div onClick={(event) => { openEntityDialog(event, nav)}} className='relative transition duration-300 ease-in-out z-index: 99 hover:text-red-700 hover:font-bold'>
+                        <div className="flex flex-row items-center justify-between w-[165px]">
+                            <div onClick={(event) => { openEntityDialog(event, nav)}} className='relative transition duration-300 ease-in-out entityNavText z-index: 99 hover:text-red-700 hover:font-bold'>
                                 <Trans defaults={`${nav.title}`} />
                             </div>
                             <div onClick={(event) => { openPropertyDialog(event, nav)}} className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'>

@@ -165,7 +165,7 @@ const VerticalMenuContent = (props) => {
         return (
             <>
                 <div className='h-5'>{title ? `${title}:` : ` `}  {focusName}</div>
-                <div className='h-24 p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
+                <div className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[150px] '>
                     {
                         focusArea === 'property' ? 
                         <>
@@ -193,7 +193,7 @@ const VerticalMenuContent = (props) => {
                     {navigationTree.map((nav) => getNavItem(nav))}
                 </div>
                 <div>
-                    <div className='px-2 py-2 mt-1 mb-16 text-sm font-bold h-36 card-border card sm:px-1 md:px-2'>
+                    <div className='h-[200px] px-2 py-2 mt-1 mb-16 text-sm font-bold card-border card sm:px-1 md:px-2 mb-[83px]'>
                     {focusGaneratorDom()}
                     </div>
                 </div>

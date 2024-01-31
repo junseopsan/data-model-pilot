@@ -134,3 +134,10 @@
   .react-flow__controls{
     z-index: 9999;
   }
+
+  .entityNavText {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
