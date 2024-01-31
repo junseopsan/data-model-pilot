@@ -1,26 +1,27 @@
-import React, { useState, useEffect } from 'react'
-import { Menu, Dropdown } from 'components/ui'
+import React, { useState, useEffect, useRef } from 'react'
+import { Menu, Dropdown, Input } from 'components/ui'
 import { Trans } from 'react-i18next'
 import { TiPlus } from "react-icons/ti";
 import EventBus from "../../../utils/hooks/EventBus";
-import { setItemMenu, setFocusInfo } from 'store/base/commonSlice'
+import { setEntityInfo, setItemMenu, setFocusInfo } from 'store/base/commonSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import _ from 'lodash';
 
 const { MenuItem, MenuCollapse } = Menu
 
 // 엔터티 영역 첫번째 Node
 const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const inputRef = useRef();
     const [isData, setIsData] = useState(false);
+    const [isInput, setIsInput] = useState(false);
+
     // const [itemMenu, setItemMenu] = useState([]);
     const propertyInfo = useSelector(
         (state) => state.base.common.propertyInfo
     )
     const itemMenu = useSelector(
         (state) => state.base.common.itemMenu
-    )
-    const entityInfo = useSelector(
-        (state) => state.base.common.entityInfo
     )
     const storeData = useSelector(
         (state) => state.base.common.storeData
@@ -33,6 +34,15 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
         event.stopPropagation()
         EventBus.emit("ENTITY-UPDATE-EVENT", entity);
     }
+    
+    const onClickEntity = (e) => {
+        e.stopPropagation();
+        setIsInput(true);
+        setTimeout(() => {
+            inputRef.current.focus();
+        }, 0);
+    }
+
     const onMenuItem = (item) => {
         dispatch(setFocusInfo({
             key: item.key,
@@ -40,6 +50,22 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
             focusName: item.title,
             focusDiscription: ''
         }))
+    }
+
+    const onInputFocusOut = () => {
+        const fined = _.find(storeData.nodes, f => f.id === nav.key);
+        const node = { ...fined.data, label: inputRef.current.value };
+        setIsInput(false);
+        dispatch(
+            setEntityInfo(
+                {
+                    entityName: node.label,
+                    entityDescription: node.description,
+                    entityType: 'update',
+                    entityId: node.id
+                }
+            )
+        )
     }
 
     useEffect(() => {
@@ -66,7 +92,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 dispatch(setItemMenu(itemMenu.concat(itemMenus)))
             }
         }
-    }, [propertyInfo])
+    }, [propertyInfo]);
     
     return (
         // 엔터티 영역 
@@ -75,10 +101,25 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 label={
                     <>
                         <div className="flex flex-row items-center justify-between w-[165px]">
-                            <div onClick={(event) => { openEntityDialog(event, nav)}} className='relative transition duration-300 ease-in-out entityNavText z-index: 99 hover:text-red-700 hover:font-bold'>
-                                <Trans defaults={`${nav.title}`} />
+                            <div
+                                onClick={onClickEntity}
+                                className='relative transition duration-300 ease-in-out entityNavText z-index: 99 hover:text-red-700 hover:font-bold'
+                            >
+                                {
+                                    isInput ?
+                                        <Input
+                                            ref={inputRef}
+                                            style={{ width: '140px' }}
+                                            defaultValue={nav.title}
+                                            onBlur={onInputFocusOut}
+                                        />
+                                    :   <Trans defaults={`${nav.title}`} />
+                                }
                             </div>
-                            <div onClick={(event) => { openPropertyDialog(event, nav)}} className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'>
+                            <div
+                                onClick={(event) => { openPropertyDialog(event, nav)}}
+                                className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'
+                            >
                                 <TiPlus /> 
                             </div>
                         </div>

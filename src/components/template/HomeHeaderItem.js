@@ -12,7 +12,7 @@ import NewPropertyDialog from '../../views/Home/dialogs/NewPropertyDialog'
 import NewEntityDialog from '../../views/Home/dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../../views/Home/dialogs/AnotherNameSaveDialog'
 import EventBus from "../../utils/hooks/EventBus";
-import { setStoreData, setEdgeType, setModelInfo, setEntityInfo} from 'store/base/commonSlice'
+import { setStoreData, setEdgeType, setModelInfo } from 'store/base/commonSlice'
 import Files from 'react-files'
 import { MdFiberNew } from "react-icons/md";
 import { CiSaveUp2, CiSaveUp1, CiMemoPad } from "react-icons/ci";
@@ -457,9 +457,9 @@ export const HomeHeaderItem = ({ className }) => {
             </Dropdown>
             <div className={classNames('text-2xl ltr:mr-2 rtl:ml-2 favoriteHeaderBox')} >
                 {
-                    favoriteList.map(item => {
+                    favoriteList.map((item, i) => {
                         return (
-                            <div onClick={() => onToolBarSelect(item.shortLabel)} className={classNames('text-2xl header-action-item header-action-item-hoverable')}>
+                            <div key={i} onClick={() => onToolBarSelect(item.shortLabel)} className={classNames('text-2xl header-action-item header-action-item-hoverable')}>
                                 <Tooltip title={item.label} placement="bottom">
                                 { item.shortLabel === 'N' && (<MdFiberNew/>) }
                                 { item.shortLabel === 'O' && 

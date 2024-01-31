@@ -16,7 +16,7 @@ export const initialState = {
     entityInfo:{
         entityName: '',
         entityDescription: '',
-        isNewEntity: false,
+        entityType: '',
     },
     focusInfo:{
         focusArea: '',

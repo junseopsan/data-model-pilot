@@ -30,10 +30,15 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
         else return true
     }
     const getNodeId = () => `randomnode_${+new Date()}`;
-    const okayEntityName = () =>{
-        if(entityValidation()){
-            if(!data.isEntityUpdate) dispatch(setEntityInfo({entityName:text, entityDescription:description, isNewEntity: true, entityId: getNodeId()}))
-            else{
+    const okayEntityName = () => {
+        if (entityValidation()) {
+            if (!data.isEntityUpdate) {
+                dispatch(
+                    setEntityInfo(
+                        {entityName:text, entityDescription:description, entityType: 'add', entityId: getNodeId()}
+                    )
+                )
+            } else {
                 const clonedNode = cloneDeep(storeData);
                 const changeNode = clonedNode.nodes.filter(item=> item.id === data.selectEntity.key)
                 changeNode[0].data.label = text

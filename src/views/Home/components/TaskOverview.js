@@ -25,6 +25,7 @@ import useUndoRedo from '../../../utils/hooks/useUndoRedo.ts';
 import EventBus from "../../../utils/hooks/EventBus";
 import 'reactflow/dist/style.css';
 import '../../../assets/styles/reactFlow/text-updater-node.css'
+import _ from 'lodash';
 
 // we define the nodeTypes outside of the component to prevent re-renderings
 // you could also use useMemo inside the component
@@ -42,7 +43,7 @@ const TaskOverview = () => {
     }, [setViewport]);
     
     const dispatch = useDispatch()
-    const { storeData, entityInfo, modelInfo, edgeType, focusInfo } = useSelector(state => state.base.common)
+    const { storeData, entityInfo, modelInfo, edgeType } = useSelector(state => state.base.common)
 
     const defaultEdgeOptions = {
       type: 'smoothstep',
@@ -52,7 +53,7 @@ const TaskOverview = () => {
       animated: edgeType
     };
 
-    const onNodeClick = (event, element) =>{
+    const onNodeClick = (e, element) =>{
       const description = element.data.description
       const text = element.data.label
       dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description }))
@@ -96,19 +97,20 @@ const TaskOverview = () => {
       };
     }, []);
 
-    useEffect(() => {
-      EventBus.on("CHANGE-NODES", (data) => {
-        console.log(data)
-        let flow = rfInstance?.toObject();
-        if(flow && flow.nodes.length > 0){
-          const getNodes = flow.nodes.map(item => item.id === data.id ? data : item)
-          setNodes(getNodes);
-        }
-      });
-      return () => {
-        EventBus.off("CHANGE-NODES");
-      };
-    }, [rfInstance]);
+    // node 수정 액션
+    // useEffect(() => {
+    //   EventBus.on("CHANGE-NODES", (data) => {
+    //     let flow = rfInstance?.toObject();
+    //     if(flow && flow.nodes.length > 0){
+    //       const getNodes = flow.nodes.map(item => item.id === data.id ? data : item)
+    //       console.log('change nodes');
+    //       setNodes(getNodes);
+    //     }
+    //   });
+    //   return () => {
+    //     EventBus.off("CHANGE-NODES");
+    //   };
+    // }, [rfInstance]);
 
     useEffect(()=> {
       dispatch(setIsUndo(canUndo))
@@ -116,7 +118,31 @@ const TaskOverview = () => {
     },[canUndo, canRedo])
 
     useEffect(()=> {
-      if(entityInfo.isNewEntity) onAdd(entityInfo)
+      const { entityType } = entityInfo;
+
+      switch (entityType) {
+        case 'add':
+          onAdd(entityInfo);
+          break;
+        case 'update':
+          {
+            let flow = rfInstance?.toObject();
+            if (flow) {
+              const getNodes = _.map(flow.nodes, item => {
+                if (item.id === entityInfo.entityId) {
+                  return { ...item, data: { ...item.data, label: entityInfo.entityName } }
+                }
+                return item;
+              });
+              setNodes(getNodes);
+            }
+          }
+          break;
+        case 'delete':
+          // 추후 삭제 로직 
+          break;
+        default: break;
+      }
     },[entityInfo])
     
     useEffect(()=> {
@@ -128,9 +154,9 @@ const TaskOverview = () => {
       onLoadUpdate()
     },[modelInfo])
     
-    useEffect(()=>{
-      // console.log(storeData)
-    },[storeData])
+    // useEffect(()=>{
+    //   console.log('storeData', storeData)
+    // },[storeData])
 
     useEffect(() => {
       onSave()
@@ -175,9 +201,7 @@ const TaskOverview = () => {
       };
       takeSnapshot();
       setNodes((nds) => nds.concat(newNode))
-      },
-      [setNodes, takeSnapshot]
-    );
+    }, [setNodes, takeSnapshot]);
     
 
     const nodeColor = (node) => {
