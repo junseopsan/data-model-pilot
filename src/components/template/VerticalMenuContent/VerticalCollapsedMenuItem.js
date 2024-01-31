@@ -129,7 +129,6 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 eventKey={nav.key}
                 expanded={true}
                 isData={isData}
-                className="mb-2"
             >
                 {nav.itemMenu?.map((itemMenu, i) => (
                     <MenuItem eventKey={itemMenu.key} key={i} onClick={() => onMenuItem(itemMenu)}>
