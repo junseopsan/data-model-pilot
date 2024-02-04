@@ -56,7 +56,7 @@ const TaskOverview = () => {
     const onNodeClick = (e, element) =>{
       const description = element.data.description
       const text = element.data.label
-      dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description }))
+      dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description, id: element.id}))
     } ;
 
     useEffect(() => {

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef} from 'react'
 import PropTypes from 'prop-types'
-import { Menu, Checkbox } from 'components/ui'
+import { Menu, Checkbox, Input} from 'components/ui'
 import { AuthorityCheck } from 'components/shared'
 import VerticalSingleMenuItem from './VerticalSingleMenuItem'
 import VerticalCollapsedMenuItem from './VerticalCollapsedMenuItem'
@@ -12,8 +12,8 @@ import {
 } from 'constants/navigation.constant'
 import useMenuActive from 'utils/hooks/useMenuActive'
 import { useDispatch, useSelector } from 'react-redux'
-import { setItemMenu, setFocusInfo } from 'store/base/commonSlice'
-import EventBus from "../../../utils/hooks/EventBus";
+import { setItemMenu, setModelInfo, setFocusInfo, setEntityInfo } from 'store/base/commonSlice'
+import _ from 'lodash';
 
 const { MenuGroup } = Menu
 
@@ -27,9 +27,11 @@ const VerticalMenuContent = (props) => {
         onMenuItemClick,
         direction = themeConfig.direction,
     } = props;
+    const inputRef = useRef();
     const dispatch = useDispatch();
     const [sideNav, setSideNav] = useState([]);
     const [defaulExpandKey, setDefaulExpandKey] = useState([])
+    const [isInput, setIsInput] = useState(false);
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
     const { focusInfo, storeData, itemMenu } = useSelector(state => state.base.common);
 
@@ -59,7 +61,6 @@ const VerticalMenuContent = (props) => {
     const handleLinkClick = () => {
         onMenuItemClick?.()
     }
-
     const getNavItem = (nav) => {
         if (nav.subMenu.length === 0 && nav.type === NAV_ITEM_TYPE_ITEM) {
             return (
@@ -153,6 +154,36 @@ const VerticalMenuContent = (props) => {
         ))
     };
 
+    const onClickDescriptionArea = (e) => {
+        e.stopPropagation();
+        setIsInput(true);
+        setTimeout(() => {
+            inputRef.current.focus();
+        }, 0);
+    }
+
+    const onInputFocusOut = () => {
+        const { id } = focusInfo;
+        if(focusInfo.focusArea === 'entity'){
+            const fined = _.find(storeData.nodes, f => f.id === id);
+            console.log(fined)
+            const node = { ...fined.data, description: inputRef.current.value };
+            setIsInput(false);
+            dispatch(
+                setEntityInfo(
+                    {
+                        entityName: node.label,
+                        entityDescription: node.description,
+                        entityType: 'update',
+                        entityId: node.id
+                    }
+                )
+            )
+        }else if(focusInfo.focusArea === 'model'){
+            dispatch(setModelInfo({ modelName: focusInfo.focusName, modelDescription: inputRef.current.value, isNewModel: true }))
+        }
+    }
+
     const focusGaneratorDom = () => {
         const { focusArea, focusName, focusDescription } = focusInfo;
         let title = '';
@@ -165,17 +196,33 @@ const VerticalMenuContent = (props) => {
         return (
             <>
                 <div className='h-5'>{title ? `${title}:` : ` `}  {focusName}</div>
-                <div className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[150px] '>
-                    {
-                        focusArea === 'property' ? 
-                        <>
-                            <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
-                            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
-                        </>
-                        : focusDescription
-                    }
-                    
-                </div>
+                {
+                    focusArea === 'property' ? (
+                        <div className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[150px]'>
+                            {
+                                <>
+                                    <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
+                                    <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
+                                </>
+                            }
+                        </div>
+                    ) : (
+                        isInput ? 
+                            <Input
+                                className="p-1 mt-1 h-[150px] rounded-md"
+                                ref={inputRef}
+                                style={{ width: '300px' }}
+                                defaultValue={focusDescription}
+                                onBlur={onInputFocusOut}
+                                textArea
+                            />
+                            : (
+                                <div onClick={onClickDescriptionArea} className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[150px] hover:border-red-700 hover:border-2 hover:cursor-pointer'  >
+                                    { focusDescription }
+                                </div>
+                            )
+                    )
+                }
             </>
         )
     }
