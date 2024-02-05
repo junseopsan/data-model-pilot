@@ -57,7 +57,7 @@ const TaskOverview = () => {
       const description = element.data.description
       const text = element.data.label
       dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description, id: element.id}))
-    } ;
+    };
 
     useEffect(() => {
       EventBus.on("SHOW-MSG", (msg) => {
@@ -118,7 +118,7 @@ const TaskOverview = () => {
     },[canUndo, canRedo])
 
     useEffect(()=> {
-      const { entityType } = entityInfo;
+      const { entityType, entityName, entityDescription } = entityInfo;
 
       switch (entityType) {
         case 'add':
@@ -130,7 +130,7 @@ const TaskOverview = () => {
             if (flow) {
               const getNodes = _.map(flow.nodes, item => {
                 if (item.id === entityInfo.entityId) {
-                  return { ...item, data: { ...item.data, label: entityInfo.entityName } }
+                  return { ...item, data: { ...item.data, label: entityName, description: entityDescription }}
                 }
                 return item;
               });

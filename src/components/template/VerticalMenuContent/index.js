@@ -164,7 +164,7 @@ const VerticalMenuContent = (props) => {
 
     const onInputFocusOut = () => {
         const { id } = focusInfo;
-        if(focusInfo.focusArea === 'entity'){
+        if (focusInfo.focusArea === 'entity') {
             const fined = _.find(storeData.nodes, f => f.id === id);
             console.log(fined)
             const node = { ...fined.data, description: inputRef.current.value };
@@ -179,13 +179,22 @@ const VerticalMenuContent = (props) => {
                     }
                 )
             )
-        }else if(focusInfo.focusArea === 'model'){
+        } else if (focusInfo.focusArea === 'model') {
             dispatch(setModelInfo({ modelName: focusInfo.focusName, modelDescription: inputRef.current.value, isNewModel: true }))
         }
     }
 
     const focusGaneratorDom = () => {
-        const { focusArea, focusName, focusDescription } = focusInfo;
+        const { id, focusArea, focusName, focusDescription } = focusInfo;
+        let label = '';
+        let description = '';
+        const fined = _.find(storeData.nodes, f => f.id === id);
+        if (fined) {
+            label = fined.data.label;
+            description = fined.data.description;
+        }
+        
+
         let title = '';
         switch (focusArea) {
             case 'model': title = '모델명'; break;
@@ -195,7 +204,7 @@ const VerticalMenuContent = (props) => {
         }
         return (
             <>
-                <div className='h-5'>{title ? `${title}:` : ` `}  {focusName}</div>
+                <div className='h-5'>{title ? `${title}:` : ` `}  {label || focusName}</div>
                 {
                     focusArea === 'property' ? (
                         <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
@@ -213,7 +222,7 @@ const VerticalMenuContent = (props) => {
                                         <Input
                                             className="p-1 mt-1 ml-2 h-[auto] rounded-md"
                                             style={{ width: '200px' }}
-                                            defaultValue={focusDescription}
+                                            defaultValue={description || focusDescription}
                                             onBlur={onInputFocusOut}
                                             placeholder="물리명을 입력해주세요."
                                         />
@@ -227,7 +236,7 @@ const VerticalMenuContent = (props) => {
                                         <Input
                                             className="p-1 mt-1 ml-2 h-[auto] rounded-md"
                                             style={{ width: '200px' }}
-                                            defaultValue={focusDescription}
+                                            defaultValue={description || focusDescription}
                                             onBlur={onInputFocusOut}
                                             placeholder="도메인명을 입력해주세요."
                                         />
@@ -241,7 +250,7 @@ const VerticalMenuContent = (props) => {
                                         <Input
                                             className="p-1 mt-1 ml-2 h-[auto] rounded-md"
                                             style={{ width: '200px' }}
-                                            defaultValue={focusDescription}
+                                            defaultValue={description || focusDescription}
                                             onBlur={onInputFocusOut}
                                             placeholder="인포 타입을 입력해주세요."
                                         />
@@ -255,7 +264,7 @@ const VerticalMenuContent = (props) => {
                                         <Input
                                             className="p-1 mt-1 ml-2 h-[auto] rounded-md"
                                             style={{ width: '200px' }}
-                                            defaultValue={focusDescription}
+                                            defaultValue={description || focusDescription}
                                             onBlur={onInputFocusOut}
                                             placeholder="데이터 타입을 입력해주세요."
                                         />
@@ -274,14 +283,14 @@ const VerticalMenuContent = (props) => {
                             className="p-1 mt-1 h-[100px] rounded-md"
                             ref={inputRef}
                             style={{ width: '300px' }}
-                            defaultValue={focusDescription}
+                            defaultValue={description || focusDescription}
                             onBlur={onInputFocusOut}
                             textArea
                             placeholder="상세정보를 입력해주세요."
                         />
                         : (
                             <div onClick={onClickDescriptionArea} className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[100px] hover:border-red-700 hover:border-2 hover:cursor-pointer'  >
-                                { focusDescription }
+                                {description || focusDescription}
                             </div>
                         )
                 }
