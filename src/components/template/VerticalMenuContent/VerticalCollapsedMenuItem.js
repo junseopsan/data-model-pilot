@@ -13,8 +13,9 @@ const { MenuItem, MenuCollapse } = Menu
 const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     const dispatch = useDispatch();
     const inputRef = useRef();
+    const inputMenusRef = useRef([]);
     const [isData, setIsData] = useState(false);
-    const [isInput, setIsInput] = useState(false);
+    const [isInput, setIsInput] = useState({ entity: false, propertyKey: '' });
 
     // const [itemMenu, setItemMenu] = useState([]);
     const propertyInfo = useSelector(
@@ -30,14 +31,14 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
         event.stopPropagation()
         EventBus.emit("PROPERTY-OPEN-EVENT", entity);
     }
-    const openEntityDialog = (event, entity) => {
-        event.stopPropagation()
-        EventBus.emit("ENTITY-UPDATE-EVENT", entity);
-    }
+    // const openEntityDialog = (event, entity) => {
+    //     event.stopPropagation()
+    //     EventBus.emit("ENTITY-UPDATE-EVENT", entity);
+    // }
     
     const onClickEntity = (e) => {
         e.stopPropagation();
-        setIsInput(true);
+        setIsInput({ entity: true, propertyId: '' });
         setTimeout(() => {
             inputRef.current.focus();
         }, 0);
@@ -52,20 +53,34 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
         }))
     }
 
+    const onClickMenuItem = (e, item, idx) => {
+        e.stopPropagation();
+        setIsInput({ entity: false, propertyKey: item.key });
+        setTimeout(() => {
+            inputMenusRef.current[idx].focus();
+        }, 0);
+    }
+
     const onInputFocusOut = () => {
-        const fined = _.find(storeData.nodes, f => f.id === nav.key);
-        const node = { ...fined.data, label: inputRef.current.value };
-        setIsInput(false);
-        dispatch(
-            setEntityInfo(
-                {
-                    entityName: node.label,
-                    entityDescription: node.description,
-                    entityType: 'update',
-                    entityId: node.id
-                }
+        if (inputRef.current.value) {
+            const fined = _.find(storeData.nodes, f => f.id === nav.key);
+            const node = { ...fined.data, label: inputRef.current.value };
+            dispatch(
+                setEntityInfo(
+                    {
+                        entityName: node.label,
+                        entityDescription: node.description,
+                        entityType: 'update',
+                        entityId: node.id
+                    }
+                )
             )
-        )
+        }
+        setIsInput({ entity: false, propertyKey: '' });
+    }
+
+    const onInputFocusOutProperty = () => {
+        setIsInput({ entity: false, propertyKey: '' });
     }
 
     useEffect(() => {
@@ -106,7 +121,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                                 className='relative transition duration-300 ease-in-out entityNavText z-index: 99 hover:text-red-700 hover:font-bold'
                             >
                                 {
-                                    isInput ?
+                                    isInput.entity ?
                                         <Input
                                             ref={inputRef}
                                             style={{ width: '140px' }}
@@ -132,11 +147,20 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
             >
                 {nav.itemMenu?.map((itemMenu, i) => (
                     <MenuItem eventKey={itemMenu.key} key={i} onClick={() => onMenuItem(itemMenu)}>
-                        <span>
-                            <Trans
-                                defaults={`${itemMenu.title}`}
-                            />
-                        </span>
+                        {
+                            isInput.propertyKey === itemMenu.key ?
+                                <Input
+                                    ref={r => inputMenusRef.current[i] = r}
+                                    style={{ width: '140px' }}
+                                    defaultValue={itemMenu.title}
+                                    onBlur={onInputFocusOutProperty}
+                                />
+                            :   <span onClick={(e) => onClickMenuItem(e, itemMenu, i)}>
+                                    <Trans
+                                        defaults={`${itemMenu.title}`}
+                                    />
+                                </span>
+                        }
                     </MenuItem>
                 ))}
             </MenuCollapse>
