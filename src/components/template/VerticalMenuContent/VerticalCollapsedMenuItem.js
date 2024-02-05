@@ -3,7 +3,7 @@ import { Menu, Dropdown, Input } from 'components/ui'
 import { Trans } from 'react-i18next'
 import { TiPlus } from "react-icons/ti";
 import EventBus from "../../../utils/hooks/EventBus";
-import { setEntityInfo, setItemMenu, setFocusInfo } from 'store/base/commonSlice'
+import { setEntityInfo, setItemMenu, setFocusInfo, setPropertyInfo } from 'store/base/commonSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import _ from 'lodash';
 
@@ -13,32 +13,34 @@ const { MenuItem, MenuCollapse } = Menu
 const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     const dispatch = useDispatch();
     const inputRef = useRef();
+    const inputMenuNewRef = useRef();
     const inputMenusRef = useRef([]);
-    const [isData, setIsData] = useState(false);
-    const [isInput, setIsInput] = useState({ entity: false, propertyKey: '' });
 
-    // const [itemMenu, setItemMenu] = useState([]);
-    const propertyInfo = useSelector(
-        (state) => state.base.common.propertyInfo
-    )
-    const itemMenu = useSelector(
-        (state) => state.base.common.itemMenu
-    )
-    const storeData = useSelector(
-        (state) => state.base.common.storeData
-    )
-    const openPropertyDialog = (event, entity) => {
-        event.stopPropagation()
-        EventBus.emit("PROPERTY-OPEN-EVENT", entity);
-    }
+    const [isData, setIsData] = useState(false);
+    const [isInput, setIsInput] = useState({ entity: false, propertyKey: '',  isProperty: false });
+    const { propertyInfo, itemMenu, storeData, focusInfo } = useSelector(state => state.base.common);
+
+    // const openPropertyDialog = (event, entity) => {
+    //     event.stopPropagation()
+    //     EventBus.emit("PROPERTY-OPEN-EVENT", entity);
+    // }
     // const openEntityDialog = (event, entity) => {
     //     event.stopPropagation()
     //     EventBus.emit("ENTITY-UPDATE-EVENT", entity);
     // }
+
+    const onPropertyAdd = (e) => {
+        e.stopPropagation();
+        setIsData(true);
+        setIsInput({ entity: false, propertyKey: '',  isProperty: true });
+        setTimeout(() => {
+            inputMenuNewRef.current.focus();
+        })
+    }
     
     const onClickEntity = (e) => {
         e.stopPropagation();
-        setIsInput({ entity: true, propertyId: '' });
+        setIsInput({ entity: true, propertyId: '', isProperty: false });
         setTimeout(() => {
             inputRef.current.focus();
         }, 0);
@@ -55,7 +57,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
 
     const onClickMenuItem = (e, item, idx) => {
         e.stopPropagation();
-        setIsInput({ entity: false, propertyKey: item.key });
+        setIsInput({ entity: false, propertyKey: item.key, isProperty: false });
         setTimeout(() => {
             inputMenusRef.current[idx].focus();
         }, 0);
@@ -76,11 +78,53 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 )
             )
         }
-        setIsInput({ entity: false, propertyKey: '' });
+        setIsInput({ entity: false, propertyKey: '', isProperty: false });
     }
 
-    const onInputFocusOutProperty = () => {
-        setIsInput({ entity: false, propertyKey: '' });
+    const onInputFocusOutProperty = (e, menu) => {
+        const { id, key } = menu;
+        const { value } = e.target;
+
+        const isCheck = _.some(itemMenu, s => s.key !== key && (s.id === id && s.title === value));
+        if (propertyValidation(isCheck)) {
+            if (value) {
+                const list = _.map(itemMenu, item => {
+                    if (item.key === key) {
+                        return { ...item, title: value }
+                    }
+                    return item;
+                });
+                dispatch(setItemMenu(list));
+                dispatch(setFocusInfo({ ...focusInfo, focusName: value }));
+            }
+        }
+        setIsInput({ entity: false, propertyKey: '', isProperty: false });
+    }
+
+    const onInputFocusOutPropertyNew = (e, entity) => {
+        const { value } = e.target;
+        if (propertyValidation(_.some(entity.itemMenu, s=> s.title === value))) {
+            if (value) {
+                dispatch(
+                    setPropertyInfo({
+                        propertyName: value,
+                        entityKey: entity.key,
+                        isNewProperty: true,
+                        nullCheck: false,
+                        discCheck: false
+                    })
+                );
+            }
+        }
+        setIsInput({ entity: false, propertyId: '', isProperty: false });
+    }
+
+    const propertyValidation = (isCheck) => {
+        if (isCheck) {
+            EventBus.emit("SHOW-MSG", '동일한 속성명이 존재합니다.');
+        } else {
+            return true;
+        }
     }
 
     useEffect(() => {
@@ -132,7 +176,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                                 }
                             </div>
                             <div
-                                onClick={(event) => { openPropertyDialog(event, nav)}}
+                                onClick={onPropertyAdd}
                                 className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'
                             >
                                 <TiPlus /> 
@@ -153,7 +197,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                                     ref={r => inputMenusRef.current[i] = r}
                                     style={{ width: '140px' }}
                                     defaultValue={itemMenu.title}
-                                    onBlur={onInputFocusOutProperty}
+                                    onBlur={e => onInputFocusOutProperty(e, itemMenu)}
                                 />
                             :   <span onClick={(e) => onClickMenuItem(e, itemMenu, i)}>
                                     <Trans
@@ -163,6 +207,18 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                         }
                     </MenuItem>
                 ))}
+                {
+                    isInput.isProperty && (
+                        <MenuItem>
+                            <Input
+                                ref={inputMenuNewRef}
+                                style={{ width: '140px' }}
+                                defaultValue=''
+                                onBlur={e => onInputFocusOutPropertyNew(e, nav)}
+                            />
+                        </MenuItem>
+                    )
+                }
             </MenuCollapse>
         </>
     )
