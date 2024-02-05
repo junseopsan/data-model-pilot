@@ -168,7 +168,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                                     isInput.entity ?
                                         <Input
                                             ref={inputRef}
-                                            style={{ width: '140px' }}
+                                            style={{ width: '140px', height: '35px' }}
                                             defaultValue={nav.title}
                                             onBlur={onInputFocusOut}
                                         />
@@ -195,7 +195,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                             isInput.propertyKey === itemMenu.key ?
                                 <Input
                                     ref={r => inputMenusRef.current[i] = r}
-                                    style={{ width: '140px' }}
+                                    style={{ width: '140px', height: '35px' }}
                                     defaultValue={itemMenu.title}
                                     onBlur={e => onInputFocusOutProperty(e, itemMenu)}
                                 />
@@ -212,7 +212,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                         <MenuItem>
                             <Input
                                 ref={inputMenuNewRef}
-                                style={{ width: '140px' }}
+                                style={{ width: '140px', height: '35px' }}
                                 defaultValue=''
                                 onBlur={e => onInputFocusOutPropertyNew(e, nav)}
                             />
@@ -262,14 +262,12 @@ const CollapsedItem = ({ entity, onLinkClick, userAuthority, direction }) => {
                     <Dropdown.Item eventKey={subNav.key} key={subNav.key}>
                         {subNav.title ? (
                             <span>
-                                ㅌㅌㅌㅌ
                                 <Trans
                                     defaults={`${subNav.title}`}
                                 />
                             </span>
                         ) : (
                             <span>
-                                ㅋㅋㅋㅋ
                                 <Trans
                                     defaults={`${subNav.title}`}
                                 />

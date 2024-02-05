@@ -78,10 +78,10 @@ const MenuCollapse = (props) => {
                     isData && (
                         <motion.ul
                             className={direction === 'rtl' ? 'mr-5' : 'ml-5'}
-                            initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                            initial={{ opacity: 0, height: 'auto', overflow: 'hidden' }}
                             animate={{
                                 opacity: isExpanded ? 1 : 0,
-                                height: isExpanded ? getChildrenHeight() : 0,
+                                height: isExpanded ? 'auto' : 0,
                             }}
                             transition={{ duration: 0.15 }}
                         >
