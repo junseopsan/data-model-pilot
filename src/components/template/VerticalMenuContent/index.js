@@ -198,30 +198,92 @@ const VerticalMenuContent = (props) => {
                 <div className='h-5'>{title ? `${title}:` : ` `}  {focusName}</div>
                 {
                     focusArea === 'property' ? (
-                        <div className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[150px]'>
+                        <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
                             {
                                 <>
-                                    <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
-                                    <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
+                                    <div>
+                                        <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
+                                        <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
+                                    </div>
+                                    <div className="flex items-center mt-0 justify-left">
+                                        <div className='w-[62px]'>
+                                            물리명
+                                        </div>
+                                        <div>
+                                        <Input
+                                            className="p-1 mt-1 ml-2 h-[auto] rounded-md"
+                                            style={{ width: '200px' }}
+                                            defaultValue={focusDescription}
+                                            onBlur={onInputFocusOut}
+                                            placeholder="물리명을 입력해주세요."
+                                        />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center mt-0 justify-left">
+                                        <div className='w-[62px]'>
+                                            도메인명
+                                        </div>
+                                        <div>
+                                        <Input
+                                            className="p-1 mt-1 ml-2 h-[auto] rounded-md"
+                                            style={{ width: '200px' }}
+                                            defaultValue={focusDescription}
+                                            onBlur={onInputFocusOut}
+                                            placeholder="도메인명을 입력해주세요."
+                                        />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center mt-0 justify-left">
+                                     <div className='w-[62px]'>
+                                        인포타입
+                                        </div>
+                                        <div>
+                                        <Input
+                                            className="p-1 mt-1 ml-2 h-[auto] rounded-md"
+                                            style={{ width: '200px' }}
+                                            defaultValue={focusDescription}
+                                            onBlur={onInputFocusOut}
+                                            placeholder="인포 타입을 입력해주세요."
+                                        />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center mt-0 justify-left">
+                                        <div className='w-[62px]'>
+                                        데이터타입
+                                        </div>
+                                        <div>
+                                        <Input
+                                            className="p-1 mt-1 ml-2 h-[auto] rounded-md"
+                                            style={{ width: '200px' }}
+                                            defaultValue={focusDescription}
+                                            onBlur={onInputFocusOut}
+                                            placeholder="데이터 타입을 입력해주세요."
+                                        />
+                                        </div>
+                                    </div>
                                 </>
                             }
                         </div>
                     ) : (
-                        isInput ? 
-                            <Input
-                                className="p-1 mt-1 h-[150px] rounded-md"
-                                ref={inputRef}
-                                style={{ width: '300px' }}
-                                defaultValue={focusDescription}
-                                onBlur={onInputFocusOut}
-                                textArea
-                            />
-                            : (
-                                <div onClick={onClickDescriptionArea} className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[150px] hover:border-red-700 hover:border-2 hover:cursor-pointer'  >
-                                    { focusDescription }
-                                </div>
-                            )
+                        <div></div>
                     )
+                }
+                {
+                    isInput ? 
+                        <Input
+                            className="p-1 mt-1 h-[100px] rounded-md"
+                            ref={inputRef}
+                            style={{ width: '300px' }}
+                            defaultValue={focusDescription}
+                            onBlur={onInputFocusOut}
+                            textArea
+                            placeholder="상세정보를 입력해주세요."
+                        />
+                        : (
+                            <div onClick={onClickDescriptionArea} className='p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80 h-[100px] hover:border-red-700 hover:border-2 hover:cursor-pointer'  >
+                                { focusDescription }
+                            </div>
+                        )
                 }
             </>
         )
@@ -240,7 +302,7 @@ const VerticalMenuContent = (props) => {
                     {navigationTree.map((nav) => getNavItem(nav))}
                 </div>
                 <div>
-                    <div className='h-[200px] px-2 py-2 mt-1 mb-16 text-sm font-bold card-border card sm:px-1 md:px-2 mb-[83px]'>
+                    <div className='h-auto px-2 py-2 mt-1 text-sm font-bold card-border card sm:px-1 md:px-2 mb-[83px]'>
                     {focusGaneratorDom()}
                     </div>
                 </div>
