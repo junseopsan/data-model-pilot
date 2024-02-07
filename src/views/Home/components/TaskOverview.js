@@ -1,10 +1,11 @@
-import React, { useCallback, useState, useEffect, useMemo, useReducer  } from 'react'
+import React, { useCallback, useState, useEffect, useMemo, useRef, useReducer  } from 'react'
 import { Card } from 'components/ui'
 import ReactFlow, {
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
   addEdge,
+  updateEdge,
   // useNodes,
   // useNodeId,
   useReactFlow,
@@ -19,7 +20,7 @@ import ReactFlow, {
 import ConnectionLine from './ConnectionLine';
 import { Notification, toast } from 'components/ui'
 import { useDispatch, useSelector } from 'react-redux'
-import { setStoreData, setIsUndo, setIsRedo, setFocusInfo } from 'store/base/commonSlice'
+import { setStoreData, setIsUndo, setIsRedo, setFocusInfo, setItemMenu } from 'store/base/commonSlice'
 import TextUpdaterNode from '../nodes/TextUpdaterNode';
 import useUndoRedo from '../../../utils/hooks/useUndoRedo.ts';
 import EventBus from "../../../utils/hooks/EventBus";
@@ -37,13 +38,14 @@ const TaskOverview = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
+    const edgeUpdateSuccessful = useRef(true);
     const { setViewport, zoomIn, zoomOut } = useReactFlow();
     const handleTransform = useCallback(() => {
       setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 800 });
     }, [setViewport]);
     
     const dispatch = useDispatch()
-    const { storeData, entityInfo, modelInfo, edgeType } = useSelector(state => state.base.common)
+    const { storeData, entityInfo, modelInfo, edgeType, itemMenu } = useSelector(state => state.base.common)
 
     const defaultEdgeOptions = {
       type: 'smoothstep',
@@ -167,16 +169,7 @@ const TaskOverview = () => {
         setNodes(storeData.nodes || []);
         setEdges(storeData.edges || []);
       }
-    };
-
-    // 👇 make adding edges undoable
-    const onConnect = useCallback(
-      (connection) => {
-        takeSnapshot();
-        setEdges((edges) => addEdge(connection, edges));
-      },
-      [setEdges, takeSnapshot]
-    );
+    };    
 
     const onSave = useCallback((type) => {
       if (rfInstance) {
@@ -202,6 +195,50 @@ const TaskOverview = () => {
       takeSnapshot();
       setNodes((nds) => nds.concat(newNode))
     }, [setNodes, takeSnapshot]);
+
+    const onConnect = (cont) => {
+      propertyCopy(cont);
+      takeSnapshot();
+      setEdges((eds) => addEdge(cont, eds));
+    };
+
+    const onEdgeUpdate = (oldEdge, newEdge) => {
+      propertyCopy(newEdge);
+      setEdges((eds) => updateEdge(oldEdge, newEdge, eds));
+    };
+
+    const onEdgeUpdateStart = useCallback(() => {
+      edgeUpdateSuccessful.current = false;
+    }, []);
+
+    const onEdgeUpdateEnd = useCallback((_, edge) => {
+      if (!edgeUpdateSuccessful.current) {
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+      }
+      edgeUpdateSuccessful.current = true;
+    }, []);
+
+    const propertyCopy = (item) => {
+      // source = 시작ID, target = 도착ID
+      const { source, target } = item;
+
+      // 시작한 엔터티의 식별체크가 Y인 리스트
+      const discList = _.filter(itemMenu, f => (f.id === source && f.discCheck));
+      const targetList = _.filter(itemMenu, f => f.id === target);
+
+      // copy할 title가 같으면 제외함
+      const diffList = _.differenceBy(discList, targetList, 'title');
+
+      const copyList = _.map(diffList, (item) => {
+        return {
+          ...item,
+          id: target,
+          key: `${target}_${item.title}`
+        }
+      });
+
+      dispatch(setItemMenu([ ...itemMenu, ...copyList ]));
+    };
     
 
     const nodeColor = (node) => {
@@ -252,6 +289,9 @@ const TaskOverview = () => {
               fitView
               fitViewOptions={FitViewOption}
               onNodeClick={onNodeClick}
+              onEdgeUpdate={onEdgeUpdate}
+              onEdgeUpdateStart={onEdgeUpdateStart}
+              onEdgeUpdateEnd={onEdgeUpdateEnd}
               
               style={{ backgroundColor: '#1a202c' }}
 
