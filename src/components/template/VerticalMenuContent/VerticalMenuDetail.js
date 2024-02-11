@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { Checkbox, Input} from 'components/ui'
+import { Checkbox, Input, Button} from 'components/ui'
 import { setItemMenu, setModelInfo, setEntityInfo } from 'store/base/commonSlice';
 import _ from 'lodash';
 
@@ -11,10 +11,16 @@ const VerticalMenuDetail = () => {
     { id: 'infoType', text: '인포타입' },
     { id: 'dataType', text: '타이터타입' }
   ]
+  const EDGE_LIST = [
+    { id: 'firstType', text: 'Zero, One or More' },
+    { id: 'secondType', text: 'One or More' },
+    { id: 'thirdType', text: 'Zero or One' },
+  ]
   const inputRef = useRef();
   const dispatch = useDispatch();
   const { modelInfo, focusInfo, storeData, itemMenu } = useSelector(state => state.base.common);
   const [isInput, setIsInput] = useState(false);
+  const [selectedEdgeType, setSelectedEdgeType] = useState("");
 
   const checkboxChecked = (name) => {
     const { key } = focusInfo;
@@ -65,6 +71,11 @@ const VerticalMenuDetail = () => {
     setIsInput(false);
   }
 
+  const onClickEdgeType = (edge) => {
+    console.log(edge)
+    // setSelectedEdgeType(edgeType)
+  }
+
   const generatorDomProperty = (description) => {
     return (
       <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
@@ -89,6 +100,27 @@ const VerticalMenuDetail = () => {
                   placeholder={`${item.text}을 입력해주세요.`}
                 />
                 </div>
+              </div>
+            ))
+          }
+        </>
+      </div>
+    )
+  }
+  const generatorDomEdge = (description) => {
+    return (
+      <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
+        <>
+          <div className='flex justify-around w-full py-4'>
+            <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
+            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
+          </div>
+          {
+            _.map(EDGE_LIST, (item, i) => (
+              <div key={i} className="flex items-center justify-center mt-0">
+                <Button variant={selectedEdgeType === item.text ? 'solid' : 'twoTone'} color="red-600" size="md" className='w-[100%] text-center mt-2' onClick={onClickEdgeType(item)}>
+                  {item.text}
+                </Button>
               </div>
             ))
           }
@@ -125,10 +157,11 @@ const VerticalMenuDetail = () => {
 
   const focusGaneratorDom = () => {
     const { modelname, modelDescription } = modelInfo;
-    const { id, focusArea, focusName, focusDiscription } = focusInfo;
+    const { id, focusArea, focusName, focusDiscription, focusEdgeType } = focusInfo;
     let title = '';
     let label = '';
     let description = '';
+    let edgeMarkType = 'arrowclosed';
     const fined = _.find(storeData.nodes, f => f.id === id);
     if (fined) {
       label = fined.data.label;
@@ -149,13 +182,20 @@ const VerticalMenuDetail = () => {
         label = focusName;
         description = focusDiscription;
         break;
+      case 'edge':
+        title = null;
+        label = null;
+        description = null;
+        edgeMarkType = focusEdgeType;
+        break;
       default:  break;
     }
     return (
       <>
         <div className='h-5'>{title ? `${title}:` : ` `}  {label}</div>
         {focusArea === 'property' && generatorDomProperty(description)}
-        {generatorDomDetail(description)}
+        {focusArea === 'edge' && generatorDomEdge(edgeMarkType)}
+        {focusArea !== 'edge' && generatorDomDetail(description)}
       </>
     )
   }
