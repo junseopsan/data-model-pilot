@@ -113,7 +113,7 @@ const VerticalMenuDetail = () => {
         <>
           <div className='flex justify-around w-full py-4'>
             <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
-            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
+            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별여부</Checkbox>
           </div>
           {
             _.map(EDGE_LIST, (item, i) => (
