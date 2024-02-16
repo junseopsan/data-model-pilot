@@ -49,7 +49,7 @@ const VerticalMenuDetail = () => {
     if (fined) {
       let animated = fined.animated;
       if (name === 'discCheck') {
-        animated = checked;
+        animated = !checked;
       }
       dispatch(setEdgeInfo({
         ...fined,
