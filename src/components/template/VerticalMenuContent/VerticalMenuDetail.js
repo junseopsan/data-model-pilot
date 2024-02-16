@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Checkbox, Input, Button} from 'components/ui'
-import { setItemMenu, setModelInfo, setEntityInfo } from 'store/base/commonSlice';
+import { setItemMenu, setModelInfo, setEntityInfo, setEdgeInfo } from 'store/base/commonSlice';
 import _ from 'lodash';
 
 const VerticalMenuDetail = () => {
@@ -12,9 +12,9 @@ const VerticalMenuDetail = () => {
     { id: 'dataType', text: '타이터타입' }
   ]
   const EDGE_LIST = [
-    { id: 'firstType', text: 'Zero, One or More' },
-    { id: 'secondType', text: 'One or More' },
-    { id: 'thirdType', text: 'Zero or One' },
+    { id: 'firstType', text: 'Zero, One or More', type: 'All' },
+    { id: 'secondType', text: 'One or More', type: 'OneOrMore' },
+    { id: 'thirdType', text: 'Zero or One', type: 'ZeroOrOne' },
   ]
   const inputRef = useRef();
   const dispatch = useDispatch();
@@ -22,12 +22,12 @@ const VerticalMenuDetail = () => {
   const [isInput, setIsInput] = useState(false);
   const [selectedEdgeType, setSelectedEdgeType] = useState("");
 
-  const checkboxChecked = (name) => {
-    const { key } = focusInfo;
-    return itemMenu.some(s => (s.key === key && s[name]));
+  const checkboxChecked = (name, dynamicData) => {
+    const { key, id } = focusInfo;
+    return _.some(dynamicData, s => ((s.key || s.id) === (key || id) && s[name]));
   };
 
-  const onCheckbox = (e) => {
+  const onCheckboxProperty = (e) => {
     const { name, checked } = e.target;
     const { key } = focusInfo;
 
@@ -41,6 +41,17 @@ const VerticalMenuDetail = () => {
       })
     ))
   };
+
+  const onCheckboxEdge = (e) => {
+    const { name, checked } = e.target;
+    const { id } = focusInfo;
+    const fined = _.find(storeData.edges, f => f.id === id);
+    dispatch(setEdgeInfo({
+      ...fined,
+      [name]: checked
+    }));
+  };
+
 
   const onClickDescriptionArea = (e) => {
     e.stopPropagation();
@@ -72,8 +83,10 @@ const VerticalMenuDetail = () => {
   }
 
   const onClickEdgeType = (edge) => {
-    console.log(edge)
-    // setSelectedEdgeType(edgeType)
+    const { id } = focusInfo;
+    const fined = _.find(storeData.edges, f => f.id === id);
+    dispatch(setEdgeInfo({ ...fined, edgeType: edge.type }));
+    setSelectedEdgeType(edge.type);
   }
 
   const generatorDomProperty = (description) => {
@@ -81,8 +94,8 @@ const VerticalMenuDetail = () => {
       <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
         <>
           <div>
-            <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
-            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별허용여부</Checkbox>
+            <Checkbox name='nullCheck' onClick={onCheckboxProperty} checked={checkboxChecked('nullCheck', itemMenu)}>Null허용여부</Checkbox>
+            <Checkbox name='discCheck' onClick={onCheckboxProperty} checked={checkboxChecked('discCheck', itemMenu)}>식별허용여부</Checkbox>
           </div>
           {
             _.map(PROPERTY_LIST, (item, i) => (
@@ -112,13 +125,17 @@ const VerticalMenuDetail = () => {
       <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
         <>
           <div className='flex justify-around w-full py-4'>
-            <Checkbox name='nullCheck' onClick={onCheckbox} checked={checkboxChecked('nullCheck')}>Null허용여부</Checkbox>
-            <Checkbox name='discCheck' onClick={onCheckbox} checked={checkboxChecked('discCheck')}>식별여부</Checkbox>
+            <Checkbox name='nullCheck' onClick={onCheckboxEdge} checked={checkboxChecked('nullCheck', storeData.edges)}>Null허용여부</Checkbox>
+            <Checkbox name='discCheck' onClick={onCheckboxEdge} checked={checkboxChecked('discCheck', storeData.edges)}>식별여부</Checkbox>
           </div>
           {
             _.map(EDGE_LIST, (item, i) => (
               <div key={i} className="flex items-center justify-center mt-0">
-                <Button variant={selectedEdgeType === item.text ? 'solid' : 'twoTone'} color="red-600" size="md" className='w-[100%] text-center mt-2' onClick={onClickEdgeType(item)}>
+                <Button
+                  variant={selectedEdgeType === item.type ? 'solid' : 'twoTone'}
+                  color="red-600" size="md" className='w-[100%] text-center mt-2'
+                  onClick={() => onClickEdgeType(item)}
+                >
                   {item.text}
                 </Button>
               </div>

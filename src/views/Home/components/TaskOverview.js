@@ -45,14 +45,17 @@ const TaskOverview = () => {
     }, [setViewport]);
     
     const dispatch = useDispatch()
-    const { storeData, entityInfo, modelInfo, edgeType, itemMenu } = useSelector(state => state.base.common)
+    const { storeData, entityInfo, modelInfo, edgeType, itemMenu, edgeInfo } = useSelector(state => state.base.common)
 
     const defaultEdgeOptions = {
       type: 'smoothstep',
       // markerEnd: 'logo', <-- 이것을 선택하면 edge 타입이 커스텀 svg 파일로 변경됨.
       markerEnd: { type: MarkerType.ArrowClosed },
       style: { strokeWidth: 2 },
-      animated: edgeType
+      animated: edgeType,
+      edgeType: '',
+      nullCheck: false,
+      discCheck: edgeType ? false : true
     };
 
     /**
@@ -169,6 +172,13 @@ const TaskOverview = () => {
     useEffect(()=>{
       onLoadUpdate()
     },[modelInfo])
+
+    useEffect(() => {
+      if (edgeInfo.id) {
+        const edgeList = _.uniqBy(_.concat(edgeInfo, storeData?.edges), 'id');
+        setEdges(edgeList);
+      }
+    }, [edgeInfo]);
     
     // useEffect(()=>{
     //   console.log('storeData', storeData)

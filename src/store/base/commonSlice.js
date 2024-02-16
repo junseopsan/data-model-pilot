@@ -30,6 +30,12 @@ export const initialState = {
         isNewModel: false,
         isNewOpen: false
     },
+    edgeInfo: {
+        id: '',
+        edgeType: '',
+        nullCheck: false,
+        discCheck: false
+    },
     storeData: [],
     itemMenu: [],
 }
@@ -62,6 +68,9 @@ export const commonSlice = createSlice({
         setPropertyInfo: (state, action) => {
             state.propertyInfo = action.payload
         },
+        setEdgeInfo: (state, action) => {
+            state.edgeInfo = action.payload
+        },
         setStoreData: (state, action) => {
             state.storeData = action.payload
         },
@@ -71,6 +80,6 @@ export const commonSlice = createSlice({
     },
 })
 
-export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusInfo, setModelInfo, setEntityInfo, setPropertyInfo, setStoreData, setItemMenu } = commonSlice.actions
+export const { setCurrentRouteKey, setEdgeType, setIsUndo, setIsRedo, setFocusInfo, setModelInfo, setEntityInfo, setPropertyInfo, setEdgeInfo, setStoreData, setItemMenu } = commonSlice.actions
 
 export default commonSlice.reducer
