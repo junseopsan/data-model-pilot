@@ -20,7 +20,6 @@ const VerticalMenuDetail = () => {
   const dispatch = useDispatch();
   const { modelInfo, focusInfo, storeData, itemMenu } = useSelector(state => state.base.common);
   const [isInput, setIsInput] = useState(false);
-  const [selectedEdgeType, setSelectedEdgeType] = useState("");
 
   const checkboxChecked = (name, dynamicData) => {
     const { key, id } = focusInfo;
@@ -86,7 +85,6 @@ const VerticalMenuDetail = () => {
     const { id } = focusInfo;
     const fined = _.find(storeData.edges, f => f.id === id);
     dispatch(setEdgeInfo({ ...fined, edgeType: edge.type }));
-    setSelectedEdgeType(edge.type);
   }
 
   const generatorDomProperty = (description) => {
@@ -121,6 +119,8 @@ const VerticalMenuDetail = () => {
     )
   }
   const generatorDomEdge = (description) => {
+    const { id } = focusInfo;
+    const fined = _.find(storeData?.edges, f => f.id === id);
     return (
       <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
         <>
@@ -132,7 +132,7 @@ const VerticalMenuDetail = () => {
             _.map(EDGE_LIST, (item, i) => (
               <div key={i} className="flex items-center justify-center mt-0">
                 <Button
-                  variant={selectedEdgeType === item.type ? 'solid' : 'twoTone'}
+                  variant={fined?.edgeType === item.type ? 'solid' : 'twoTone'}
                   color="red-600" size="md" className='w-[100%] text-center mt-2'
                   onClick={() => onClickEdgeType(item)}
                 >
