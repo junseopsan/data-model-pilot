@@ -45,10 +45,18 @@ const VerticalMenuDetail = () => {
     const { name, checked } = e.target;
     const { id } = focusInfo;
     const fined = _.find(storeData.edges, f => f.id === id);
-    dispatch(setEdgeInfo({
-      ...fined,
-      [name]: checked
-    }));
+
+    if (fined) {
+      let animated = fined.animated;
+      if (name === 'discCheck') {
+        animated = checked;
+      }
+      dispatch(setEdgeInfo({
+        ...fined,
+        animated,
+        [name]: checked
+      }));
+    }
   };
 
 
