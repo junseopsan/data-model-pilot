@@ -38,6 +38,8 @@ const TaskOverview = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
+    const [markerEnd, setMarkerEnd] = useState({ type: MarkerType.ArrowClosed });
+    const [refY, setRefY] = useState(10.5);
     const edgeUpdateSuccessful = useRef(true);
     const { setViewport, zoomIn, zoomOut } = useReactFlow();
     const handleTransform = useCallback(() => {
@@ -49,8 +51,7 @@ const TaskOverview = () => {
 
     const defaultEdgeOptions = {
       type: 'smoothstep',
-      // markerEnd: 'logo', <-- 이것을 선택하면 edge 타입이 커스텀 svg 파일로 변경됨.
-      markerEnd: { type: MarkerType.ArrowClosed },
+      markerEnd: markerEnd,  // <-- 이것을 선택하면 edge 타입이 커스텀 svg 파일로 변경됨.
       style: { strokeWidth: 2 },
       animated: edgeType,
       edgeType: '',
@@ -175,6 +176,8 @@ const TaskOverview = () => {
 
     useEffect(() => {
       if (edgeInfo.id) {
+        setMarkerEnd(edgeInfo.markerEnd)
+        setRefY(edgeInfo.refY)
         const edgeList = _.uniqBy(_.concat(edgeInfo, storeData?.edges), 'id');
         setEdges(edgeList);
       }
@@ -260,22 +263,9 @@ const TaskOverview = () => {
           key: `${target}_${item.title}`
         }
       });
-
       dispatch(setItemMenu([ ...itemMenu, ...copyList ]));
     };
     
-
-    const nodeColor = (node) => {
-      switch (node.type) {
-        case 'input':
-          return '#6ede87';
-        case 'output':
-          return '#6865A5';
-        default:
-          return '#ff0072';
-      }
-    };
-
     const FitViewOption = {
       minZoom: 1,
       maxZoom: 1,
@@ -292,98 +282,43 @@ const TaskOverview = () => {
           }
       )
     }
+
+    const markerPathD = (type) => {   
+      let d = ""
+      // 식별관계선은 _ 로 표시한다. 식별관계선이면서 선택가능한 3가지 옵션
+      if(type === '_ZeroOneOrMore') d = "M20.7,17.5l-9.2-7l9-7c0.2-0.1,0.4-0.3,0.4-0.6c0-0.2,0-0.5-0.1-0.6c-0.1-0.2-0.3-0.3-0.6-0.4c-0.3,0-0.5,0-0.6,0.2L11,8.7V0.9C11,0.4,10.6,0,10.1,0S9.2,0.4,9.2,0.9v1.5C8.4,1.9,7.5,1.7,6.5,1.7C2.9,1.7,0,5.6,0,10.5c0,4.9,2.9,8.8,6.6,8.8c0.9,0,1.8-0.3,2.7-0.8v1.6c0,0.5,0.4,0.9,0.9,0.9s0.9-0.4,0.9-0.9v-7.8l8.5,6.6c0.2,0.2,0.3,0.2,0.6,0.2c0.3,0,0.5-0.2,0.7-0.3l0.1-0.1C21.2,18.3,21.1,17.9,20.7,17.5z M7.2,17.4c-0.2,0-0.5,0.1-0.7,0.1c-2.6,0-4.8-3.2-4.8-7c0-3.8,2.2-7,4.8-7c1,0,1.9,0.4,2.7,1.2v11.6C8.5,16.9,7.9,17.3,7.2,17.4z"
+      else if(type === '_OneorMore') d = "M11.9,0.4c-0.1-0.1-0.1-0.2-0.3-0.3C11.5,0.1,11.3,0,11.2,0c0,0-0.1,0-0.1,0c-0.5,0-0.9,0.4-0.9,0.9v1.6C9.3,2,8.3,1.7,7.2,1.7c-4,0-7.2,3.9-7.2,8.8s3.2,8.8,7.2,8.8c1.1,0,2.1-0.3,3-0.8v1.6c0,0.5,0.4,0.9,0.9,0.9s0.9-0.4,0.9-0.9c0,0,0,0,0-0.1c0-0.1,0-0.1,0-0.2c0-0.1,0-0.2,0-0.3c0-0.1,0-0.3,0-0.4c0-0.2,0-0.4,0-0.5c0-0.2,0-0.4,0-0.6c0-0.2,0-0.5,0-0.7c0-0.3,0-0.5,0-0.8c0-0.3,0-0.6,0-0.9c0-0.3,0-0.6,0-0.9c0-0.3,0-0.6,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.6,0-1c0-0.3,0-0.6,0-0.9c0-0.3,0-0.6,0-0.9c0-0.3,0-0.5,0-0.8c0-0.2,0-0.5,0-0.7c0-0.2,0-0.4,0-0.7c0-0.2,0-0.4,0-0.6c0-0.2,0-0.3,0-0.5c0-0.2,0-0.4,0-0.6C12,0.8,12,0.6,11.9,0.4z M7.2,17.5c-3,0-5.4-3.1-5.4-7c0-3.8,2.5-7,5.4-7c1.1,0,2.1,0.4,3,1.2v11.6C9.3,17.1,8.3,17.5,7.2,17.5z"
+      else if(type === '_ZeroOrOne') d = "M20.5,29.4L3.3,17.3L20.5,5.2c0.5-0.3,0.7-1,0.3-1.7c-0.3-0.5-1-0.7-1.7-0.3L2.4,15V1.2C2.4,0.5,1.9,0,1.2,0S0,0.5,0,1.2v32.2c0,0.7,0.5,1.2,1.2,1.2s1.2-0.5,1.2-1.2V19.6L19,31.3c0.2,0.2,0.6,0.2,0.8,0.2c0.3,0,0.7-0.1,1-0.4c0.2-0.2,0.3-0.5,0.2-0.8C21,29.9,20.8,29.6,20.5,29.4z"
+      
+      return d
+    }
+
+    const EdgeItem = ({markerEnd, refY}) => {
+      return (
+          <>
+            <svg strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
+              <defs>
+                  <marker
+                    id={markerEnd}
+                    viewBox="0 0 40 40"
+                    markerWidth={20}
+                    markerHeight={20}
+                    refX={18}
+                    refY={refY}
+                    orient="auto"
+                  >
+                    <path style={{fill:'#B1B1B7'}} d={markerPathD(markerEnd)}/>
+                  </marker>
+              </defs>
+              </svg>
+          </>
+      )
+    }
     
     return (
         // <style>.cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px;}</style>
         <Card className="w-full h-full" bodyClass="h-full">
-            <svg style={{ position: 'absolute', top: 0, left: 0 }}>
-              <defs>
-                <marker
-                  id="logo"
-                  viewBox="0 0 40 40"
-                  markerHeight={20}
-                  markerWidth={20}
-                  refX={20}
-                  refY={40}
-                >
-                  <path
-                    d="M35 23H25C23.8954 23 23 23.8954 23 25V35C23 36.1046 23.8954 37 25 37H35C36.1046 37 37 36.1046 37 35V25C37 23.8954 36.1046 23 35 23Z"
-                    stroke="#1A192B"
-                    stroke-width="2"
-                    fill="white"
-                  />
-                  <path
-                    d="M35 3H25C23.8954 3 23 3.89543 23 5V15C23 16.1046 23.8954 17 25 17H35C36.1046 17 37 16.1046 37 15V5C37 3.89543 36.1046 3 35 3Z"
-                    stroke="#FF0072"
-                    stroke-width="2"
-                    fill="white"
-                  />
-                  <path
-                    d="M15 23H5C3.89543 23 3 23.8954 3 25V35C3 36.1046 3.89543 37 5 37H15C16.1046 37 17 36.1046 17 35V25C17 23.8954 16.1046 23 15 23Z"
-                    stroke="#1A192B"
-                    stroke-width="2"
-                    fill="white"
-                  />
-                  <path
-                    d="M15 3H5C3.89543 3 3 3.89543 3 5V15C3 16.1046 3.89543 17 5 17H15C16.1046 17 17 16.1046 17 15V5C17 3.89543 16.1046 3 15 3Z"
-                    stroke="#1A192B"
-                    stroke-width="2"
-                    fill="white"
-                  />
-                  <path
-                    d="M17 13C18.6569 13 20 11.6569 20 10C20 8.34315 18.6569 7 17 7C15.3431 7 14 8.34315 14 10C14 11.6569 15.3431 13 17 13Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M23 13C24.6569 13 26 11.6569 26 10C26 8.34315 24.6569 7 23 7C21.3431 7 20 8.34315 20 10C20 11.6569 21.3431 13 23 13Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M30 20C31.6569 20 33 18.6569 33 17C33 15.3431 31.6569 14 30 14C28.3431 14 27 15.3431 27 17C27 18.6569 28.3431 20 30 20Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M30 26C31.6569 26 33 24.6569 33 23C33 21.3431 31.6569 20 30 20C28.3431 20 27 21.3431 27 23C27 24.6569 28.3431 26 30 26Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M17 33C18.6569 33 20 31.6569 20 30C20 28.3431 18.6569 27 17 27C15.3431 27 14 28.3431 14 30C14 31.6569 15.3431 33 17 33Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M23 33C24.6569 33 26 31.6569 26 30C26 28.3431 24.6569 27 23 27C21.3431 27 20 28.3431 20 30C20 31.6569 21.3431 33 23 33Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M30 25C31.1046 25 32 24.1046 32 23C32 21.8954 31.1046 21 30 21C28.8954 21 28 21.8954 28 23C28 24.1046 28.8954 25 30 25Z"
-                    fill="#1A192B"
-                  />
-                  <path
-                    d="M17 32C18.1046 32 19 31.1046 19 30C19 28.8954 18.1046 28 17 28C15.8954 28 15 28.8954 15 30C15 31.1046 15.8954 32 17 32Z"
-                    fill="#1A192B"
-                  />
-                  <path
-                    d="M23 32C24.1046 32 25 31.1046 25 30C25 28.8954 24.1046 28 23 28C21.8954 28 21 28.8954 21 30C21 31.1046 21.8954 32 23 32Z"
-                    fill="#1A192B"
-                  />
-                  <path opacity="0.35" d="M22 9.5H18V10.5H22V9.5Z" fill="#1A192B" />
-                  <path opacity="0.35" d="M29.5 17.5V21.5H30.5V17.5H29.5Z" fill="#1A192B" />
-                  <path opacity="0.35" d="M22 29.5H18V30.5H22V29.5Z" fill="#1A192B" />
-                  <path
-                    d="M17 12C18.1046 12 19 11.1046 19 10C19 8.89543 18.1046 8 17 8C15.8954 8 15 8.89543 15 10C15 11.1046 15.8954 12 17 12Z"
-                    fill="#1A192B"
-                  />
-                  <path
-                    d="M23 12C24.1046 12 25 11.1046 25 10C25 8.89543 24.1046 8 23 8C21.8954 8 21 8.89543 21 10C21 11.1046 21.8954 12 23 12Z"
-                    fill="#FF0072"
-                  />
-                  <path
-                    d="M30 19C31.1046 19 32 18.1046 32 17C32 15.8954 31.1046 15 30 15C28.8954 15 28 15.8954 28 17C28 18.1046 28.8954 19 30 19Z"
-                    fill="#FF0072"
-                  />
-                </marker>
-              </defs>
-            </svg>
+           <EdgeItem markerEnd={markerEnd} refY={refY} />
            <ReactFlow 
               nodes={nodes}
               edges={edges}
@@ -406,12 +341,10 @@ const TaskOverview = () => {
               onEdgeUpdate={onEdgeUpdate}
               onEdgeUpdateStart={onEdgeUpdateStart}
               onEdgeUpdateEnd={onEdgeUpdateEnd}
-              
               style={{ backgroundColor: '#1a202c' }}
-
               >
                 <Background />
-                <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
+                <MiniMap nodeStrokeWidth={3} zoomable pannable />
                 <Controls showZoom={false} showInteractive={false} fitViewOptions={{duration:1000}}></Controls>
                 <Panel position="bottom-center">
                   <div hidden>

@@ -12,9 +12,9 @@ const VerticalMenuDetail = () => {
     { id: 'dataType', text: '타이터타입' }
   ]
   const EDGE_LIST = [
-    { id: 'firstType', text: 'Zero, One or More', type: 'All' },
-    { id: 'secondType', text: 'One or More', type: 'OneOrMore' },
-    { id: 'thirdType', text: 'Zero or One', type: 'ZeroOrOne' },
+    { id: 'firstType', text: 'Zero, One or More', type: 'ZeroOneOrMore', refY: 10.5 },
+    { id: 'secondType', text: 'One or More', type: 'OneorMore', refY: 10.5 },
+    { id: 'thirdType', text: 'Zero or One', type: 'ZeroOrOne', refY: 17 },
   ]
   const inputRef = useRef();
   const dispatch = useDispatch();
@@ -92,7 +92,8 @@ const VerticalMenuDetail = () => {
   const onClickEdgeType = (edge) => {
     const { id } = focusInfo;
     const fined = _.find(storeData.edges, f => f.id === id);
-    dispatch(setEdgeInfo({ ...fined, edgeType: edge.type }));
+    const getMarkerEnd = fined.animated === '' ? `_${edge.type}` : edge.type
+    dispatch(setEdgeInfo({ ...fined, refY: edge.refY, markerEnd: getMarkerEnd, btnType: edge.type}));
   }
 
   const generatorDomProperty = (description) => {
@@ -140,7 +141,7 @@ const VerticalMenuDetail = () => {
             _.map(EDGE_LIST, (item, i) => (
               <div key={i} className="flex items-center justify-center mt-0">
                 <Button
-                  variant={fined?.edgeType === item.type ? 'solid' : 'twoTone'}
+                  variant={fined?.btnType === item.type ? 'solid' : 'twoTone'}
                   color="red-600" size="md" className='w-[100%] text-center mt-2'
                   onClick={() => onClickEdgeType(item)}
                 >
