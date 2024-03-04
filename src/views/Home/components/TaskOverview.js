@@ -293,32 +293,36 @@ const TaskOverview = () => {
       return d
     }
 
-    const EdgeItem = ({markerEnd, refY}) => {
+    const EdgeItem = ({ edges }) => {
       return (
-          <>
-            <svg strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
-              <defs>
+        <>
+          {
+            _.map(edges, (item, i) => (
+              <svg key={i} strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
+                <defs>
                   <marker
-                    id={markerEnd}
+                    id={item.markerEnd}
                     viewBox="0 0 40 40"
                     markerWidth={20}
                     markerHeight={20}
                     refX={18}
-                    refY={refY}
+                    refY={item.refY}
                     orient="auto"
                   >
-                    <path style={{fill:'#B1B1B7'}} d={markerPathD(markerEnd)}/>
+                    <path style={{fill:'#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
                   </marker>
               </defs>
               </svg>
-          </>
+            ))
+          }
+        </>
       )
     }
     
     return (
         // <style>.cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px;}</style>
         <Card className="w-full h-full" bodyClass="h-full">
-           <EdgeItem markerEnd={markerEnd} refY={refY} />
+           <EdgeItem edges={storeData?.edges} />
            <ReactFlow 
               nodes={nodes}
               edges={edges}
@@ -342,7 +346,7 @@ const TaskOverview = () => {
               onEdgeUpdateStart={onEdgeUpdateStart}
               onEdgeUpdateEnd={onEdgeUpdateEnd}
               style={{ backgroundColor: '#1a202c' }}
-              >
+            >
                 <Background />
                 <MiniMap nodeStrokeWidth={3} zoomable pannable />
                 <Controls showZoom={false} showInteractive={false} fitViewOptions={{duration:1000}}></Controls>
