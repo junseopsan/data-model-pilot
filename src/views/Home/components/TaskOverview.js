@@ -47,7 +47,7 @@ const TaskOverview = () => {
     }, [setViewport]);
     
     const dispatch = useDispatch()
-    const { storeData, entityInfo, modelInfo, edgeType, itemMenu, edgeInfo } = useSelector(state => state.base.common)
+    const { storeData, entityInfo, modelInfo, edgeType, itemMenu, edgeInfo, focusInfo } = useSelector(state => state.base.common)
 
     const defaultEdgeOptions = {
       type: 'smoothstep',
@@ -77,6 +77,7 @@ const TaskOverview = () => {
      */
     const onEdgeClick = (e, element) =>{
       dispatch(setFocusInfo({ focusArea: 'edge', id: element.id, focusEdgeType: element.markerEnd.type}))
+
     };
 
     useEffect(() => {
@@ -294,6 +295,7 @@ const TaskOverview = () => {
     }
 
     const EdgeItem = ({ edges }) => {
+      const { id } = focusInfo
       return (
         <>
           {
@@ -309,7 +311,7 @@ const TaskOverview = () => {
                     refY={item.refY}
                     orient="auto"
                   >
-                    <path style={{fill:'#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
+                    <path style={{fill: id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
                   </marker>
               </defs>
               </svg>
