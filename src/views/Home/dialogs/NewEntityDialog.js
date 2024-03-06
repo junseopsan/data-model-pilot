@@ -43,7 +43,6 @@ const NewEntityDialog = ({ data, onDialogClose}) => {
                 const changeNode = clonedNode.nodes.filter(item=> item.id === data.selectEntity.key)
                 changeNode[0].data.label = text
                 changeNode[0].data.description = description
-                EventBus.emit("CHANGE-NODES", changeNode[0]);
             }
             setText('')
             setDescription('')

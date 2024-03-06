@@ -15,6 +15,7 @@ import ReactFlow, {
   MarkerType,
   ConnectionMode,
   ConnectionLineType,
+  applyEdgeChanges
   // useOnSelectionChange
 } from 'reactflow';
 import ConnectionLine from './ConnectionLine';
@@ -33,53 +34,32 @@ import _ from 'lodash';
 const proOptions = { account: 'paid-pro', hideAttribution: true };
 
 const TaskOverview = () => {
+  const dispatch = useDispatch()
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
     const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [edges, setEdges] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
     const [markerEnd, setMarkerEnd] = useState({ type: MarkerType.ArrowClosed });
-    const [refY, setRefY] = useState(10.5);
     const edgeUpdateSuccessful = useRef(true);
+    const [edgeSelected, setEdgeSelected] = useState({ selected: false, id: '' });
     const { setViewport, zoomIn, zoomOut } = useReactFlow();
-    const handleTransform = useCallback(() => {
-      setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 800 });
-    }, [setViewport]);
-    
-    const dispatch = useDispatch()
     const { storeData, entityInfo, modelInfo, edgeType, itemMenu, edgeInfo, focusInfo } = useSelector(state => state.base.common)
-
+    const FitViewOption = {
+      minZoom: 1,
+      maxZoom: 1,
+      duration: 500,
+    }
     const defaultEdgeOptions = {
       type: 'smoothstep',
-      markerEnd: markerEnd,  // <-- 이것을 선택하면 edge 타입이 커스텀 svg 파일로 변경됨.
+      markerEnd: markerEnd,
       style: { strokeWidth: 2 },
       animated: edgeType,
       edgeType: '',
       nullCheck: false,
       discCheck: edgeType ? false : true
     };
-
-    /**
-     * 엔터티 클릭 이벤트
-     * @param {*} e 
-     * @param {*} element 
-     */
-    const onNodeClick = (e, element) =>{
-      const description = element.data.description
-      const text = element.data.label
-      dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description, id: element.id}))
-    };
     
-    /**
-     * 관계선 클릭 이벤트
-     * @param {*} e 
-     * @param {*} element 
-     */
-    const onEdgeClick = (e, element) =>{
-      dispatch(setFocusInfo({ focusArea: 'edge', id: element.id, focusEdgeType: element.markerEnd.type}))
-
-    };
-
     useEffect(() => {
       EventBus.on("SHOW-MSG", (msg) => {
         triggerMessage(msg)
@@ -118,20 +98,38 @@ const TaskOverview = () => {
       };
     }, []);
 
-    // node 수정 액션
-    // useEffect(() => {
-    //   EventBus.on("CHANGE-NODES", (data) => {
-    //     let flow = rfInstance?.toObject();
-    //     if(flow && flow.nodes.length > 0){
-    //       const getNodes = flow.nodes.map(item => item.id === data.id ? data : item)
-    //       console.log('change nodes');
-    //       setNodes(getNodes);
-    //     }
-    //   });
-    //   return () => {
-    //     EventBus.off("CHANGE-NODES");
-    //   };
-    // }, [rfInstance]);
+    const onEdgesChange = useCallback(
+      (changes) => {
+        setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
+        if(changes[0].selected) setEdgeSelected(changes[0])
+        else {
+          setMarkerEnd({ type: MarkerType.ArrowClosed })
+          dispatch(setFocusInfo({ focusArea: 'model', focusName: modelInfo.modelName, focusDescription: modelInfo.modelDescription }))
+        } 
+      },
+      [setEdges],
+    );
+
+    /**
+     * 엔터티 클릭 이벤트
+     * @param {*} e 
+     * @param {*} element 
+     */
+    const onNodeClick = (e, element) =>{
+      const description = element.data.description
+      const text = element.data.label
+      dispatch(setFocusInfo({ focusArea: 'entity', focusName: text, focusDescription: description, id: element.id}))
+    };
+    
+    /**
+     * 관계선 클릭 이벤트
+     * @param {*} e 
+     * @param {*} element 
+     */
+    const onEdgeClick = (e, element) =>{
+      dispatch(setFocusInfo({ focusArea: 'edge', id: element.id, focusEdgeType: element.markerEnd.type}))
+
+    };
 
     useEffect(()=> {
       dispatch(setIsUndo(canUndo))
@@ -178,16 +176,11 @@ const TaskOverview = () => {
     useEffect(() => {
       if (edgeInfo.id) {
         setMarkerEnd(edgeInfo.markerEnd)
-        setRefY(edgeInfo.refY)
         const edgeList = _.uniqBy(_.concat(edgeInfo, storeData?.edges), 'id');
         setEdges(edgeList);
       }
     }, [edgeInfo]);
     
-    // useEffect(()=>{
-    //   console.log('storeData', storeData)
-    // },[storeData])
-
     useEffect(() => {
       onSave()
     },[nodes, edges])
@@ -266,12 +259,6 @@ const TaskOverview = () => {
       });
       dispatch(setItemMenu([ ...itemMenu, ...copyList ]));
     };
-    
-    const FitViewOption = {
-      minZoom: 1,
-      maxZoom: 1,
-      duration: 500,
-    }
 
     const triggerMessage = (msg) => {
       toast.push(
@@ -311,7 +298,7 @@ const TaskOverview = () => {
                     refY={item.refY}
                     orient="auto"
                   >
-                    <path style={{fill: id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
+                    <path style={{fill: edgeSelected.selected && id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
                   </marker>
               </defs>
               </svg>
@@ -322,7 +309,6 @@ const TaskOverview = () => {
     }
     
     return (
-        // <style>.cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px;}</style>
         <Card className="w-full h-full" bodyClass="h-full">
            <EdgeItem edges={storeData?.edges} />
            <ReactFlow 
@@ -370,10 +356,6 @@ const TaskOverview = () => {
 }
 
 function ReactFlowWrapper(props) {
-  const reRender = () => {
-    // calling the forceUpdate() method
-    this.forceUpdate();
-  };
   return (
     <ReactFlowProvider>
       <TaskOverview {...props} />
