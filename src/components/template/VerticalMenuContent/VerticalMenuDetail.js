@@ -18,7 +18,7 @@ const VerticalMenuDetail = () => {
   ]
   const inputRef = useRef();
   const dispatch = useDispatch();
-  const { modelInfo, focusInfo, storeData, itemMenu } = useSelector(state => state.base.common);
+  const { modelInfo, focusInfo, storeData, itemMenu, edgeType } = useSelector(state => state.base.common);
   const [isInput, setIsInput] = useState(false);
 
   const checkboxChecked = (name, dynamicData) => {
@@ -92,8 +92,13 @@ const VerticalMenuDetail = () => {
   const onClickEdgeType = (edge) => {
     const { id } = focusInfo;
     const fined = _.find(storeData.edges, f => f.id === id);
-    const getMarkerEnd = fined.animated === '' ? `_${edge.type}` : edge.type
-    dispatch(setEdgeInfo({ ...fined, refY: edge.refY, markerEnd: getMarkerEnd, btnType: edge.type}));
+    const getMarkerEnd = fined.animated === '' ? `_${edge.type}` : `..${edge.type}`
+    let refY = edge.refY
+    // 비관계선
+    if(edgeType){
+      refY = getMarkerEnd === '..OneorMore' ? 17.5 : 10.5
+    }
+    dispatch(setEdgeInfo({ ...fined, refY: refY, markerEnd: getMarkerEnd, btnType: edge.type}));
   }
 
   const generatorDomProperty = (description) => {
