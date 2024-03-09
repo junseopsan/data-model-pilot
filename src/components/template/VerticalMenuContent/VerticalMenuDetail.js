@@ -45,7 +45,7 @@ const VerticalMenuDetail = () => {
     const { name, checked } = e.target;
     const { id } = focusInfo;
     const fined = _.find(storeData.edges, f => f.id === id);
-
+    
     if (fined) {
       let animated = fined.animated;
       if (name === 'discCheck') {
@@ -92,13 +92,15 @@ const VerticalMenuDetail = () => {
   const onClickEdgeType = (edge) => {
     const { id } = focusInfo;
     const fined = _.find(storeData.edges, f => f.id === id);
+    // debugger
     const getMarkerEnd = fined.animated === '' ? `_${edge.type}` : `..${edge.type}`
+    const getMarkerStart = 'arrow'
     let refY = edge.refY
     // 비관계선
     if(edgeType){
       refY = getMarkerEnd === '..OneorMore' ? 17.5 : 10.5
     }
-    dispatch(setEdgeInfo({ ...fined, refY: refY, markerEnd: getMarkerEnd, btnType: edge.type}));
+    dispatch(setEdgeInfo({ ...fined, refY: refY, markerStart: getMarkerStart, markerEnd: getMarkerEnd, btnType: edge.type}));
   }
 
   const generatorDomProperty = (description) => {

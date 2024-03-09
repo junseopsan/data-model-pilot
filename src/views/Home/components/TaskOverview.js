@@ -41,6 +41,7 @@ const TaskOverview = () => {
     const [edges, setEdges] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
     const [markerEnd, setMarkerEnd] = useState({ type: MarkerType.ArrowClosed });
+    const [markerStart, setMarkerStart] = useState({ type: MarkerType.ArrowClosed });
     const edgeUpdateSuccessful = useRef(true);
     const [edgeSelected, setEdgeSelected] = useState({ selected: false, id: '' });
     const { setViewport, zoomIn, zoomOut } = useReactFlow();
@@ -52,6 +53,7 @@ const TaskOverview = () => {
     }
     const defaultEdgeOptions = {
       type: 'smoothstep',
+      markerStart: markerStart,
       markerEnd: markerEnd,
       style: { strokeWidth: 2 },
       animated: edgeType,
@@ -128,8 +130,7 @@ const TaskOverview = () => {
      * @param {*} element 
      */
     const onEdgeClick = (e, element) =>{
-      dispatch(setFocusInfo({ focusArea: 'edge', id: element.id, focusEdgeType: element.markerEnd.type}))
-
+      dispatch(setFocusInfo({ focusArea: 'edge', id: element.id, focusEdgeType: element.markerEnd.type, nullCheck: element.nullCheck}))
     };
 
     useEffect(()=> {
@@ -176,6 +177,8 @@ const TaskOverview = () => {
 
     useEffect(() => {
       if (edgeInfo.id) {
+        if(edgeInfo.animated && edgeInfo.nullCheck) setMarkerStart('..ZeroOrOne')
+        
         setMarkerEnd(edgeInfo.markerEnd)
         const edgeList = _.uniqBy(_.concat(edgeInfo, storeData?.edges), 'id');
         setEdges(edgeList);
@@ -294,26 +297,44 @@ const TaskOverview = () => {
     }
 
     const EdgeItem = ({ edges }) => {
-      const { id } = focusInfo
+      const { id, nullCheck } = focusInfo
+      // if(nullCheck) setMarkerStart(typeTwo)
       return (
         <>
           {
             _.map(edges, (item, i) => (
-              <svg key={i} strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
-                <defs>
-                  <marker
-                    id={item.markerEnd}
-                    viewBox="0 0 40 40"
-                    markerWidth={20}
-                    markerHeight={20}
-                    refX={18}
-                    refY={item.refY}
-                    orient="auto"
-                  >
-                    <path style={{fill: edgeSelected.selected && edgeSelected.id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
-                  </marker>
-              </defs>
-              </svg>
+              <>
+                {/* <svg key={`markerStart_${i}`} strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
+                  <defs>
+                    <marker
+                      id={item.markerStart}
+                      viewBox="0 0 40 40"
+                      markerWidth={20}
+                      markerHeight={20}
+                      refX={18}
+                      refY={item.refY}
+                      orient="auto"
+                    >
+                      <path style={{fill: edgeSelected.selected && id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerStart)}/>
+                    </marker>
+                  </defs>
+                </svg> */}
+                <svg key={i} strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
+                  <defs>
+                    <marker
+                      id={item.markerEnd}
+                      viewBox="0 0 40 40"
+                      markerWidth={20}
+                      markerHeight={20}
+                      refX={18}
+                      refY={item.refY}
+                      orient="auto"
+                    >
+                      <path style={{fill: edgeSelected.selected && id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
+                    </marker>
+                  </defs>
+                </svg>
+              </>
             ))
           }
         </>
