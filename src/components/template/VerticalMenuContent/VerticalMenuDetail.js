@@ -12,9 +12,9 @@ const VerticalMenuDetail = () => {
     { id: 'dataType', text: '타이터타입' }
   ]
   const EDGE_LIST = [
-    { id: 'firstType', text: 'Zero, One or More', type: 'ZeroOneOrMore', refY: 10.5 },
-    { id: 'secondType', text: 'One or More', type: 'OneorMore', refY: 10.5 },
-    { id: 'thirdType', text: 'Zero or One', type: 'ZeroOrOne', refY: 17 },
+    { id: 'firstType', text: 'Zero, One or More', type: 'ZeroOneOrMore', refY: 10.5, refX: 18 },
+    { id: 'secondType', text: 'One or More', type: 'OneorMore', refY: 10.5, refX: 18 },
+    { id: 'thirdType', text: 'Zero or One', type: 'ZeroOrOne', refY: 10.5, refX: 10 },
   ]
   const inputRef = useRef();
   const dispatch = useDispatch();
@@ -51,9 +51,11 @@ const VerticalMenuDetail = () => {
       if (name === 'discCheck') {
         animated = !checked;
       }
+      const getMarkerStart = checked && fined.animated !== '' ? `..ZeroOrOne` : fined.markerStart
       dispatch(setEdgeInfo({
         ...fined,
         animated,
+        markerStart: getMarkerStart,
         [name]: checked
       }));
     }
@@ -94,13 +96,15 @@ const VerticalMenuDetail = () => {
     const fined = _.find(storeData.edges, f => f.id === id);
     // debugger
     const getMarkerEnd = fined.animated === '' ? `_${edge.type}` : `..${edge.type}`
-    const getMarkerStart = 'arrow'
+    const getMarkerStart = ''
     let refY = edge.refY
-    // 비관계선
+    let refX = edge.refX
+    // 비관계선 일때
     if(edgeType){
-      refY = getMarkerEnd === '..OneorMore' ? 17.5 : 10.5
+      if(getMarkerEnd === '..OneorMore') refX = 10
+      if(getMarkerEnd === '..ZeroOrOne') refX = 18
     }
-    dispatch(setEdgeInfo({ ...fined, refY: refY, markerStart: getMarkerStart, markerEnd: getMarkerEnd, btnType: edge.type}));
+    dispatch(setEdgeInfo({ ...fined, refX: refX, refY: refY, markerStart: getMarkerStart, markerEnd: getMarkerEnd, btnType: edge.type}));
   }
 
   const generatorDomProperty = (description) => {

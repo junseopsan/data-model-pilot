@@ -40,8 +40,8 @@ const TaskOverview = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
-    const [markerEnd, setMarkerEnd] = useState({ type: MarkerType.ArrowClosed });
-    const [markerStart, setMarkerStart] = useState({ type: MarkerType.ArrowClosed });
+    const [markerEnd, setMarkerEnd] = useState({ type: 'arrow' });
+    const [markerStart, setMarkerStart] = useState({type: ''});
     const edgeUpdateSuccessful = useRef(true);
     const [edgeSelected, setEdgeSelected] = useState({ selected: false, id: '' });
     const { setViewport, zoomIn, zoomOut } = useReactFlow();
@@ -103,10 +103,10 @@ const TaskOverview = () => {
     const onEdgesChange = useCallback(
       (changes) => {
         setEdges((oldEdges) => applyEdgeChanges(changes, oldEdges));
+        setMarkerEnd({ type: MarkerType.ArrowClosed })
         if(changes[0].selected) setEdgeSelected(changes[0])
         else {
           setEdgeSelected({ selected: false, id: '' })
-          setMarkerEnd({ type: MarkerType.ArrowClosed })
           dispatch(setFocusInfo({ focusArea: 'model', focusName: modelInfo.modelName, focusDescription: modelInfo.modelDescription }))
         } 
       },
@@ -180,6 +180,7 @@ const TaskOverview = () => {
         if(edgeInfo.animated && edgeInfo.nullCheck) setMarkerStart('..ZeroOrOne')
         
         setMarkerEnd(edgeInfo.markerEnd)
+        setMarkerStart(edgeInfo.markerStart)
         const edgeList = _.uniqBy(_.concat(edgeInfo, storeData?.edges), 'id');
         setEdges(edgeList);
       }
@@ -282,7 +283,9 @@ const TaskOverview = () => {
       //  동그라미만 있는 속성
       const typeTwo = "M11.9,0.4c-0.1-0.1-0.1-0.2-0.3-0.3C11.5,0.1,11.3,0,11.2,0c0,0-0.1,0-0.1,0c-0.5,0-0.9,0.4-0.9,0.9v1.6C9.3,2,8.3,1.7,7.2,1.7c-4,0-7.2,3.9-7.2,8.8s3.2,8.8,7.2,8.8c1.1,0,2.1-0.3,3-0.8v1.6c0,0.5,0.4,0.9,0.9,0.9s0.9-0.4,0.9-0.9c0,0,0,0,0-0.1c0-0.1,0-0.1,0-0.2c0-0.1,0-0.2,0-0.3c0-0.1,0-0.3,0-0.4c0-0.2,0-0.4,0-0.5c0-0.2,0-0.4,0-0.6c0-0.2,0-0.5,0-0.7c0-0.3,0-0.5,0-0.8c0-0.3,0-0.6,0-0.9c0-0.3,0-0.6,0-0.9c0-0.3,0-0.6,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.7,0-1c0-0.3,0-0.6,0-1c0-0.3,0-0.6,0-0.9c0-0.3,0-0.6,0-0.9c0-0.3,0-0.5,0-0.8c0-0.2,0-0.5,0-0.7c0-0.2,0-0.4,0-0.7c0-0.2,0-0.4,0-0.6c0-0.2,0-0.3,0-0.5c0-0.2,0-0.4,0-0.6C12,0.8,12,0.6,11.9,0.4z M7.2,17.5c-3,0-5.4-3.1-5.4-7c0-3.8,2.5-7,5.4-7c1.1,0,2.1,0.4,3,1.2v11.6C9.3,17.1,8.3,17.5,7.2,17.5z"
       // 다리만 두개인 속성
-      const typeThree = "M20.5,29.4L3.3,17.3L20.5,5.2c0.5-0.3,0.7-1,0.3-1.7c-0.3-0.5-1-0.7-1.7-0.3L2.4,15V1.2C2.4,0.5,1.9,0,1.2,0S0,0.5,0,1.2v32.2c0,0.7,0.5,1.2,1.2,1.2s1.2-0.5,1.2-1.2V19.6L19,31.3c0.2,0.2,0.6,0.2,0.8,0.2c0.3,0,0.7-0.1,1-0.4c0.2-0.2,0.3-0.5,0.2-0.8C21,29.9,20.8,29.6,20.5,29.4z"
+      const typeThree = "M13,18.5c0-0.3-0.1-0.5-0.4-0.6L2.3,10.6l10.3-7.2c0.4-0.2,0.5-0.7,0.2-1.2c-0.2-0.4-0.7-0.5-1.2-0.2L1.7,9V0.9C1.7,0.4,1.3,0,0.9,0C0.4,0,0,0.4,0,0.9v19.5c0,0.5,0.4,0.9,0.9,0.9c0.5,0,0.9-0.4,0.9-0.9v-8.1l9.9,6.9c0.2,0.2,0.4,0.2,0.6,0.2c0.1,0,0.4,0,0.7-0.3C13,18.9,13.1,18.7,13,18.5z"
+      // markerStart null true, 비식별 관계선
+      const typeFour = "M0,1c0,0.2,0,0.4,0,0.6c0,0.2,0,0.3,0,0.5c0,0.2,0,0.4,0,0.6C0,3,0,3.2,0,3.4s0,0.5,0,0.7c0,0.3,0,0.5,0,0.8s0,0.6,0,0.9c0,0.3,0,0.6,0,0.9c0,0.4,0,0.7,0,1c0,0.3,0,0.7,0,1s0,0.7,0,1c0,0.3,0,0.7,0,1c0,0.3,0,0.7,0,1s0,0.7,0,1c0,0.3,0,0.7,0,1c0,0.4,0,0.7,0,1c0,0.3,0,0.6,0,0.9c0,0.3,0,0.6,0,0.9c0,0.3,0,0.5,0,0.8c0,0.2,0,0.5,0,0.7c0,0.2,0,0.4,0,0.6c0,0.1,0,0.3,0,0.5c0,0.1,0,0.3,0,0.4c0,0.1,0,0.2,0,0.3s0,0.1,0,0.2s0,0.1,0,0.1C0,20.6,0.4,21,0.9,21s0.9-0.4,0.9-0.9v-1.6c0.9,0.5,1.9,0.8,3,0.8c4,0,7.2-3.9,7.2-8.8S8.8,1.7,4.8,1.7c-1.1,0-2.1,0.3-3,0.8V0.9C1.8,0.4,1.4,0,0.9,0L0.8,0C0.7,0,0.5,0.1,0.4,0.1C0.2,0.2,0.2,0.3,0.1,0.4C0,0.6,0,0.8,0,1z M1.8,16.3V4.7c0.9-0.8,1.9-1.2,3-1.2c2.9,0,5.4,3.2,5.4,7c0,3.9-2.4,7-5.4,7C3.7,17.5,2.7,17.1,1.8,16.3z"
       
       // 식별관계선은 _ 로 표시한다. 
       if(type === '_ZeroOneOrMore') d = typeOne
@@ -303,11 +306,11 @@ const TaskOverview = () => {
         <>
           {
             _.map(edges, (item, i) => (
-              <>
-                {/* <svg key={`markerStart_${i}`} strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
+              <div key={`${i}`} >
+                <svg strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
                   <defs>
                     <marker
-                      id={item.markerStart}
+                      id={`..ZeroOrOne`}
                       viewBox="0 0 40 40"
                       markerWidth={20}
                       markerHeight={20}
@@ -315,26 +318,26 @@ const TaskOverview = () => {
                       refY={item.refY}
                       orient="auto"
                     >
-                      <path style={{fill: edgeSelected.selected && id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerStart)}/>
+                      <path style={{fill: '#B1B1B7'}} d={markerPathD('..ZeroOrOne')}/>
                     </marker>
                   </defs>
-                </svg> */}
-                <svg key={i} strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
+                </svg>
+                <svg  strokeWidth="20" style={{ position: 'absolute', top: 0, left: 0, zIndex: '9999' }}>
                   <defs>
                     <marker
                       id={item.markerEnd}
                       viewBox="0 0 40 40"
                       markerWidth={20}
                       markerHeight={20}
-                      refX={18}
+                      refX={item.refX}
                       refY={item.refY}
                       orient="auto"
                     >
-                      <path style={{fill: edgeSelected.selected && id === item.id ? '#555' : '#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
+                      <path style={{fill:'#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
                     </marker>
                   </defs>
                 </svg>
-              </>
+              </div>
             ))
           }
         </>
