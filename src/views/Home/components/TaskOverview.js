@@ -276,7 +276,8 @@ const TaskOverview = () => {
       )
     }
 
-    const markerPathD = (type) => {   
+    const markerPathD = (edge, type) => {
+      const { nullCheck, discCheck } = edge;
       let d = ""
       // 동그라미에 다리가 두개인 속성
       const typeOne = "M20.7,17.5l-9.2-7l9-7c0.2-0.1,0.4-0.3,0.4-0.6c0-0.2,0-0.5-0.1-0.6c-0.1-0.2-0.3-0.3-0.6-0.4c-0.3,0-0.5,0-0.6,0.2L11,8.7V0.9C11,0.4,10.6,0,10.1,0S9.2,0.4,9.2,0.9v1.5C8.4,1.9,7.5,1.7,6.5,1.7C2.9,1.7,0,5.6,0,10.5c0,4.9,2.9,8.8,6.6,8.8c0.9,0,1.8-0.3,2.7-0.8v1.6c0,0.5,0.4,0.9,0.9,0.9s0.9-0.4,0.9-0.9v-7.8l8.5,6.6c0.2,0.2,0.3,0.2,0.6,0.2c0.3,0,0.5-0.2,0.7-0.3l0.1-0.1C21.2,18.3,21.1,17.9,20.7,17.5z M7.2,17.4c-0.2,0-0.5,0.1-0.7,0.1c-2.6,0-4.8-3.2-4.8-7c0-3.8,2.2-7,4.8-7c1,0,1.9,0.4,2.7,1.2v11.6C8.5,16.9,7.9,17.3,7.2,17.4z"
@@ -287,16 +288,22 @@ const TaskOverview = () => {
       // markerStart null true, 비식별 관계선
       const typeFour = "M0,1c0,0.2,0,0.4,0,0.6c0,0.2,0,0.3,0,0.5c0,0.2,0,0.4,0,0.6C0,3,0,3.2,0,3.4s0,0.5,0,0.7c0,0.3,0,0.5,0,0.8s0,0.6,0,0.9c0,0.3,0,0.6,0,0.9c0,0.4,0,0.7,0,1c0,0.3,0,0.7,0,1s0,0.7,0,1c0,0.3,0,0.7,0,1c0,0.3,0,0.7,0,1s0,0.7,0,1c0,0.3,0,0.7,0,1c0,0.4,0,0.7,0,1c0,0.3,0,0.6,0,0.9c0,0.3,0,0.6,0,0.9c0,0.3,0,0.5,0,0.8c0,0.2,0,0.5,0,0.7c0,0.2,0,0.4,0,0.6c0,0.1,0,0.3,0,0.5c0,0.1,0,0.3,0,0.4c0,0.1,0,0.2,0,0.3s0,0.1,0,0.2s0,0.1,0,0.1C0,20.6,0.4,21,0.9,21s0.9-0.4,0.9-0.9v-1.6c0.9,0.5,1.9,0.8,3,0.8c4,0,7.2-3.9,7.2-8.8S8.8,1.7,4.8,1.7c-1.1,0-2.1,0.3-3,0.8V0.9C1.8,0.4,1.4,0,0.9,0L0.8,0C0.7,0,0.5,0.1,0.4,0.1C0.2,0.2,0.2,0.3,0.1,0.4C0,0.6,0,0.8,0,1z M1.8,16.3V4.7c0.9-0.8,1.9-1.2,3-1.2c2.9,0,5.4,3.2,5.4,7c0,3.9-2.4,7-5.4,7C3.7,17.5,2.7,17.1,1.8,16.3z"
       
-      // 식별관계선은 _ 로 표시한다. 
-      if(type === '_ZeroOneOrMore') d = typeOne
-      else if(type === '_OneorMore') d = typeTwo
-      else if(type === '_ZeroOrOne') d = typeThree
-      // 비식별관계선은 .. 로 표시한다. 
-      else if(type === '..ZeroOneOrMore') d = typeOne
-      else if(type === '..OneorMore') d = typeThree
-      else if(type === '..ZeroOrOne') d = typeTwo
+      if (nullCheck && !discCheck) {
+        d = typeFour;
+      } else {
+        switch (type) {
+          // 식별관계선은 _ 로 표시한다.
+          case '_ZeroOneOrMore': d = typeOne; break;
+          case '_OneorMore': d = typeTwo; break;
+          case '_ZeroOrOne': d = typeThree; break;
+          // 비식별관계선은 .. 로 표시한다.
+          case '..ZeroOneOrMore': d = typeOne; break;
+          case '..OneorMore': d = typeThree; break;
+          case '..ZeroOrOne': d = typeTwo; break;
+        }
+      }
       
-      return d
+      return d;
     }
 
     const EdgeItem = ({ edges }) => {
@@ -318,7 +325,7 @@ const TaskOverview = () => {
                       refY={item.refY}
                       orient="auto"
                     >
-                      <path style={{fill: '#B1B1B7'}} d={markerPathD('..ZeroOrOne')}/>
+                      <path style={{fill: '#B1B1B7'}} d={markerPathD(item, '..ZeroOrOne')}/>
                     </marker>
                   </defs>
                 </svg>
@@ -333,7 +340,7 @@ const TaskOverview = () => {
                       refY={item.refY}
                       orient="auto"
                     >
-                      <path style={{fill:'#B1B1B7'}} d={markerPathD(item.markerEnd)}/>
+                      <path style={{fill:'#B1B1B7'}} d={markerPathD(item, item.markerEnd)}/>
                     </marker>
                   </defs>
                 </svg>
