@@ -41,7 +41,7 @@ const TaskOverview = () => {
     const [edges, setEdges] = useEdgesState([]);
     const [rfInstance, setRfInstance] = useState(null);
     const [markerEnd, setMarkerEnd] = useState({ type: 'arrow' });
-    const [markerStart, setMarkerStart] = useState({type: ''});
+    const [markerStart, setMarkerStart] = useState('..ZeroOrOne');
     const edgeUpdateSuccessful = useRef(true);
     const [edgeSelected, setEdgeSelected] = useState({ selected: false, id: '' });
     const { setViewport, zoomIn, zoomOut } = useReactFlow();
@@ -53,7 +53,7 @@ const TaskOverview = () => {
     }
     const defaultEdgeOptions = {
       type: 'smoothstep',
-      markerStart: markerStart,
+      markerStart: '..ZeroOrOne',
       markerEnd: markerEnd,
       style: { strokeWidth: 2 },
       animated: edgeType,

@@ -62,6 +62,8 @@ export const HomeHeaderItem = ({ className }) => {
     useEffect(() => {
         onFavoriteClick('N', 'home')
         onFavoriteClick('E', 'modelItem')
+        onFavoriteClick('R1', 'modelItem')
+        onFavoriteClick('R2', 'modelItem')
     }, [])
     
     useEffect(() => {
