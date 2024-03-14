@@ -107,7 +107,20 @@ const VerticalMenuDetail = () => {
     dispatch(setEdgeInfo({ ...fined, refX: refX, refY: refY, markerStart: getMarkerStart, markerEnd: getMarkerEnd, btnType: edge.type}));
   }
 
-  const generatorDomProperty = (description) => {
+  const onChangePropertyTypes = (e) => {
+    const { id, value } = e.target;
+    const list = _.map(itemMenu, (item) => {
+      if (item.key === focusInfo.key) {
+        return { ...item, [id]: value }
+      }
+      return item;
+    });
+    dispatch(setItemMenu(list));
+  };
+
+  const generatorDomProperty = (info) => {
+    const { key } = info;
+    const property = _.find(itemMenu, f => f.key === key);
     return (
       <div className='h-auto p-1 mt-1 overflow-y-scroll border border-gray-200 rounded-md opacity-80'>
         <>
@@ -122,14 +135,15 @@ const VerticalMenuDetail = () => {
                   {item.text}
                 </div>
                 <div>
-                <Input
-                  id={item.id}
-                  className="p-1 mt-1 ml-2 h-[auto] rounded-md"
-                  style={{ width: '200px' }}
-                  defaultValue={description}
-                  onBlur={(e) => console.log('e', e.target.id)}
-                  placeholder={`${item.text}을 입력해주세요.`}
-                />
+                  <Input
+                    id={item.id}
+                    className="p-1 mt-1 ml-2 h-[auto] rounded-md"
+                    style={{ width: '200px' }}
+                    value={property[item.id]}
+                    onBlur={(e) => console.log('e', e.target.id)}
+                    placeholder={`${item.text}을 입력해주세요.`}
+                    onChange={onChangePropertyTypes}
+                  />
                 </div>
               </div>
             ))
@@ -194,7 +208,7 @@ const VerticalMenuDetail = () => {
 
   const focusGaneratorDom = () => {
     const { modelname, modelDescription } = modelInfo;
-    const { id, focusArea, focusName, focusDiscription, focusEdgeType } = focusInfo;
+    const { id, key, focusArea, focusName, focusDiscription, focusEdgeType } = focusInfo;
     let title = '';
     let label = '';
     let description = '';
@@ -230,7 +244,7 @@ const VerticalMenuDetail = () => {
     return (
       <>
         <div className='h-5'>{title ? `${title}:` : ` `}  {label}</div>
-        {focusArea === 'property' && generatorDomProperty(description)}
+        {focusArea === 'property' && generatorDomProperty(focusInfo)}
         {focusArea === 'edge' && generatorDomEdge(edgeMarkType)}
         {focusArea !== 'edge' && generatorDomDetail(description)}
       </>

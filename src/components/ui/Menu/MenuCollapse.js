@@ -8,7 +8,7 @@ import MenuContext from './context/menuContext'
 import { HiChevronDown } from 'react-icons/hi'
 
 const MenuCollapse = (props) => {
-    const { children, className, eventKey, expanded, label, onToggle, isData } = props
+    const { children, className, eventKey, expanded, label, onToggle, onClick, isData } = props
 
     const [isExpanded, setIsExpanded] = useState(expanded)
 
@@ -28,6 +28,7 @@ const MenuCollapse = (props) => {
     }, [expanded, onToggle, eventKey, defaultExpandedKeys])
 
     const toggleCollapse = (e) => {
+        e.stopPropagation();
         if (typeof onToggle === 'function') {
             onToggle(!isExpanded, e)
         }
@@ -53,7 +54,7 @@ const MenuCollapse = (props) => {
 
     return (
         <div className="menu-collapse">
-            <div className={menuCollapseItemClass} onClick={toggleCollapse}>
+            <div className={menuCollapseItemClass} onClick={onClick}>
                 <span className="flex items-center">{label}</span>
                 {
                     isData && (
@@ -66,6 +67,7 @@ const MenuCollapse = (props) => {
                                     : 'rotate(0deg)',
                             }}
                             transition={{ duration: 0.15 }}
+                            onClick={toggleCollapse}
                         >
                             {sideCollapsed ? null : <HiChevronDown />}
                         </motion.span>

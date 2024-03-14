@@ -37,6 +37,23 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
             inputMenuNewRef.current.focus();
         })
     }
+
+    const onClickEntityInfo = (e, item) => {
+        e.stopPropagation();
+        const { title, description, type, key } = item;
+        dispatch(setEntityInfo({
+            entityName: title,
+            entityDescription: description,
+            entityType: type,
+            entityId: key
+        }));
+        dispatch(setFocusInfo({
+            id: key,
+            focusArea: 'entity',
+            focusName: title,
+            focusDiscription: description
+        }));
+    }
     
     const onClickEntity = (e) => {
         e.stopPropagation();
@@ -144,7 +161,11 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                             type: 'item',
                             subMenu: [],
                             nullCheck: false,
-                            discCheck: false
+                            discCheck: false,
+                            physical: '',
+                            domain: '',
+                            infoType: '',
+                            dataType: ''
                         })
                     }
                 })
@@ -172,14 +193,15 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                                             defaultValue={nav.title}
                                             onBlur={onInputFocusOut}
                                         />
-                                    :   <Trans defaults={`${nav.title}`} />
+                                    :
+                                        <Trans defaults={`${nav.title}`} />
                                 }
                             </div>
                             <div
                                 onClick={onPropertyAdd}
                                 className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'
                             >
-                                <TiPlus /> 
+                                <TiPlus />
                             </div>
                         </div>
                     </>
@@ -188,6 +210,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 eventKey={nav.key}
                 expanded={true}
                 isData={isData}
+                onClick={(e) => onClickEntityInfo(e, nav)}
             >
                 {nav.itemMenu?.map((itemMenu, i) => (
                     <MenuItem eventKey={itemMenu.key} key={i} onClick={() => onMenuItem(itemMenu)}>
