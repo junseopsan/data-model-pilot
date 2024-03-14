@@ -180,7 +180,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
             <MenuCollapse
                 label={
                     <>
-                        <div className="flex flex-row items-center justify-between w-[165px]">
+                        <div className="flex flex-row items-center justify-between w-[265px]">
                             <div
                                 onClick={onClickEntity}
                                 className='relative transition duration-300 ease-in-out entityNavText z-index: 99 hover:text-red-700 hover:font-bold'
@@ -189,7 +189,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                                     isInput.entity ?
                                         <Input
                                             ref={inputRef}
-                                            style={{ width: '140px', height: '35px' }}
+                                            style={{ width: '240px', height: '35px' }}
                                             defaultValue={nav.title}
                                             onBlur={onInputFocusOut}
                                         />
