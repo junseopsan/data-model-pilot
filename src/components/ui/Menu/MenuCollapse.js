@@ -10,7 +10,7 @@ import { HiChevronDown } from 'react-icons/hi'
 const MenuCollapse = (props) => {
     const { children, className, eventKey, expanded, label, onToggle, onClick, isData } = props
 
-    const [isExpanded, setIsExpanded] = useState(expanded)
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const { menuItemHeight, variant, sideCollapsed, defaultExpandedKeys } =
         useContext(MenuContext)
@@ -18,14 +18,18 @@ const MenuCollapse = (props) => {
     const { direction } = useConfig()
 
     useEffect(() => {
-        if (defaultExpandedKeys.includes(eventKey)) {
-            setIsExpanded(true)
-        }
-        if (expanded !== isExpanded) {
-            setIsExpanded(true)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [expanded, onToggle, eventKey, defaultExpandedKeys])
+        setIsExpanded(expanded);
+    }, [expanded]);
+
+    // useEffect(() => {
+    //     if (defaultExpandedKeys.includes(eventKey)) {
+    //         setIsExpanded(true)
+    //     }
+    //     if (expanded !== isExpanded) {
+    //         setIsExpanded(true)
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [expanded, onToggle, eventKey, defaultExpandedKeys])
 
     const toggleCollapse = (e) => {
         e.stopPropagation();

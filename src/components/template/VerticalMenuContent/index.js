@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Menu } from 'components/ui'
+import { Menu, Input } from 'components/ui'
+import { TiPlus } from "react-icons/ti";
 import { AuthorityCheck } from 'components/shared'
 import VerticalSingleMenuItem from './VerticalSingleMenuItem'
 import VerticalCollapsedMenuItem from './VerticalCollapsedMenuItem'
@@ -12,7 +13,9 @@ import {
     NAV_ITEM_TYPE_ITEM,
 } from 'constants/navigation.constant'
 import useMenuActive from 'utils/hooks/useMenuActive'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setEntityInfo } from 'store/base/commonSlice'
+import EventBus from "../../../utils/hooks/EventBus";
 import _ from 'lodash';
 
 const { MenuGroup } = Menu
@@ -28,10 +31,13 @@ const VerticalMenuContent = (props) => {
         direction = themeConfig.direction,
     } = props;
     
+    const dispatch = useDispatch();
     const [sideNav, setSideNav] = useState([]);
-    const [defaulExpandKey, setDefaulExpandKey] = useState([])
+    const [defaulExpandKey, setDefaulExpandKey] = useState([]);
+    const [etInput, setEtInput] = useState(false);
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
-    const { storeData, itemMenu } = useSelector(state => state.base.common);
+    const { storeData, itemMenu, modelInfo } = useSelector(state => state.base.common);
+    const inputRef = useRef();
 
     useEffect(() => {
         let nav = []
@@ -59,6 +65,29 @@ const VerticalMenuContent = (props) => {
     const handleLinkClick = () => {
         onMenuItemClick?.()
     }
+
+    const oBlurEtInput = (e) => {
+        const { value } = e.target;
+        const getNodeId = `randomnode_${new Date()}`;
+        if (modelInfo.modelName) {
+            if (value) {
+                dispatch(
+                    setEntityInfo(
+                        {
+                            entityName: e.target.value,
+                            entityDescription: '',
+                            entityType: 'add',
+                            entityId: getNodeId
+                        }
+                    )
+                );
+            }            
+        } else {
+            EventBus.emit("SHOW-MSG", '먼저 새 모델을 작성해주세요.');
+        }
+        setEtInput(false);
+    };
+
     const getNavItem = (nav) => {
         if (nav.subMenu.length === 0 && nav.type === NAV_ITEM_TYPE_ITEM) {
             return (
@@ -75,7 +104,35 @@ const VerticalMenuContent = (props) => {
 
         if (nav.type === NAV_ITEM_TYPE_COLLAPSE) {
             return (
-                <MenuGroup key={nav.key} label={`엔터티 영역`}>
+                <MenuGroup
+                    key={nav.key}
+                    label={
+                        <div className="flex flex-row items-center justify-between">
+                            엔터티 영역
+                            <div
+                                className='relative ml-2 transition duration-300 ease-in-out z-index: 99 hover:text-red-700'
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    setEtInput(true);
+                                    setTimeout(() => {
+                                        inputRef.current.focus();
+                                    });
+                                }}
+                            >
+                                <TiPlus />
+                            </div>
+                        </div>
+                        
+                    }
+                >
+                    {
+                        etInput && (
+                            <Input
+                                ref={inputRef}
+                                onBlur={oBlurEtInput}
+                            />
+                        )
+                    }
                     {
                         sideNav?.length > 0 && (
                             sideNav.map((entity) => (

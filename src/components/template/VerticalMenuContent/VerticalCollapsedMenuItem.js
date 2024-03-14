@@ -17,6 +17,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     const inputMenusRef = useRef([]);
 
     const [isData, setIsData] = useState(false);
+    const [expanded, setExpanded] = useState(false);
     const [isInput, setIsInput] = useState({ entity: false, propertyKey: '',  isProperty: false });
     const { propertyInfo, itemMenu, storeData, focusInfo } = useSelector(state => state.base.common);
 
@@ -32,6 +33,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
     const onPropertyAdd = (e) => {
         e.stopPropagation();
         setIsData(true);
+        setExpanded(true);
         setIsInput({ entity: false, propertyKey: '',  isProperty: true });
         setTimeout(() => {
             inputMenuNewRef.current.focus();
@@ -208,9 +210,10 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }) => {
                 }
                 key={nav.key}
                 eventKey={nav.key}
-                expanded={true}
+                expanded={expanded}
                 isData={isData}
                 onClick={(e) => onClickEntityInfo(e, nav)}
+                onToggle={(v) => setExpanded(v)}
             >
                 {nav.itemMenu?.map((itemMenu, i) => (
                     <MenuItem eventKey={itemMenu.key} key={i} onClick={() => onMenuItem(itemMenu)}>
