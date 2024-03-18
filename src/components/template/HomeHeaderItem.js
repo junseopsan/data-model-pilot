@@ -61,6 +61,8 @@ export const HomeHeaderItem = ({ className }) => {
     
     useEffect(() => {
         onFavoriteClick('N', 'home')
+        onFavoriteClick('O', 'home')
+        onFavoriteClick('S', 'home')
         onFavoriteClick('E', 'modelItem')
         onFavoriteClick('R1', 'modelItem')
         onFavoriteClick('R2', 'modelItem')
@@ -92,7 +94,6 @@ export const HomeHeaderItem = ({ className }) => {
       }, []);
 
     const onToolBarSelect = (shortLabel) => {
-        console.log('toolbar', shortLabel);
         if(shortLabel === 'N') setIsModelDialogOpen(true)
         if(shortLabel === 'S') exportJsonData('dataModelPilot')
         if(shortLabel === 'SA') exportTheOhterJsonData()
@@ -213,7 +214,6 @@ export const HomeHeaderItem = ({ className }) => {
     const handleError = (error, file) => {
         console.log('error code ' + error.code + ': ' + error.message)
     }
-    
 
     const selectedHomeMenu = (
         <div className={classNames(className, 'flex items-center')}>
@@ -272,7 +272,6 @@ export const HomeHeaderItem = ({ className }) => {
                 >
                     { item === 'N' && (<MdFiberNew/>) }
                     { item === 'O' && (<AiOutlineFolderOpen/>) }
-                    { item === 'O' && (<AiOutlineFolderOpen/>) }
                     { item === 'S' && (<CiSaveUp1/>) }
                     { item === 'SA' && (<CiSaveUp2/>) }
                     { item === 'E' && (<AiOutlineMinusSquare/>) }
@@ -329,7 +328,7 @@ export const HomeHeaderItem = ({ className }) => {
                         }
                         {
                             (toolbar.label === '열기') && (
-                                <>
+                                  <>
                                     <Files
                                         className='files-dropzone'
                                         onChange={importJsonData}
