@@ -12,11 +12,12 @@ import NewPropertyDialog from '../../views/Home/dialogs/NewPropertyDialog'
 import NewEntityDialog from '../../views/Home/dialogs/NewEntityDialog'
 import AnotherNameSaveDialog from '../../views/Home/dialogs/AnotherNameSaveDialog'
 import EventBus from "../../utils/hooks/EventBus";
-import { setStoreData, setEdgeType, setModelInfo } from 'store/base/commonSlice'
+import { setStoreData, setEdgeType, setModelInfo, setItemMenu } from 'store/base/commonSlice'
 import Files from 'react-files'
 import { MdFiberNew } from "react-icons/md";
 import { CiSaveUp2, CiSaveUp1, CiMemoPad } from "react-icons/ci";
 import { AiOutlineFolderOpen, AiOutlineMinusSquare, AiOutlineMinus, AiOutlineDash } from "react-icons/ai";
+import _ from 'lodash';
 
 
 export const HomeHeaderItem = ({ className }) => {
@@ -45,12 +46,8 @@ export const HomeHeaderItem = ({ className }) => {
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
-    const modelInfo = useSelector(
-        (state) => state.base.common.modelInfo
-    )
-    const storeData = useSelector(
-        (state) => state.base.common.storeData
-    )
+    const { storeData, modelInfo, itemMenu } = useSelector((state) => state.base.common);
+
     /**
      * 다른 이름으로 저장에 값 변경에 대한 다운로드 실행
      */
@@ -157,7 +154,16 @@ export const HomeHeaderItem = ({ className }) => {
             if(validEntityData('none')){
                 // create file in browser
                 const fileName = name;
-                const json = JSON.stringify({modelTitle:modelInfo.modelName, ...storeData}, null, 2);
+                const nodes = _.map(storeData.nodes, (item) => {
+                    return {
+                        ...item,
+                        itemMenu: _.filter(itemMenu, f => f.id === item.id)
+                    }
+                });
+                const data = _.cloneDeep(storeData);
+                data.nodes = nodes;
+
+                const json = JSON.stringify({modelTitle:modelInfo.modelName, ...data}, null, 2);
                 const blob = new Blob([json], { type: "application/json" });
                 const href = URL.createObjectURL(blob);
         
@@ -185,6 +191,7 @@ export const HomeHeaderItem = ({ className }) => {
             dispatch(setModelInfo({...modelInfo, modelName: result.modelTitle, isNewModel: true, isNewOpen: true}))
             delete result.modelTitle
             dispatch(setStoreData(result))
+            dispatch(setItemMenu(_.flatten(_.map(result.nodes, 'itemMenu'))))
             // dispatch(setModelInfo({...modelInfo, isNewModel: false, isNewOpen: false}))
          })
     }
