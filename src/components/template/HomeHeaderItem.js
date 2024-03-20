@@ -30,7 +30,7 @@ export const HomeHeaderItem = ({ className }) => {
         {index: 3, label: '다른 이름으로 저장', shortLabel: 'SA', isFavorite: false}
     ])
     const [toolbarModelItemList, setToolbarModelItemList] = useState([
-        {index: 4, label: '엔터티 추가', shortLabel: 'E', isFavorite: false},
+        // {index: 4, label: '엔터티 추가', shortLabel: 'E', isFavorite: false},
         {index: 5, label: '식별 관계선 선택', shortLabel: 'R1', isFavorite: false},
         {index: 6, label: '비식별 관계선 선택', shortLabel: 'R2', isFavorite: false},
         {index: 7, label: '메모 추가', shortLabel: 'MD', isFavorite: false}
@@ -60,7 +60,7 @@ export const HomeHeaderItem = ({ className }) => {
         onFavoriteClick('N', 'home')
         onFavoriteClick('O', 'home')
         onFavoriteClick('S', 'home')
-        onFavoriteClick('E', 'modelItem')
+        // onFavoriteClick('E', 'modelItem')
         onFavoriteClick('R1', 'modelItem')
         onFavoriteClick('R2', 'modelItem')
     }, [])
@@ -300,7 +300,7 @@ export const HomeHeaderItem = ({ className }) => {
             </div>
             <Dropdown renderTitle={selectedHomeMenu} placement="bottom-end">
                 {toolbarHomeList.map((toolbar, key) => (
-                    <div className={classNames('menu_box')} key={toolbar.index}>
+                    <div className={toolbar.label !== '열기' && classNames('menu_box')} key={toolbar.index}>
                         {
                             (toolbar.label === '신규') && (
                                 <>
@@ -333,7 +333,7 @@ export const HomeHeaderItem = ({ className }) => {
                                 </>
                             )
                         }
-                        {
+                        {/* {
                             (toolbar.label === '열기') && (
                                   <>
                                     <Files
@@ -369,7 +369,7 @@ export const HomeHeaderItem = ({ className }) => {
                                     </div>
                                 </>
                             )
-                        }
+                        } */}
                         {
                             (!['신규', '열기'].includes(toolbar.label)) && (
                                 <>
